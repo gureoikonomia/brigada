@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* Paleta: señalética municipal, no genérica de "AI design" */
+  --color-concrete: #EAE7DF;      /* fondo principal, gris hormigón cálido */
+  --color-concrete-dark: #DCD8CE; /* paneles / hover sobre el fondo */
+  --color-ink: #16262E;           /* texto principal, tinta azul-petróleo casi negra */
+  --color-petrol: #1B3A4B;        /* azul petróleo, superficies oscuras (nav, footer) */
+  --color-petrol-light: #2C5266;
+  --color-signal: #E8590C;        /* naranja aviso — acento de acción */
+  --color-signal-dark: #C64A08;
+  --color-signal-soft: #FBE3D2;   /* tinte del acento, para badges/fondos suaves */
+  --color-line: #C9C2B4;          /* líneas divisorias / bordes */
+  --color-ok: #2F6D4F;            /* estado resuelta */
+  --color-warn: #B3261E;          /* estado rechazada / errores */
+  --color-paper: #F6F4EE;         /* superficies tipo "ficha" sobre el fondo */
+
+  --font-display: 'Big Shoulders Display', sans-serif;
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  --radius-none: 0px;
+  --radius-sm: 2px;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-concrete);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display);
+    letter-spacing: 0.01em;
+  }
+
+  /* Foco de teclado visible en toda la app, sin excepción */
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Panel con scroll interno propio, usado en listados largos (incidencias,
+     moderación) para que la página no crezca sin límite: el contenedor
+     tiene alto fijo y es él quien scrollea, no el body. */
+  .scroll-panel {
+    overflow-y: auto;
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: var(--color-line) transparent; /* Firefox */
+  }
+
+  .scroll-panel::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .scroll-panel::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scroll-panel::-webkit-scrollbar-thumb {
+    background-color: var(--color-line);
+    border: 2px solid transparent;
+    background-clip: content-box;
+    border-radius: 4px;
+  }
+
+  .scroll-panel::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-petrol);
+    background-clip: content-box;
+  }
+}

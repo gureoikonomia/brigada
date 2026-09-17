@@ -1,0 +1,167 @@
+{
+  "nav": {
+    "brand": "BRIGADA",
+    "incidents": "INCIDENCIAS",
+    "newIncident": "+ NUEVA",
+    "newIncidentFull": "+ NUEVA INCIDENCIA",
+    "moderation": "MODERACIÓN",
+    "login": "ENTRAR",
+    "register": "REGISTRO",
+    "logout": "SALIR",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú"
+  },
+  "common": {
+    "loading": "Cargando…",
+    "loadingSession": "Cargando sesión…",
+    "noPermission": "No tienes permiso para ver esta página.",
+    "back": "← Volver",
+    "save": "GUARDAR",
+    "saving": "GUARDANDO…",
+    "cancel": "Cancelar"
+  },
+  "category": {
+    "infraestructura": "Infraestructura",
+    "seguridad": "Seguridad",
+    "limpieza": "Limpieza",
+    "ruido": "Ruido",
+    "trafico": "Tráfico",
+    "otros": "Otros",
+    "all": "Todas"
+  },
+  "status": {
+    "pendiente": "Pendiente",
+    "en_revision": "En revisión",
+    "resuelta": "Resuelta",
+    "rechazada": "Rechazada",
+    "all": "Todos"
+  },
+  "role": {
+    "user": "Vecino/a",
+    "moderator": "Moderador/a",
+    "admin": "Administrador/a"
+  },
+  "vote": {
+    "support": "APOYAR",
+    "voted": "✓ VOTADO"
+  },
+  "incidentCard": {
+    "noPhoto": "Sin foto"
+  },
+  "incidentList": {
+    "title": "INCIDENCIAS",
+    "sortRecent": "Recientes",
+    "sortPopular": "Populares",
+    "loadError": "No se pudieron cargar las incidencias.",
+    "empty": "No hay incidencias que coincidan con estos filtros.",
+    "prev": "← Anterior",
+    "next": "Siguiente →",
+    "pageOf": "{{page}} / {{totalPages}}"
+  },
+  "incidentDetail": {
+    "backToList": "← Volver al listado",
+    "loadError": "No se pudo cargar la incidencia.",
+    "notFound": "Incidencia no encontrada.",
+    "reportedBy": "reportado por",
+    "deleteIncident": "Borrar incidencia",
+    "deleting": "Borrando…",
+    "confirmDelete": "¿Seguro que quieres borrar esta incidencia? No se puede deshacer.",
+    "moderationStatusLabel": "Cambiar estado (moderación)",
+    "viewPhoto": "Ver foto {{n}} de {{total}}"
+  },
+  "createIncident": {
+    "title": "NUEVA INCIDENCIA",
+    "subtitle": "Describe qué ocurre y dónde. Cuanto más concreto, mejor.",
+    "titleLabel": "Título",
+    "descriptionLabel": "Descripción",
+    "categoryLabel": "Categoría",
+    "locationLabel": "Ubicación",
+    "useMyLocation": "Usar mi ubicación actual",
+    "locating": "Localizando…",
+    "latPlaceholder": "Latitud",
+    "lngPlaceholder": "Longitud",
+    "addressPlaceholder": "Dirección (opcional, ej: Gran Vía 45)",
+    "photosLabel": "Fotos",
+    "photosHint": "(hasta 5, opcional)",
+    "submit": "PUBLICAR INCIDENCIA",
+    "submitting": "PUBLICANDO…",
+    "error": "No se pudo crear la incidencia"
+  },
+  "login": {
+    "title": "ACCEDER",
+    "subtitle": "Inicia sesión para reportar y apoyar incidencias.",
+    "emailLabel": "Email",
+    "passwordLabel": "Contraseña",
+    "submit": "ENTRAR",
+    "submitting": "ENTRANDO…",
+    "error": "No se pudo iniciar sesión",
+    "noAccount": "¿No tienes cuenta?",
+    "registerLink": "Regístrate"
+  },
+  "register": {
+    "title": "REGISTRO",
+    "subtitle": "Únete a la brigada vecinal.",
+    "nameLabel": "Nombre",
+    "emailLabel": "Email",
+    "passwordLabel": "Contraseña",
+    "passwordHint": "(mín. 8 caracteres)",
+    "submit": "CREAR CUENTA",
+    "submitting": "CREANDO CUENTA…",
+    "error": "No se pudo crear la cuenta",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "loginLink": "Entra aquí"
+  },
+  "profile": {
+    "yourIncidents": "TUS INCIDENCIAS",
+    "edit": "Editar",
+    "loadError": "No se pudieron cargar tus incidencias.",
+    "empty": "Todavía no has reportado ninguna incidencia."
+  },
+  "editProfile": {
+    "backToProfile": "← Volver a tu perfil",
+    "title": "EDITAR PERFIL",
+    "accountData": "Datos de la cuenta",
+    "nameLabel": "Nombre",
+    "emailLabel": "Email",
+    "saveData": "GUARDAR DATOS",
+    "saveSuccess": "Cambios guardados correctamente.",
+    "saveError": "No se pudieron guardar los cambios",
+    "changePassword": "Cambiar contraseña",
+    "currentPasswordLabel": "Contraseña actual",
+    "newPasswordLabel": "Nueva contraseña",
+    "newPasswordHint": "(mín. 8 caracteres)",
+    "confirmPasswordLabel": "Repite la nueva contraseña",
+    "passwordMismatch": "Las dos contraseñas nuevas no coinciden",
+    "changePasswordSubmit": "CAMBIAR CONTRASEÑA",
+    "changingPassword": "CAMBIANDO…",
+    "passwordSuccess": "Contraseña actualizada correctamente.",
+    "passwordError": "No se pudo cambiar la contraseña"
+  },
+  "moderation": {
+    "title": "MODERACIÓN",
+    "subtitle": "Revisa y cambia el estado de las incidencias reportadas.",
+    "tabPending": "Pendientes",
+    "tabInReview": "En revisión",
+    "tabResolved": "Resueltas",
+    "tabRejected": "Rechazadas",
+    "loadError": "No se pudieron cargar las incidencias.",
+    "empty": "No hay incidencias en este estado. Todo al día.",
+    "delete": "Borrar",
+    "statusChangeError": "No se pudo cambiar el estado",
+    "deleteError": "No se pudo borrar",
+    "confirmDelete": "¿Borrar \"{{title}}\"? No se puede deshacer.",
+    "votesCount": "{{count}} votos",
+    "rowMeta": "{{author}} · {{date}}"
+  },
+  "notFound": {
+    "code": "ERROR 404",
+    "title": "Página no encontrada",
+    "subtitle": "Esta ruta no existe o se ha movido.",
+    "backLink": "← Volver al listado de incidencias"
+  },
+  "language": {
+    "label": "Idioma",
+    "es": "Castellano",
+    "eu": "Euskara"
+  }
+}

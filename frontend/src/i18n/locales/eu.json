@@ -1,0 +1,167 @@
+{
+  "nav": {
+    "brand": "BRIGADA",
+    "incidents": "GORABEHERAK",
+    "newIncident": "+ BERRIA",
+    "newIncidentFull": "+ GORABEHERA BERRIA",
+    "moderation": "MODERAZIOA",
+    "login": "SARTU",
+    "register": "IZENA EMAN",
+    "logout": "IRTEN",
+    "openMenu": "Menua ireki",
+    "closeMenu": "Menua itxi"
+  },
+  "common": {
+    "loading": "Kargatzen…",
+    "loadingSession": "Saioa kargatzen…",
+    "noPermission": "Ez duzu orri hau ikusteko baimenik.",
+    "back": "← Atzera",
+    "save": "GORDE",
+    "saving": "GORDETZEN…",
+    "cancel": "Utzi"
+  },
+  "category": {
+    "infraestructura": "Azpiegitura",
+    "seguridad": "Segurtasuna",
+    "limpieza": "Garbiketa",
+    "ruido": "Zarata",
+    "trafico": "Trafikoa",
+    "otros": "Beste batzuk",
+    "all": "Guztiak"
+  },
+  "status": {
+    "pendiente": "Zain",
+    "en_revision": "Aztertzen",
+    "resuelta": "Konponduta",
+    "rechazada": "Ukatuta",
+    "all": "Guztiak"
+  },
+  "role": {
+    "user": "Auzokidea",
+    "moderator": "Moderatzailea",
+    "admin": "Administratzailea"
+  },
+  "vote": {
+    "support": "BOTOA EMAN",
+    "voted": "✓ BOZKATUTA"
+  },
+  "incidentCard": {
+    "noPhoto": "Argazkirik ez"
+  },
+  "incidentList": {
+    "title": "GORABEHERAK",
+    "sortRecent": "Berrienak",
+    "sortPopular": "Ezagunenak",
+    "loadError": "Ezin izan dira gorabeherak kargatu.",
+    "empty": "Ez dago iragazki hauekin bat datorren gorabeherarik.",
+    "prev": "← Aurrekoa",
+    "next": "Hurrengoa →",
+    "pageOf": "{{page}} / {{totalPages}}"
+  },
+  "incidentDetail": {
+    "backToList": "← Zerrendara itzuli",
+    "loadError": "Ezin izan da gorabehera kargatu.",
+    "notFound": "Gorabehera ez da aurkitu.",
+    "reportedBy": "jakinarazlea:",
+    "deleteIncident": "Gorabehera ezabatu",
+    "deleting": "Ezabatzen…",
+    "confirmDelete": "Ziur gorabehera hau ezabatu nahi duzula? Ezin da desegin.",
+    "moderationStatusLabel": "Egoera aldatu (moderazioa)",
+    "viewPhoto": "{{total}}etik {{n}}. argazkia ikusi"
+  },
+  "createIncident": {
+    "title": "GORABEHERA BERRIA",
+    "subtitle": "Azaldu zer gertatzen den eta non. Zenbat eta zehatzagoa, hobe.",
+    "titleLabel": "Izenburua",
+    "descriptionLabel": "Deskribapena",
+    "categoryLabel": "Kategoria",
+    "locationLabel": "Kokapena",
+    "useMyLocation": "Nire uneko kokapena erabili",
+    "locating": "Kokatzen…",
+    "latPlaceholder": "Latitudea",
+    "lngPlaceholder": "Longitudea",
+    "addressPlaceholder": "Helbidea (aukerakoa, adib: Gran Via 45)",
+    "photosLabel": "Argazkiak",
+    "photosHint": "(gehienez 5, aukerakoa)",
+    "submit": "GORABEHERA ARGITARATU",
+    "submitting": "ARGITARATZEN…",
+    "error": "Ezin izan da gorabehera sortu"
+  },
+  "login": {
+    "title": "SARTU",
+    "subtitle": "Hasi saioa gorabeherak jakinarazteko eta bozkatzeko.",
+    "emailLabel": "Emaila",
+    "passwordLabel": "Pasahitza",
+    "submit": "SARTU",
+    "submitting": "SARTZEN…",
+    "error": "Ezin izan da saioa hasi",
+    "noAccount": "Ez duzu konturik?",
+    "registerLink": "Eman izena"
+  },
+  "register": {
+    "title": "IZENA EMAN",
+    "subtitle": "Elkartu auzo-brigadara.",
+    "nameLabel": "Izena",
+    "emailLabel": "Emaila",
+    "passwordLabel": "Pasahitza",
+    "passwordHint": "(gutxienez 8 karaktere)",
+    "submit": "KONTUA SORTU",
+    "submitting": "KONTUA SORTZEN…",
+    "error": "Ezin izan da kontua sortu",
+    "hasAccount": "Kontua baduzu?",
+    "loginLink": "Sartu hemen"
+  },
+  "profile": {
+    "yourIncidents": "ZURE GORABEHERAK",
+    "edit": "Editatu",
+    "loadError": "Ezin izan dira zure gorabeherak kargatu.",
+    "empty": "Oraindik ez duzu gorabeherarik jakinarazi."
+  },
+  "editProfile": {
+    "backToProfile": "← Zure profilera itzuli",
+    "title": "PROFILA EDITATU",
+    "accountData": "Kontuaren datuak",
+    "nameLabel": "Izena",
+    "emailLabel": "Emaila",
+    "saveData": "DATUAK GORDE",
+    "saveSuccess": "Aldaketak ondo gorde dira.",
+    "saveError": "Ezin izan dira aldaketak gorde",
+    "changePassword": "Pasahitza aldatu",
+    "currentPasswordLabel": "Uneko pasahitza",
+    "newPasswordLabel": "Pasahitz berria",
+    "newPasswordHint": "(gutxienez 8 karaktere)",
+    "confirmPasswordLabel": "Errepikatu pasahitz berria",
+    "passwordMismatch": "Bi pasahitz berriak ez datoz bat",
+    "changePasswordSubmit": "PASAHITZA ALDATU",
+    "changingPassword": "ALDATZEN…",
+    "passwordSuccess": "Pasahitza ondo eguneratu da.",
+    "passwordError": "Ezin izan da pasahitza aldatu"
+  },
+  "moderation": {
+    "title": "MODERAZIOA",
+    "subtitle": "Berrikusi eta aldatu jakinarazitako gorabeheren egoera.",
+    "tabPending": "Zain",
+    "tabInReview": "Aztertzen",
+    "tabResolved": "Konponduta",
+    "tabRejected": "Ukatuta",
+    "loadError": "Ezin izan dira gorabeherak kargatu.",
+    "empty": "Ez dago egoera honetan gorabeherarik. Dena eguneratuta.",
+    "delete": "Ezabatu",
+    "statusChangeError": "Ezin izan da egoera aldatu",
+    "deleteError": "Ezin izan da ezabatu",
+    "confirmDelete": "\"{{title}}\" ezabatu? Ezin da desegin.",
+    "votesCount": "{{count}} boto",
+    "rowMeta": "{{author}} · {{date}}"
+  },
+  "notFound": {
+    "code": "404 ERROREA",
+    "title": "Orria ez da aurkitu",
+    "subtitle": "Bide hau ez da existitzen edo lekuz aldatu da.",
+    "backLink": "← Gorabeheren zerrendara itzuli"
+  },
+  "language": {
+    "label": "Hizkuntza",
+    "es": "Castellano",
+    "eu": "Euskara"
+  }
+}
