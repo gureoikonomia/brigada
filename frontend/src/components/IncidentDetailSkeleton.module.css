@@ -1,0 +1,57 @@
+@reference "../index.css";
+
+.wrapper {
+  @apply max-w-2xl mx-auto px-4 py-8 animate-pulse;
+}
+
+.lineTopNav {
+  @apply h-3 w-32 bg-concrete-dark mb-4;
+}
+
+.cardContainer {
+  @apply bg-paper border border-line;
+}
+
+.imagePlaceholder {
+  @apply w-full h-64 bg-concrete-dark;
+}
+
+.contentBody {
+  @apply p-6;
+}
+
+.badgeRow {
+  @apply flex items-center gap-2 mb-3;
+}
+
+.lineCategory {
+  @apply h-3 w-24 bg-concrete-dark;
+}
+
+.lineBadge {
+  @apply h-4 w-20 bg-concrete-dark;
+}
+
+.lineTitle {
+  @apply h-8 w-2/3 bg-concrete-dark mb-3;
+}
+
+.lineAddress {
+  @apply h-3 w-1/2 bg-concrete-dark mb-6;
+}
+
+.textLines {
+  @apply space-y-2 mb-6;
+}
+
+.lineFull {
+  @apply h-3 w-full bg-concrete-dark;
+}
+
+.lineShort {
+  @apply h-3 w-2/3 bg-concrete-dark;
+}
+
+.buttonPlaceholder {
+  @apply h-9 w-32 bg-concrete-dark;
+}

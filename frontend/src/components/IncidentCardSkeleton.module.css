@@ -1,0 +1,45 @@
+@reference "../index.css";
+
+.skeletonCard {
+  @apply flex bg-paper border border-line animate-pulse;
+}
+
+.thumbBox {
+  @apply w-28 h-28 flex-shrink-0 bg-concrete-dark;
+}
+
+.contentBox {
+  @apply flex-1 min-w-0 p-3 flex flex-col justify-between;
+}
+
+.headerRow {
+  @apply flex items-center justify-between gap-2 mb-2;
+}
+
+.lineCategory {
+  @apply h-2.5 w-20 bg-concrete-dark;
+}
+
+.lineBadge {
+  @apply h-4 w-16 bg-concrete-dark;
+}
+
+.lineTitle {
+  @apply h-4 w-3/4 bg-concrete-dark mb-2;
+}
+
+.lineAddress {
+  @apply h-3 w-1/2 bg-concrete-dark;
+}
+
+.footerRow {
+  @apply flex items-center justify-between mt-2;
+}
+
+.lineDate {
+  @apply h-2.5 w-16 bg-concrete-dark;
+}
+
+.lineButton {
+  @apply h-7 w-20 bg-concrete-dark;
+}

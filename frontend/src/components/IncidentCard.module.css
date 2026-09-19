@@ -1,0 +1,45 @@
+@reference "../index.css";
+
+.cardLink {
+  @apply block bg-paper border border-line hover:border-petrol transition-colors;
+}
+
+.cardContainer {
+  @apply flex;
+}
+
+.thumbnailImage {
+  @apply w-24 h-24 sm:w-28 sm:h-28 object-cover flex-shrink-0 grayscale-[15%];
+}
+
+.noPhotoBox {
+  @apply w-24 h-24 sm:w-28 sm:h-28 flex-shrink-0 bg-concrete-dark flex items-center justify-center font-mono text-[10px] text-ink/40 uppercase tracking-wide text-center px-2;
+}
+
+.cardContent {
+  @apply flex-1 min-w-0 p-3 flex flex-col justify-between gap-2;
+}
+
+.headerRow {
+  @apply flex items-center justify-between gap-2 mb-1 flex-wrap;
+}
+
+.categoryTag {
+  @apply font-mono text-[10px] uppercase tracking-wider text-ink/50;
+}
+
+.cardTitle {
+  @apply font-display font-semibold text-lg leading-tight truncate group-hover:text-signal transition-colors;
+}
+
+.cardAddress {
+  @apply text-sm text-ink/70 line-clamp-1;
+}
+
+.footerRow {
+  @apply flex items-center justify-between gap-2 flex-wrap;
+}
+
+.cardDate {
+  @apply font-mono text-[11px] text-ink/40;
+}

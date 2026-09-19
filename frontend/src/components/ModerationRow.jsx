@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { updateIncidentStatus, deleteIncident } from '../services/incident.service';
+import { useAuth } from '../context/AuthContext';
+import styles from './ModerationRow.module.css';
 
 const STATUS_STEPS = [
   { value: 'pendiente', color: '#8A7B4F' },
@@ -10,8 +12,9 @@ const STATUS_STEPS = [
   { value: 'rechazada', color: '#B3261E' },
 ];
 
-export default function ModerationRow({ incident, onChanged, onDeleted }) {
+export default function ModerationRow({ incident, onChanged, onDeleted, allowedStatuses }) {
   const { t, i18n } = useTranslation();
+  const { user } = useAuth();
   const [status, setStatus] = useState(incident.status);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
@@ -29,9 +32,9 @@ export default function ModerationRow({ incident, onChanged, onDeleted }) {
     try {
       await updateIncidentStatus(incident._id, newStatus);
       onChanged?.(incident._id, newStatus);
-    } catch {
+    } catch (err) {
       setStatus(prev);
-      setError(t('moderation.statusChangeError'));
+      setError(err?.response?.data?.message || t('moderation.statusChangeError'));
     } finally {
       setBusy(false);
     }
@@ -49,29 +52,43 @@ export default function ModerationRow({ incident, onChanged, onDeleted }) {
     }
   };
 
+  const isModerator = user?.role === 'moderator';
+
+  // Determinar los estados que se pueden seleccionar
+  const availableSteps = STATUS_STEPS.filter((s) => {
+    if (allowedStatuses && Array.isArray(allowedStatuses)) {
+      return allowedStatuses.includes(s.value) || s.value === status;
+    }
+    if (isModerator) {
+      if (status === 'en_revision') return ['pendiente', 'rechazada', 'en_revision'].includes(s.value);
+      if (status === 'pendiente') return ['en_revision', 'rechazada', 'pendiente'].includes(s.value);
+    }
+    return true; // Admin ve todos
+  });
+
   return (
-    <div className="bg-paper border border-line p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-      <div className="min-w-0 flex-1">
-        <Link to={`/incidencias/${incident._id}`} className="font-medium hover:text-signal truncate block">
+    <div className={styles.rowContainer}>
+      <div className={styles.contentBox}>
+        <Link to={`/incidencias/${incident._id}`} className={styles.titleLink}>
           {incident.title}
         </Link>
-        <p className="font-mono text-[11px] text-ink/50 truncate">
+        <p className={styles.metaText}>
           {t('moderation.rowMeta', { author: incident.createdBy?.name || 'usuario', date: formatDate(incident.createdAt) })}
           {' · '}
           {t('moderation.votesCount', { count: incident.votesCount })}
           {incident.location?.address ? ` · ${incident.location.address}` : ''}
         </p>
-        {error && <p className="font-mono text-[11px] text-warn mt-1">{error}</p>}
+        {error && <p className={styles.errorMsg}>{error}</p>}
       </div>
 
-      <div className="flex items-center gap-1 flex-wrap">
-        {STATUS_STEPS.map((s) => (
+      <div className={styles.actionsGroup}>
+        {availableSteps.map((s) => (
           <button
             key={s.value}
-            disabled={busy}
+            disabled={busy || status === s.value}
             onClick={() => handleStatusChange(s.value)}
             aria-pressed={status === s.value}
-            className="font-mono text-[10px] uppercase px-2 py-1 border transition-colors disabled:opacity-50"
+            className={styles.statusBtn}
             style={
               status === s.value
                 ? { backgroundColor: s.color, borderColor: s.color, color: 'white' }
@@ -85,7 +102,7 @@ export default function ModerationRow({ incident, onChanged, onDeleted }) {
         <button
           disabled={busy}
           onClick={handleDelete}
-          className="font-mono text-[10px] uppercase px-2 py-1 border border-warn text-warn hover:bg-warn hover:text-white transition-colors disabled:opacity-50 ml-1"
+          className={styles.deleteBtn}
         >
           {t('moderation.delete')}
         </button>

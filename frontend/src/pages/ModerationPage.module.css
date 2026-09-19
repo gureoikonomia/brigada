@@ -1,0 +1,68 @@
+@reference "../index.css";
+
+.container {
+  @apply max-w-4xl mx-auto px-4 py-8;
+}
+
+.header {
+  @apply mb-6;
+}
+
+.title {
+  @apply font-display font-bold text-3xl mb-1;
+}
+
+.subtitle {
+  @apply text-ink/60 text-sm;
+}
+
+.tabsRow {
+  @apply flex flex-wrap gap-1 mb-4 font-mono text-xs border-b border-line;
+}
+
+.tabBtn {
+  @apply px-3 py-2 uppercase tracking-wide border-b-2 -mb-px transition-colors;
+}
+
+.tabActive {
+  @apply border-signal text-signal font-bold;
+}
+
+.tabInactive {
+  @apply border-transparent text-ink/50 hover:text-ink;
+}
+
+.tabAdminActive {
+  @apply border-amber-500 text-amber-600 font-bold bg-amber-50/40;
+}
+
+.tabAdminInactive {
+  @apply border-transparent text-amber-700/80 hover:text-amber-900;
+}
+
+.loadingText {
+  @apply font-mono text-sm text-ink/50 py-12 text-center;
+}
+
+.errorBox {
+  @apply text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2;
+}
+
+.emptyState {
+  @apply border border-dashed border-line py-16 text-center;
+}
+
+.emptyText {
+  @apply font-mono text-sm text-ink/50;
+}
+
+.listPanel {
+  @apply max-h-[65vh] pr-2 border border-line bg-concrete-dark/30 p-2;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+
+.itemsSpace {
+  @apply space-y-2;
+}

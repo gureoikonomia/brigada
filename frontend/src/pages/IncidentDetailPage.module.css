@@ -1,0 +1,94 @@
+@reference "../index.css";
+
+.container {
+  @apply max-w-2xl mx-auto px-4 py-8;
+}
+
+.backLink {
+  @apply font-mono text-xs text-ink/50 hover:text-signal;
+}
+
+.errorWrapper {
+  @apply max-w-2xl mx-auto px-4 py-12;
+}
+
+.errorBox {
+  @apply text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2 max-w-2xl mx-auto mt-8;
+}
+
+.errorNotice {
+  @apply mt-4 border border-warn bg-warn/10 p-6;
+}
+
+.errorNoticeTitle {
+  @apply font-bold font-mono text-sm text-warn mb-1;
+}
+
+.errorNoticeText {
+  @apply font-mono text-sm text-warn;
+}
+
+.inReviewBanner {
+  @apply mt-4 p-3 border font-mono text-xs flex items-center gap-2 font-semibold;
+  background-color: rgba(27, 58, 75, 0.08);
+  border-color: rgba(27, 58, 75, 0.35);
+  color: #1B3A4B;
+}
+
+.inReviewDot {
+  @apply w-2 h-2 rounded-full flex-shrink-0;
+  background-color: #1B3A4B;
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes ping {
+  75%, 100% { transform: scale(2); opacity: 0; }
+}
+
+.cardContainer {
+  @apply bg-paper border border-line mt-4;
+}
+
+.cardBody {
+  @apply p-6;
+}
+
+.badgeRow {
+  @apply flex items-center gap-2 mb-2;
+}
+
+.categoryTag {
+  @apply font-mono text-xs uppercase tracking-wider text-ink/50;
+}
+
+.title {
+  @apply font-display font-bold text-3xl mb-2;
+}
+
+.metaText {
+  @apply font-mono text-xs text-ink/50 mb-4;
+}
+
+.description {
+  @apply text-ink/80 leading-relaxed whitespace-pre-line mb-6;
+}
+
+.actionsRow {
+  @apply flex items-center justify-between flex-wrap gap-3 pt-4 border-t border-line;
+}
+
+.deleteBtn {
+  @apply font-mono text-xs uppercase text-warn border border-warn px-3 py-1.5 hover:bg-warn hover:text-white transition-colors disabled:opacity-50;
+}
+
+.moderationPanel {
+  @apply mt-4 pt-4 border-t border-line;
+}
+
+.moderationLabel {
+  @apply block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1;
+}
+
+.statusSelect {
+  @apply border border-line bg-white px-2 py-1.5 font-mono text-xs uppercase;
+}

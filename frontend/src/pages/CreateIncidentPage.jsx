@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { createIncident } from '../services/incident.service';
+import styles from './CreateIncidentPage.module.css';
 
 const CATEGORIES = ['infraestructura', 'seguridad', 'limpieza', 'ruido', 'trafico', 'otros'];
 
@@ -57,13 +58,13 @@ export default function CreateIncidentPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-8">
-      <h1 className="font-display font-bold text-3xl mb-1">{t('createIncident.title')}</h1>
-      <p className="text-ink/60 text-sm mb-6">{t('createIncident.subtitle')}</p>
+    <div className={styles.container}>
+      <h1 className={styles.title}>{t('createIncident.title')}</h1>
+      <p className={styles.subtitle}>{t('createIncident.subtitle')}</p>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className={styles.form}>
         <div>
-          <label className="block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1">
+          <label className={styles.label}>
             {t('createIncident.titleLabel')}
           </label>
           <input
@@ -72,12 +73,12 @@ export default function CreateIncidentPage() {
             maxLength={150}
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
-            className="w-full border border-line bg-paper px-3 py-2 focus:border-signal outline-none"
+            className={styles.textInput}
           />
         </div>
 
         <div>
-          <label className="block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1">
+          <label className={styles.label}>
             {t('createIncident.descriptionLabel')}
           </label>
           <textarea
@@ -87,18 +88,18 @@ export default function CreateIncidentPage() {
             rows={5}
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
-            className="w-full border border-line bg-paper px-3 py-2 focus:border-signal outline-none resize-none"
+            className={styles.textarea}
           />
         </div>
 
         <div>
-          <label className="block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1">
+          <label className={styles.label}>
             {t('createIncident.categoryLabel')}
           </label>
           <select
             value={form.category}
             onChange={(e) => setForm({ ...form, category: e.target.value })}
-            className="w-full border border-line bg-paper px-3 py-2 uppercase font-mono text-sm"
+            className={styles.selectInput}
           >
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>{t(`category.${c}`)}</option>
@@ -107,20 +108,20 @@ export default function CreateIncidentPage() {
         </div>
 
         <div>
-          <div className="flex items-center justify-between mb-1">
-            <label className="block font-mono text-xs uppercase tracking-wide text-ink/60">
+          <div className={styles.locationHeader}>
+            <label className={styles.label}>
               {t('createIncident.locationLabel')}
             </label>
             <button
               type="button"
               onClick={handleUseMyLocation}
               disabled={locating}
-              className="font-mono text-[11px] text-petrol hover:text-signal underline disabled:opacity-50"
+              className={styles.locateBtn}
             >
               {locating ? t('createIncident.locating') : t('createIncident.useMyLocation')}
             </button>
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className={styles.coordsGrid}>
             <input
               type="number"
               step="any"
@@ -128,7 +129,7 @@ export default function CreateIncidentPage() {
               placeholder={t('createIncident.latPlaceholder')}
               value={form.lat}
               onChange={(e) => setForm({ ...form, lat: e.target.value })}
-              className="border border-line bg-paper px-3 py-2 focus:border-signal outline-none font-mono text-sm"
+              className={styles.coordInput}
             />
             <input
               type="number"
@@ -137,7 +138,7 @@ export default function CreateIncidentPage() {
               placeholder={t('createIncident.lngPlaceholder')}
               value={form.lng}
               onChange={(e) => setForm({ ...form, lng: e.target.value })}
-              className="border border-line bg-paper px-3 py-2 focus:border-signal outline-none font-mono text-sm"
+              className={styles.coordInput}
             />
           </div>
           <input
@@ -145,31 +146,31 @@ export default function CreateIncidentPage() {
             placeholder={t('createIncident.addressPlaceholder')}
             value={form.address}
             onChange={(e) => setForm({ ...form, address: e.target.value })}
-            className="w-full border border-line bg-paper px-3 py-2 mt-2 focus:border-signal outline-none"
+            className={styles.addressInput}
           />
         </div>
 
         <div>
-          <label className="block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1">
-            {t('createIncident.photosLabel')} <span className="text-ink/40">{t('createIncident.photosHint')}</span>
+          <label className={styles.label}>
+            {t('createIncident.photosLabel')} <span className={styles.photosHint}>{t('createIncident.photosHint')}</span>
           </label>
           <input
             type="file"
             accept="image/jpeg,image/png,image/webp"
             multiple
             onChange={(e) => setImages(Array.from(e.target.files).slice(0, 5))}
-            className="w-full font-mono text-sm"
+            className={styles.fileInput}
           />
         </div>
 
         {error && (
-          <p className="text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2">{error}</p>
+          <p className={styles.errorBox}>{error}</p>
         )}
 
         <button
           type="submit"
           disabled={submitting}
-          className="w-full bg-signal hover:bg-signal-dark text-white font-mono font-medium py-2.5 disabled:opacity-60 transition-colors"
+          className={styles.submitBtn}
         >
           {submitting ? t('createIncident.submitting') : t('createIncident.submit')}
         </button>

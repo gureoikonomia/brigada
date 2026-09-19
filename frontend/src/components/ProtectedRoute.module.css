@@ -1,0 +1,9 @@
+@reference "../index.css";
+
+.loadingContainer {
+  @apply flex justify-center py-24 text-ink/60 font-mono text-sm;
+}
+
+.forbiddenBox {
+  @apply max-w-lg mx-auto mt-16 border border-warn bg-warn/5 p-6 text-warn font-mono text-sm;
+}

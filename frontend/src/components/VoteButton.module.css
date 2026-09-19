@@ -1,0 +1,21 @@
+@reference "../index.css";
+
+.voteBtn {
+  @apply font-mono font-medium border transition-colors disabled:opacity-60;
+}
+
+.sizeMd {
+  @apply px-3 py-1.5 text-sm;
+}
+
+.sizeLg {
+  @apply px-4 py-2 text-base;
+}
+
+.voted {
+  @apply bg-signal text-white border-signal;
+}
+
+.notVoted {
+  @apply bg-transparent text-petrol border-petrol hover:bg-petrol hover:text-white;
+}

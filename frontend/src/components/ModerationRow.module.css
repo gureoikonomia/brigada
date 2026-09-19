@@ -1,0 +1,33 @@
+@reference "../index.css";
+
+.rowContainer {
+  @apply bg-paper border border-line p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between;
+}
+
+.contentBox {
+  @apply min-w-0 flex-1;
+}
+
+.titleLink {
+  @apply font-medium hover:text-signal truncate block;
+}
+
+.metaText {
+  @apply font-mono text-[11px] text-ink/50 truncate;
+}
+
+.errorMsg {
+  @apply font-mono text-[11px] text-warn mt-1;
+}
+
+.actionsGroup {
+  @apply flex items-center gap-1 flex-wrap;
+}
+
+.statusBtn {
+  @apply font-mono text-[10px] uppercase px-2 py-1 border transition-colors disabled:opacity-50;
+}
+
+.deleteBtn {
+  @apply font-mono text-[10px] uppercase px-2 py-1 border border-warn text-warn hover:bg-warn hover:text-white transition-colors disabled:opacity-50 ml-1;
+}

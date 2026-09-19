@@ -1,0 +1,169 @@
+@reference "../index.css";
+
+.container {
+  @apply bg-paper border border-line p-5;
+}
+
+.headerRow {
+  @apply flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6;
+}
+
+.title {
+  @apply font-display font-bold text-xl;
+}
+
+.subTitle {
+  @apply text-ink/60 text-xs font-mono;
+}
+
+.controlsGroup {
+  @apply flex flex-wrap items-center gap-2;
+}
+
+.searchForm {
+  @apply flex gap-1;
+}
+
+.searchInput {
+  @apply bg-concrete-dark/30 border border-line px-3 py-1.5 font-mono text-xs focus:outline-none focus:border-petrol;
+}
+
+.searchBtn {
+  @apply bg-petrol text-white font-mono text-xs uppercase px-3 py-1.5 hover:bg-petrol/90 transition-colors;
+}
+
+.roleSelectFilter {
+  @apply bg-concrete-dark/30 border border-line px-3 py-1.5 font-mono text-xs uppercase focus:outline-none focus:border-petrol;
+}
+
+.feedbackSuccess {
+  @apply p-3 mb-4 font-mono text-xs border border-emerald-500 bg-emerald-500/10 text-emerald-800;
+}
+
+.feedbackError {
+  @apply p-3 mb-4 font-mono text-xs border border-warn bg-warn/10 text-warn;
+}
+
+.errorMessage {
+  @apply text-warn text-xs font-mono border border-warn bg-warn/5 p-3 mb-4;
+}
+
+.loadingText {
+  @apply font-mono text-xs text-ink/50 py-12 text-center;
+}
+
+.emptyState {
+  @apply border border-dashed border-line py-12 text-center;
+}
+
+.emptyText {
+  @apply font-mono text-xs text-ink/50;
+}
+
+.tableWrapper {
+  @apply overflow-x-auto border border-line;
+}
+
+.table {
+  @apply w-full text-left border-collapse;
+}
+
+.tableHeaderRow {
+  @apply bg-concrete-dark/50 border-b border-line font-mono text-xs uppercase text-ink/70;
+}
+
+.thCell {
+  @apply p-3;
+}
+
+.thCellRight {
+  @apply p-3 text-right;
+}
+
+.tbody {
+  @apply divide-y divide-line font-mono text-xs;
+}
+
+.trRow {
+  @apply hover:bg-concrete-dark/20 transition-colors;
+}
+
+.tdCell {
+  @apply p-3;
+}
+
+.tdCellEmail {
+  @apply p-3 text-ink/80;
+}
+
+.tdCellRight {
+  @apply p-3 text-right;
+}
+
+.userFlex {
+  @apply flex items-center gap-2;
+}
+
+.avatarImage {
+  @apply w-8 h-8 rounded-full object-cover border border-line;
+}
+
+.avatarInitials {
+  @apply w-8 h-8 rounded-full bg-petrol text-white font-bold flex items-center justify-center text-xs;
+}
+
+.userName {
+  @apply font-bold text-ink block;
+}
+
+.selfLabel {
+  @apply text-[10px] text-amber-600 uppercase font-semibold;
+}
+
+.selectRole {
+  @apply border px-2 py-1 uppercase text-[11px] font-semibold focus:outline-none;
+}
+
+.selectRoleAdmin {
+  @apply border-amber-500 text-amber-700 bg-amber-50;
+}
+
+.selectRoleModerator {
+  @apply border-purple-500 text-purple-700 bg-purple-50;
+}
+
+.selectRoleUser {
+  @apply border-line text-ink bg-white;
+}
+
+.statusTag {
+  @apply inline-block px-2 py-0.5 text-[10px] uppercase font-bold border;
+}
+
+.statusActive {
+  @apply border-emerald-500 text-emerald-700 bg-emerald-50;
+}
+
+.statusInactive {
+  @apply border-warn text-warn bg-warn/10;
+}
+
+.toggleStatusBtn {
+  @apply px-2.5 py-1 text-[11px] font-mono uppercase tracking-wide border transition-colors disabled:opacity-30 disabled:pointer-events-none;
+}
+
+.toggleStatusBtnActive {
+  @apply border-warn text-warn hover:bg-warn hover:text-white;
+}
+
+.toggleStatusBtnInactive {
+  @apply border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white;
+}
+
+.paginationRow {
+  @apply flex justify-between items-center mt-4 font-mono text-xs;
+}
+
+.pageBtn {
+  @apply px-3 py-1 border border-line hover:bg-concrete-dark disabled:opacity-30;
+}

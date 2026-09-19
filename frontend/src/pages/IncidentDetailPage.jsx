@@ -7,6 +7,7 @@ import StatusBadge from '../components/StatusBadge';
 import VoteButton from '../components/VoteButton';
 import ImageGallery from '../components/ImageGallery';
 import IncidentDetailSkeleton from '../components/IncidentDetailSkeleton';
+import styles from './IncidentDetailPage.module.css';
 
 const STATUS_OPTIONS = ['pendiente', 'en_revision', 'resuelta', 'rechazada'];
 
@@ -27,8 +28,10 @@ export default function IncidentDetailPage() {
       .then((data) => {
         if (!cancelled) setIncident(data);
       })
-      .catch(() => {
-        if (!cancelled) setError(t('incidentDetail.loadError'));
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err.response?.data?.message || t('incidentDetail.loadError'));
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -58,42 +61,56 @@ export default function IncidentDetailPage() {
   if (loading) return <IncidentDetailSkeleton />;
   if (error || !incident) {
     return (
-      <p className="text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2 max-w-2xl mx-auto mt-8">
-        {error || t('incidentDetail.notFound')}
-      </p>
+      <div className={styles.errorWrapper}>
+        <Link to="/" className={styles.backLink}>
+          {t('incidentDetail.backToList')}
+        </Link>
+        <div className={styles.errorNotice}>
+          <p className={styles.errorNoticeTitle}>⚠️ {t('incidentDetail.notFound')}</p>
+          <p className={styles.errorNoticeText}>{error || t('incidentDetail.pendingModerationNotice')}</p>
+        </div>
+      </div>
     );
   }
 
   const isOwner = user && incident.createdBy?._id === user.id;
   const canModerate = user && ['admin', 'moderator'].includes(user.role);
+  const isInReview = incident.status === 'en_revision';
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      <Link to="/" className="font-mono text-xs text-ink/50 hover:text-signal">
+    <div className={styles.container}>
+      <Link to="/" className={styles.backLink}>
         {t('incidentDetail.backToList')}
       </Link>
 
-      <div className="bg-paper border border-line mt-4">
+      {isInReview && (
+        <div className={styles.inReviewBanner}>
+          <span className={styles.inReviewDot}></span>
+          <span>{t('incidentDetail.inReviewBanner')}</span>
+        </div>
+      )}
+
+      <div className={styles.cardContainer}>
         <ImageGallery images={incident.images} />
 
-        <div className="p-6">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="font-mono text-xs uppercase tracking-wider text-ink/50">
+        <div className={styles.cardBody}>
+          <div className={styles.badgeRow}>
+            <span className={styles.categoryTag}>
               {t(`category.${incident.category}`, { defaultValue: incident.category })}
             </span>
             <StatusBadge status={incident.status} />
           </div>
 
-          <h1 className="font-display font-bold text-3xl mb-2">{incident.title}</h1>
+          <h1 className={styles.title}>{incident.title}</h1>
 
-          <p className="font-mono text-xs text-ink/50 mb-4">
+          <p className={styles.metaText}>
             {incident.location?.address} · {new Date(incident.createdAt).toLocaleDateString(i18n.resolvedLanguage)} ·{' '}
             {t('incidentDetail.reportedBy')} {incident.createdBy?.name || 'usuario'}
           </p>
 
-          <p className="text-ink/80 leading-relaxed whitespace-pre-line mb-6">{incident.description}</p>
+          <p className={styles.description}>{incident.description}</p>
 
-          <div className="flex items-center justify-between flex-wrap gap-3 pt-4 border-t border-line">
+          <div className={styles.actionsRow}>
             <VoteButton
               incidentId={incident._id}
               initialVoted={incident.hasVoted}
@@ -105,7 +122,7 @@ export default function IncidentDetailPage() {
               <button
                 onClick={handleDelete}
                 disabled={deleting}
-                className="font-mono text-xs uppercase text-warn border border-warn px-3 py-1.5 hover:bg-warn hover:text-white transition-colors disabled:opacity-50"
+                className={styles.deleteBtn}
               >
                 {deleting ? t('incidentDetail.deleting') : t('incidentDetail.deleteIncident')}
               </button>
@@ -113,14 +130,14 @@ export default function IncidentDetailPage() {
           </div>
 
           {canModerate && (
-            <div className="mt-4 pt-4 border-t border-line">
-              <label className="block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1">
+            <div className={styles.moderationPanel}>
+              <label className={styles.moderationLabel}>
                 {t('incidentDetail.moderationStatusLabel')}
               </label>
               <select
                 value={incident.status}
                 onChange={(e) => handleStatusChange(e.target.value)}
-                className="border border-line bg-white px-2 py-1.5 font-mono text-xs uppercase"
+                className={styles.statusSelect}
               >
                 {STATUS_OPTIONS.map((s) => (
                   <option key={s} value={s}>{t(`status.${s}`)}</option>

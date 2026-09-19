@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { updateProfile, changePassword } from '../services/auth.service';
+import styles from './EditProfilePage.module.css';
 
 export default function EditProfilePage() {
   const { user, updateUser } = useAuth();
@@ -62,19 +63,19 @@ export default function EditProfilePage() {
   };
 
   return (
-    <div className="max-w-md mx-auto px-4 py-8">
-      <Link to="/perfil" className="font-mono text-xs text-ink/50 hover:text-signal">
+    <div className={styles.container}>
+      <Link to="/perfil" className={styles.backLink}>
         {t('editProfile.backToProfile')}
       </Link>
 
-      <h1 className="font-display font-bold text-3xl mt-3 mb-6">{t('editProfile.title')}</h1>
+      <h1 className={styles.title}>{t('editProfile.title')}</h1>
 
-      <section className="bg-paper border border-line p-6 mb-6">
-        <h2 className="font-mono text-xs uppercase tracking-wide text-ink/60 mb-4">{t('editProfile.accountData')}</h2>
+      <section className={styles.sectionCard}>
+        <h2 className={styles.sectionTitle}>{t('editProfile.accountData')}</h2>
 
-        <form onSubmit={handleProfileSubmit} className="space-y-4">
+        <form onSubmit={handleProfileSubmit} className={styles.form}>
           <div>
-            <label className="block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1">
+            <label className={styles.label}>
               {t('editProfile.nameLabel')}
             </label>
             <input
@@ -86,12 +87,12 @@ export default function EditProfilePage() {
                 setProfileForm({ ...profileForm, name: e.target.value });
                 setProfileSuccess(false);
               }}
-              className="w-full border border-line bg-white px-3 py-2 focus:border-signal outline-none"
+              className={styles.input}
             />
           </div>
 
           <div>
-            <label className="block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1">
+            <label className={styles.label}>
               {t('editProfile.emailLabel')}
             </label>
             <input
@@ -102,15 +103,15 @@ export default function EditProfilePage() {
                 setProfileForm({ ...profileForm, email: e.target.value });
                 setProfileSuccess(false);
               }}
-              className="w-full border border-line bg-white px-3 py-2 focus:border-signal outline-none"
+              className={styles.input}
             />
           </div>
 
           {profileError && (
-            <p className="text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2">{profileError}</p>
+            <p className={styles.errorBox}>{profileError}</p>
           )}
           {profileSuccess && (
-            <p className="text-ok text-sm font-mono border border-ok bg-ok/5 px-3 py-2">
+            <p className={styles.successBox}>
               {t('editProfile.saveSuccess')}
             </p>
           )}
@@ -118,19 +119,19 @@ export default function EditProfilePage() {
           <button
             type="submit"
             disabled={savingProfile}
-            className="bg-petrol hover:bg-petrol-light text-white font-mono font-medium px-4 py-2 disabled:opacity-60 transition-colors"
+            className={styles.saveProfileBtn}
           >
             {savingProfile ? t('common.saving') : t('editProfile.saveData')}
           </button>
         </form>
       </section>
 
-      <section className="bg-paper border border-line p-6">
-        <h2 className="font-mono text-xs uppercase tracking-wide text-ink/60 mb-4">{t('editProfile.changePassword')}</h2>
+      <section className={styles.sectionCard}>
+        <h2 className={styles.sectionTitle}>{t('editProfile.changePassword')}</h2>
 
-        <form onSubmit={handlePasswordSubmit} className="space-y-4">
+        <form onSubmit={handlePasswordSubmit} className={styles.form}>
           <div>
-            <label className="block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1">
+            <label className={styles.label}>
               {t('editProfile.currentPasswordLabel')}
             </label>
             <input
@@ -141,13 +142,13 @@ export default function EditProfilePage() {
                 setPasswordForm({ ...passwordForm, currentPassword: e.target.value });
                 setPasswordSuccess(false);
               }}
-              className="w-full border border-line bg-white px-3 py-2 focus:border-signal outline-none"
+              className={styles.input}
             />
           </div>
 
           <div>
-            <label className="block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1">
-              {t('editProfile.newPasswordLabel')} <span className="text-ink/40">{t('editProfile.newPasswordHint')}</span>
+            <label className={styles.label}>
+              {t('editProfile.newPasswordLabel')} <span className={styles.hint}>{t('editProfile.newPasswordHint')}</span>
             </label>
             <input
               type="password"
@@ -158,12 +159,12 @@ export default function EditProfilePage() {
                 setPasswordForm({ ...passwordForm, newPassword: e.target.value });
                 setPasswordSuccess(false);
               }}
-              className="w-full border border-line bg-white px-3 py-2 focus:border-signal outline-none"
+              className={styles.input}
             />
           </div>
 
           <div>
-            <label className="block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1">
+            <label className={styles.label}>
               {t('editProfile.confirmPasswordLabel')}
             </label>
             <input
@@ -175,15 +176,15 @@ export default function EditProfilePage() {
                 setPasswordForm({ ...passwordForm, confirmPassword: e.target.value });
                 setPasswordSuccess(false);
               }}
-              className="w-full border border-line bg-white px-3 py-2 focus:border-signal outline-none"
+              className={styles.input}
             />
           </div>
 
           {passwordError && (
-            <p className="text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2">{passwordError}</p>
+            <p className={styles.errorBox}>{passwordError}</p>
           )}
           {passwordSuccess && (
-            <p className="text-ok text-sm font-mono border border-ok bg-ok/5 px-3 py-2">
+            <p className={styles.successBox}>
               {t('editProfile.passwordSuccess')}
             </p>
           )}
@@ -191,7 +192,7 @@ export default function EditProfilePage() {
           <button
             type="submit"
             disabled={savingPassword}
-            className="bg-signal hover:bg-signal-dark text-white font-mono font-medium px-4 py-2 disabled:opacity-60 transition-colors"
+            className={styles.savePasswordBtn}
           >
             {savingPassword ? t('editProfile.changingPassword') : t('editProfile.changePasswordSubmit')}
           </button>

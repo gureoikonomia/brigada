@@ -1,0 +1,97 @@
+@reference "../index.css";
+
+.skeletonWidget {
+  @apply bg-paper border border-line p-4 animate-pulse space-y-3 mb-6;
+}
+
+.skeletonHeader {
+  @apply h-4 bg-line/40 w-1/3;
+}
+
+.skeletonGrid {
+  @apply grid grid-cols-2 md:grid-cols-4 gap-4;
+}
+
+.skeletonBox {
+  @apply h-16 bg-line/20;
+}
+
+.widgetContainer {
+  @apply bg-paper border-2 border-amber-500/40 p-5 mb-6 shadow-sm relative overflow-hidden;
+}
+
+.widgetHeader {
+  @apply flex items-center justify-between border-b border-line pb-3 mb-4;
+}
+
+.headerTitleBox {
+  @apply flex items-center gap-2;
+}
+
+.pingDot {
+  @apply w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping;
+}
+
+.title {
+  @apply font-display font-bold text-lg text-ink uppercase tracking-wider;
+}
+
+.badge {
+  @apply font-mono text-xs text-amber-600 bg-amber-500/10 px-2 py-0.5 border border-amber-500/30;
+}
+
+.statsGrid {
+  @apply grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4;
+}
+
+.statCard {
+  @apply bg-concrete-dark/30 border border-line p-3 text-center;
+}
+
+.statLabel {
+  @apply block font-mono text-xs uppercase text-ink/60;
+}
+
+.statValue {
+  @apply font-display font-extrabold text-2xl text-petrol;
+}
+
+.statValueInk {
+  @apply font-display font-extrabold text-2xl text-ink;
+}
+
+.statValueSuccess {
+  @apply font-display font-extrabold text-2xl text-emerald-600;
+}
+
+.statSubtext {
+  @apply block font-mono text-[10px] text-ink/40;
+}
+
+.statSubtextHighlight {
+  @apply block font-mono text-[10px] text-signal font-semibold;
+}
+
+.breakdownSection {
+  @apply space-y-1;
+}
+
+.breakdownLabelRow {
+  @apply flex justify-between font-mono text-[11px] text-ink/70;
+}
+
+.progressBarTrack {
+  @apply w-full h-2 bg-concrete-dark flex overflow-hidden border border-line;
+}
+
+.progressPending {
+  @apply bg-signal transition-all;
+}
+
+.progressReview {
+  @apply bg-amber-400 transition-all;
+}
+
+.progressResolved {
+  @apply bg-emerald-500 transition-all;
+}

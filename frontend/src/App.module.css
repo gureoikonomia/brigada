@@ -1,0 +1,9 @@
+@reference "./index.css";
+
+.appContainer {
+  @apply min-h-screen bg-concrete;
+}
+
+.mainContent {
+  @apply w-full;
+}

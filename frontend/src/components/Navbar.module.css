@@ -1,0 +1,109 @@
+@reference "../index.css";
+
+.header {
+  @apply bg-petrol text-white border-b-4 border-signal relative;
+}
+
+.container {
+  @apply max-w-5xl mx-auto px-4 h-16 flex items-center justify-between;
+}
+
+.brand {
+  @apply font-display font-bold text-2xl tracking-wide;
+}
+
+.desktopNav {
+  @apply hidden md:flex items-center gap-4 font-mono text-sm;
+}
+
+.navLink {
+  @apply hover:text-signal transition-colors;
+}
+
+.primaryButton {
+  @apply px-3 py-1.5 bg-signal hover:bg-signal-dark transition-colors;
+}
+
+.moderationLink {
+  @apply px-2.5 py-1 border border-amber-400/50 text-amber-300 hover:bg-amber-500/20 transition-colors flex items-center gap-1 font-bold;
+}
+
+.pulseDot {
+  @apply w-2 h-2 rounded-full bg-amber-400 animate-pulse;
+}
+
+.userLink {
+  @apply flex items-center gap-2 hover:text-signal transition-colors;
+}
+
+.userName {
+  @apply text-white/90 font-semibold;
+}
+
+.roleBadge {
+  @apply text-[10px] font-bold uppercase px-1.5 py-0.5 border;
+}
+
+.roleAdmin {
+  @apply border-amber-400 text-amber-300 bg-amber-400/10;
+}
+
+.roleModerator {
+  @apply border-purple-300 text-purple-200 bg-purple-500/10;
+}
+
+.roleUser {
+  @apply border-white/30 text-white/70;
+}
+
+.logoutButton {
+  @apply hover:text-signal transition-colors;
+}
+
+.hamburgerButton {
+  @apply md:hidden w-9 h-9 flex flex-col items-center justify-center gap-1.5 flex-shrink-0;
+}
+
+.hamburgerLine {
+  @apply block w-6 h-0.5 bg-white transition-transform;
+}
+
+.hamburgerLineTopOpen {
+  @apply translate-y-2 rotate-45;
+}
+
+.hamburgerLineMiddleOpen {
+  @apply opacity-0;
+}
+
+.hamburgerLineBottomOpen {
+  @apply -translate-y-2 -rotate-45;
+}
+
+.mobileNav {
+  @apply md:hidden border-t border-white/10 bg-petrol font-mono text-sm;
+}
+
+.mobileNavContent {
+  @apply max-w-5xl mx-auto px-4 py-3 flex flex-col gap-1;
+}
+
+.mobileNavLink {
+  @apply py-2.5 hover:text-signal transition-colors;
+}
+
+.mobileModerationLink {
+  @apply py-2.5 text-amber-300 font-bold hover:text-amber-200 transition-colors flex items-center gap-1.5;
+}
+
+.mobileUserLink {
+  @apply py-2.5 text-white/90 hover:text-signal transition-colors flex items-center justify-between;
+}
+
+.mobileLogoutButton {
+  @apply py-2.5 text-left hover:text-signal transition-colors;
+}
+
+.mobileSwitcherContainer {
+  @apply pt-2 mt-1 border-t border-white/10;
+}

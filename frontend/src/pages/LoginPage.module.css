@@ -1,0 +1,53 @@
+@reference "../index.css";
+
+.container {
+  @apply max-w-sm mx-auto mt-16 px-4;
+}
+
+.title {
+  @apply font-display font-bold text-3xl mb-1;
+}
+
+.subtitle {
+  @apply text-ink/60 text-sm mb-6;
+}
+
+.form {
+  @apply space-y-4;
+}
+
+.fieldGroup {
+  @apply block;
+}
+
+.label {
+  @apply block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1;
+}
+
+.input {
+  @apply w-full border border-line bg-paper px-3 py-2 focus:border-signal outline-none;
+}
+
+.errorBox {
+  @apply text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2;
+}
+
+.submitBtn {
+  @apply w-full bg-signal hover:bg-signal-dark text-white font-mono font-medium py-2.5 disabled:opacity-60 transition-colors;
+}
+
+.footerText {
+  @apply text-sm text-ink/60 mt-4;
+}
+
+.link {
+  @apply text-petrol font-medium hover:text-signal;
+}
+
+.passwordLabelRow {
+  @apply flex justify-between items-baseline mb-1;
+}
+
+.forgotLink {
+  @apply font-mono text-xs text-ink/40 hover:text-signal transition-colors;
+}

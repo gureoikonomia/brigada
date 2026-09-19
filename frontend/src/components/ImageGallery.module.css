@@ -1,0 +1,25 @@
+@reference "../index.css";
+
+.activeImage {
+  @apply w-full h-64 object-cover;
+}
+
+.thumbnailsTrack {
+  @apply flex gap-1 p-1 bg-concrete-dark;
+}
+
+.thumbButton {
+  @apply flex-1 h-14 overflow-hidden border-2 transition-colors;
+}
+
+.thumbActive {
+  @apply border-signal;
+}
+
+.thumbInactive {
+  @apply border-transparent opacity-70 hover:opacity-100;
+}
+
+.thumbImage {
+  @apply w-full h-full object-cover;
+}

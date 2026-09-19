@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import styles from './LoginPage.module.css';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -26,13 +27,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="max-w-sm mx-auto mt-16 px-4">
-      <h1 className="font-display font-bold text-3xl mb-1">{t('login.title')}</h1>
-      <p className="text-ink/60 text-sm mb-6">{t('login.subtitle')}</p>
+    <div className={styles.container}>
+      <h1 className={styles.title}>{t('login.title')}</h1>
+      <p className={styles.subtitle}>{t('login.subtitle')}</p>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1">
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <div className={styles.fieldGroup}>
+          <label className={styles.label}>
             {t('login.emailLabel')}
           </label>
           <input
@@ -40,39 +41,44 @@ export default function LoginPage() {
             required
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="w-full border border-line bg-paper px-3 py-2 focus:border-signal outline-none"
+            className={styles.input}
           />
         </div>
 
-        <div>
-          <label className="block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1">
-            {t('login.passwordLabel')}
-          </label>
+        <div className={styles.fieldGroup}>
+          <div className={styles.passwordLabelRow}>
+            <label className={styles.label}>
+              {t('login.passwordLabel')}
+            </label>
+            <Link to="/olvide-contrasena" className={styles.forgotLink}>
+              {t('login.forgotPassword')}
+            </Link>
+          </div>
           <input
             type="password"
             required
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
-            className="w-full border border-line bg-paper px-3 py-2 focus:border-signal outline-none"
+            className={styles.input}
           />
         </div>
 
         {error && (
-          <p className="text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2">{error}</p>
+          <p className={styles.errorBox}>{error}</p>
         )}
 
         <button
           type="submit"
           disabled={submitting}
-          className="w-full bg-signal hover:bg-signal-dark text-white font-mono font-medium py-2.5 disabled:opacity-60 transition-colors"
+          className={styles.submitBtn}
         >
           {submitting ? t('login.submitting') : t('login.submit')}
         </button>
       </form>
 
-      <p className="text-sm text-ink/60 mt-4">
+      <p className={styles.footerText}>
         {t('login.noAccount')}{' '}
-        <Link to="/registro" className="text-petrol font-medium hover:text-signal">
+        <Link to="/registro" className={styles.link}>
           {t('login.registerLink')}
         </Link>
       </p>

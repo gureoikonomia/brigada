@@ -65,7 +65,7 @@ async function list(req, res, next) {
       page,
       limit,
       sortBy,
-      userId: req.user?.id,
+      user: req.user,
     });
 
     return res.status(200).json(result);
@@ -81,7 +81,7 @@ async function getById(req, res, next) {
   try {
     const incident = await incidentService.getIncidentById(
       req.validated.params.id,
-      req.user?.id
+      req.user
     );
 
     return res.status(200).json(incident);
@@ -106,7 +106,8 @@ async function updateStatus(req, res, next) {
 
     const incident = await incidentService.updateStatus(
       req.validated.params.id,
-      status
+      status,
+      req.user
     );
 
     return res.status(200).json(incident);
@@ -139,10 +140,31 @@ async function remove(req, res, next) {
   }
 }
 
+/**
+ * GET /api/incidents/user/voted
+ */
+async function listVoted(req, res, next) {
+  try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 20;
+
+    const result = await incidentService.listVotedIncidents({
+      userId: req.user.id,
+      page,
+      limit,
+    });
+
+    return res.status(200).json(result);
+  } catch (err) {
+    return next(err);
+  }
+}
+
 export default {
   create,
   list,
   getById,
   updateStatus,
   remove,
+  listVoted,
 };

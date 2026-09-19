@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { voteIncident, unvoteIncident } from '../services/incident.service';
 import { useNavigate } from 'react-router-dom';
+import styles from './VoteButton.module.css';
 
 export default function VoteButton({ incidentId, initialVoted, initialCount, size = 'md' }) {
   const { user } = useAuth();
@@ -42,18 +43,15 @@ export default function VoteButton({ incidentId, initialVoted, initialCount, siz
     }
   };
 
-  const sizeClasses = size === 'lg' ? 'px-4 py-2 text-base' : 'px-3 py-1.5 text-sm';
+  const sizeClass = size === 'lg' ? styles.sizeLg : styles.sizeMd;
+  const stateClass = voted ? styles.voted : styles.notVoted;
 
   return (
     <button
       onClick={handleClick}
       disabled={busy}
       aria-pressed={voted}
-      className={`font-mono font-medium border transition-colors disabled:opacity-60 ${sizeClasses} ${
-        voted
-          ? 'bg-signal text-white border-signal'
-          : 'bg-transparent text-petrol border-petrol hover:bg-petrol hover:text-white'
-      }`}
+      className={`${styles.voteBtn} ${sizeClass} ${stateClass}`}
     >
       {voted ? t('vote.voted') : t('vote.support')} · {count}
     </button>

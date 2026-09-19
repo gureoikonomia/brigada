@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import styles from './StatusBadge.module.css';
 
 const STATUS_COLORS = {
   pendiente: { color: '#8A7B4F', bg: '#F1ECD8' },
@@ -14,10 +15,10 @@ export default function StatusBadge({ status }) {
 
   return (
     <span
-      className="inline-flex items-center gap-1.5 px-2 py-0.5 font-mono text-xs uppercase tracking-wide border"
+      className={styles.badge}
       style={{ color: colors.color, backgroundColor: colors.bg, borderColor: colors.color }}
     >
-      <span className="w-1.5 h-1.5" style={{ backgroundColor: colors.color }} />
+      <span className={styles.indicatorDot} style={{ backgroundColor: colors.color }} />
       {label}
     </span>
   );

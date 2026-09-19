@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { listIncidents } from '../services/incident.service';
+import { useAuth } from '../context/AuthContext';
 import ModerationRow from '../components/ModerationRow';
+import AdminStatsWidget from '../components/AdminStatsWidget';
+import UserManagementTable from '../components/UserManagementTable';
+import styles from './ModerationPage.module.css';
 
 const TAB_VALUES = ['pendiente', 'en_revision', 'resuelta', 'rechazada'];
 const TAB_KEYS = {
@@ -13,12 +17,15 @@ const TAB_KEYS = {
 
 export default function ModerationPage() {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState('pendiente');
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState('pendiente'); // 'pendiente' | 'en_revision' | 'resuelta' | 'rechazada' | 'usuarios'
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (activeTab === 'usuarios') return;
+
     let cancelled = false;
     setLoading(true);
     setError(null);
@@ -48,52 +55,75 @@ export default function ModerationPage() {
     setItems((prev) => prev.filter((i) => i._id !== id));
   };
 
-  return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="font-display font-bold text-3xl mb-1">{t('moderation.title')}</h1>
-      <p className="text-ink/60 text-sm mb-6">{t('moderation.subtitle')}</p>
+  const isAdmin = user?.role === 'admin';
 
-      <div className="flex gap-1 mb-4 font-mono text-xs border-b border-line">
+  return (
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>{t('moderation.title')}</h1>
+        <p className={styles.subtitle}>{t('moderation.subtitle')}</p>
+      </div>
+
+      {/* Widget KPI para Administradores y Moderadores */}
+      <AdminStatsWidget />
+
+      {/* Pestañas de Moderación */}
+      <div className={styles.tabsRow}>
         {TAB_VALUES.map((value) => (
           <button
             key={value}
             onClick={() => setActiveTab(value)}
-            className={`px-3 py-2 uppercase tracking-wide border-b-2 -mb-px transition-colors ${
-              activeTab === value
-                ? 'border-signal text-signal'
-                : 'border-transparent text-ink/50 hover:text-ink'
+            className={`${styles.tabBtn} ${
+              activeTab === value ? styles.tabActive : styles.tabInactive
             }`}
           >
             {t(TAB_KEYS[value])}
           </button>
         ))}
+
+        {isAdmin && (
+          <button
+            onClick={() => setActiveTab('usuarios')}
+            className={`${styles.tabBtn} ${
+              activeTab === 'usuarios' ? styles.tabAdminActive : styles.tabAdminInactive
+            }`}
+          >
+            🛡️ {t('admin.manageUsers')}
+          </button>
+        )}
       </div>
 
-      {loading && <p className="font-mono text-sm text-ink/50 py-12 text-center">{t('common.loading')}</p>}
+      {activeTab === 'usuarios' && isAdmin ? (
+        <UserManagementTable />
+      ) : (
+        <>
+          {loading && <p className={styles.loadingText}>{t('common.loading')}</p>}
 
-      {error && (
-        <p className="text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2">{error}</p>
-      )}
+          {error && (
+            <p className={styles.errorBox}>{error}</p>
+          )}
 
-      {!loading && !error && items.length === 0 && (
-        <div className="border border-dashed border-line py-16 text-center">
-          <p className="font-mono text-sm text-ink/50">{t('moderation.empty')}</p>
-        </div>
-      )}
+          {!loading && !error && items.length === 0 && (
+            <div className={styles.emptyState}>
+              <p className={styles.emptyText}>{t('moderation.empty')}</p>
+            </div>
+          )}
 
-      {!loading && items.length > 0 && (
-        <div className="scroll-panel max-h-[65vh] pr-2 border border-line bg-concrete-dark/30 p-2">
-          <div className="space-y-2">
-            {items.map((incident) => (
-              <ModerationRow
-                key={incident._id}
-                incident={incident}
-                onChanged={handleChanged}
-                onDeleted={handleDeleted}
-              />
-            ))}
-          </div>
-        </div>
+          {!loading && items.length > 0 && (
+            <div className={styles.listPanel}>
+              <div className={styles.itemsSpace}>
+                {items.map((incident) => (
+                  <ModerationRow
+                    key={incident._id}
+                    incident={incident}
+                    onChanged={handleChanged}
+                    onDeleted={handleDeleted}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

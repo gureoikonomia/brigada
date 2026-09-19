@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import styles from './ProtectedRoute.module.css';
 
 export default function ProtectedRoute({ children, roles }) {
   const { user, loading } = useAuth();
@@ -8,7 +9,7 @@ export default function ProtectedRoute({ children, roles }) {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-24 text-ink/60 font-mono text-sm">
+      <div className={styles.loadingContainer}>
         {t('common.loadingSession')}
       </div>
     );
@@ -20,7 +21,7 @@ export default function ProtectedRoute({ children, roles }) {
 
   if (roles && !roles.includes(user.role)) {
     return (
-      <div className="max-w-lg mx-auto mt-16 border border-warn bg-warn/5 p-6 text-warn font-mono text-sm">
+      <div className={styles.forbiddenBox}>
         {t('common.noPermission')}
       </div>
     );

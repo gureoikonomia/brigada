@@ -11,15 +11,18 @@ import EditProfilePage from './pages/EditProfilePage';
 import ModerationPage from './pages/ModerationPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import NotFoundPage from './pages/NotFoundPage';
+import styles from './App.module.css';
 
 export default function App() {
   return (
     <AuthProvider>
-      <div className="min-h-screen bg-concrete">
+      <div className={styles.appContainer}>
         <HtmlLangSync />
         <Navbar />
-        <main>
+        <main className={styles.mainContent}>
           <Routes>
             <Route path="/" element={<IncidentListPage />} />
             <Route path="/incidencias/:id" element={<IncidentDetailPage />} />
@@ -57,6 +60,8 @@ export default function App() {
             />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/registro" element={<RegisterPage />} />
+            <Route path="/olvide-contrasena" element={<ForgotPasswordPage />} />
+            <Route path="/recuperar-contrasena" element={<ResetPasswordPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>

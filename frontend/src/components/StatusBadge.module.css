@@ -1,0 +1,9 @@
+@reference "../index.css";
+
+.badge {
+  @apply inline-flex items-center gap-1.5 px-2 py-0.5 font-mono text-xs uppercase tracking-wide border;
+}
+
+.indicatorDot {
+  @apply w-1.5 h-1.5;
+}

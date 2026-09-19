@@ -36,6 +36,13 @@ router.get(
   incidentController.list
 );
 
+// Obtener incidencias votadas por el usuario logueado
+router.get(
+  '/user/voted',
+  protect,
+  incidentController.listVoted
+);
+
 // Obtener una incidencia concreta
 router.get(
   '/:id',

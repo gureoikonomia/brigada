@@ -22,7 +22,7 @@ const incidentSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ['pendiente', 'en_revision', 'resuelta', 'rechazada'],
-      default: 'pendiente',
+      default: 'en_revision',
       index: true,
     },
     // Ubicación en formato GeoJSON -> permite queries geoespaciales ($near, etc.)

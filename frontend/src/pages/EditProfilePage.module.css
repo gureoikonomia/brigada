@@ -1,0 +1,53 @@
+@reference "../index.css";
+
+.container {
+  @apply max-w-md mx-auto px-4 py-8;
+}
+
+.backLink {
+  @apply font-mono text-xs text-ink/50 hover:text-signal;
+}
+
+.title {
+  @apply font-display font-bold text-3xl mt-3 mb-6;
+}
+
+.sectionCard {
+  @apply bg-paper border border-line p-6 mb-6;
+}
+
+.sectionTitle {
+  @apply font-mono text-xs uppercase tracking-wide text-ink/60 mb-4;
+}
+
+.form {
+  @apply space-y-4;
+}
+
+.label {
+  @apply block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1;
+}
+
+.input {
+  @apply w-full border border-line bg-white px-3 py-2 focus:border-signal outline-none;
+}
+
+.hint {
+  @apply text-ink/40;
+}
+
+.errorBox {
+  @apply text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2;
+}
+
+.successBox {
+  @apply text-ok text-sm font-mono border border-ok bg-ok/5 px-3 py-2;
+}
+
+.saveProfileBtn {
+  @apply bg-petrol hover:bg-petrol-light text-white font-mono font-medium px-4 py-2 disabled:opacity-60 transition-colors;
+}
+
+.savePasswordBtn {
+  @apply bg-signal hover:bg-signal-dark text-white font-mono font-medium px-4 py-2 disabled:opacity-60 transition-colors;
+}

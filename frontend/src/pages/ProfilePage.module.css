@@ -1,0 +1,224 @@
+@reference "../index.css";
+
+.container {
+  @apply max-w-4xl mx-auto px-4 py-8;
+}
+
+.profileCard {
+  @apply bg-paper border border-line p-6 mb-8 shadow-sm;
+}
+
+.profileCardInner {
+  @apply flex flex-col sm:flex-row items-start sm:items-center gap-5;
+}
+
+.avatarImage {
+  @apply w-20 h-20 object-cover flex-shrink-0 border-2 border-line;
+}
+
+.avatarPlaceholder {
+  @apply w-20 h-20 flex-shrink-0 bg-petrol text-white font-display font-bold text-2xl flex items-center justify-center border-2 border-line;
+}
+
+.userInfo {
+  @apply min-w-0 flex-1;
+}
+
+.titleBadgeRow {
+  @apply flex flex-wrap items-center gap-2 mb-1;
+}
+
+.userName {
+  @apply font-display font-bold text-3xl truncate;
+}
+
+.roleBadge {
+  @apply font-mono text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 border;
+}
+
+.roleAdmin {
+  @apply border-amber-500 text-amber-700 bg-amber-500/10;
+}
+
+.roleModerator {
+  @apply border-purple-600 text-purple-700 bg-purple-500/10;
+}
+
+.roleUser {
+  @apply border-petrol text-petrol bg-petrol/5;
+}
+
+.userEmail {
+  @apply text-ink/60 text-sm font-mono truncate;
+}
+
+.verifiedBadge {
+  @apply text-ink/40 text-xs font-mono mt-1;
+}
+
+.editButton {
+  @apply font-mono text-xs uppercase px-4 py-2 border transition-colors flex-shrink-0;
+}
+
+.editButtonActive {
+  @apply bg-petrol text-white border-petrol;
+}
+
+.editButtonInactive {
+  @apply border-petrol text-petrol hover:bg-petrol hover:text-white;
+}
+
+.tabsRow {
+  @apply flex flex-wrap gap-2 mb-6 font-mono text-xs border-b border-line pb-px;
+}
+
+.tabBtn {
+  @apply px-4 py-2.5 font-semibold uppercase tracking-wide border-b-2 transition-colors;
+}
+
+.tabBtnActive {
+  @apply border-signal text-signal font-bold;
+}
+
+.tabBtnInactive {
+  @apply border-transparent text-ink/60 hover:text-ink;
+}
+
+.tabAdminActive {
+  @apply border-amber-500 text-amber-600 font-bold bg-amber-50/50;
+}
+
+.tabAdminInactive {
+  @apply border-transparent text-amber-700/80 hover:text-amber-800;
+}
+
+.sectionTitle {
+  @apply font-display font-bold text-xl mb-4;
+}
+
+.skeletonsList {
+  @apply space-y-3;
+}
+
+.errorBox {
+  @apply text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2;
+}
+
+.emptyState {
+  @apply border border-dashed border-line py-12 text-center;
+}
+
+.emptyText {
+  @apply font-mono text-sm text-ink/50;
+}
+
+.listPanel {
+  @apply max-h-[60vh] pr-2 border border-line bg-concrete-dark/30 p-2;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+
+.itemsSpace {
+  @apply space-y-3;
+}
+
+.statsWrapper {
+  @apply space-y-6;
+}
+
+.rankCard {
+  @apply bg-paper border-2 border-petrol p-6 flex flex-col sm:flex-row items-center justify-between gap-4;
+}
+
+.rankLabel {
+  @apply font-mono text-xs uppercase text-ink/60;
+}
+
+.rankTitle {
+  @apply font-display font-extrabold text-2xl text-petrol uppercase;
+}
+
+.rankSubtext {
+  @apply text-xs font-mono text-ink/60 mt-1;
+}
+
+.memberSince {
+  @apply text-right font-mono text-xs text-ink/50;
+}
+
+.memberSinceBold {
+  @apply font-bold text-ink;
+}
+
+.statsGrid {
+  @apply grid grid-cols-2 sm:grid-cols-4 gap-4;
+}
+
+.statItem {
+  @apply bg-paper border border-line p-4 text-center;
+}
+
+.statItemLabel {
+  @apply block font-mono text-xs text-ink/60 uppercase;
+}
+
+.statValuePetrol {
+  @apply font-display font-bold text-3xl text-petrol;
+}
+
+.statValueSuccess {
+  @apply font-display font-bold text-3xl text-emerald-600;
+}
+
+.statValueSignal {
+  @apply font-display font-bold text-3xl text-signal;
+}
+
+.adminSection {
+  @apply space-y-6;
+}
+
+.adminNotice {
+  @apply bg-paper border border-line p-4 text-center font-mono text-xs text-ink/60;
+}
+
+.settingsGrid {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+}
+
+.sectionCard {
+  @apply bg-paper border border-line p-6;
+}
+
+.subSectionTitle {
+  @apply font-display font-bold text-lg mb-4;
+}
+
+.formSpace {
+  @apply space-y-4;
+}
+
+.fieldLabel {
+  @apply block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1;
+}
+
+.formInput {
+  @apply w-full border border-line bg-white px-3 py-2 font-mono text-sm focus:border-signal outline-none;
+}
+
+.formError {
+  @apply text-warn text-xs font-mono border border-warn bg-warn/5 p-2;
+}
+
+.formSuccess {
+  @apply text-ok text-xs font-mono border border-ok bg-ok/5 p-2;
+}
+
+.saveProfileBtn {
+  @apply bg-petrol text-white font-mono text-xs uppercase font-semibold px-4 py-2 hover:bg-petrol/90 disabled:opacity-60 transition-colors w-full;
+}
+
+.savePasswordBtn {
+  @apply bg-signal text-white font-mono text-xs uppercase font-semibold px-4 py-2 hover:bg-signal/90 disabled:opacity-60 transition-colors w-full;
+}

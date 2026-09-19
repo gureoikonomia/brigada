@@ -1,19 +1,26 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { listIncidents } from '../services/incident.service';
+import { useAuth } from '../context/AuthContext';
 import IncidentCard from '../components/IncidentCard';
 import IncidentCardSkeleton from '../components/IncidentCardSkeleton';
+import styles from './IncidentListPage.module.css';
 
 const CATEGORY_VALUES = ['', 'infraestructura', 'seguridad', 'limpieza', 'ruido', 'trafico', 'otros'];
-const STATUS_VALUES = ['', 'pendiente', 'en_revision', 'resuelta', 'rechazada'];
+const PUBLIC_STATUS_VALUES = ['', 'pendiente', 'resuelta'];
+const ALL_STATUS_VALUES = ['', 'pendiente', 'en_revision', 'resuelta', 'rechazada'];
 
 export default function IncidentListPage() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({ category: '', status: '', sortBy: 'recent', page: 1 });
+
+  const isPrivileged = user && ['admin', 'moderator'].includes(user.role);
+  const statusOptions = isPrivileged ? ALL_STATUS_VALUES : PUBLIC_STATUS_VALUES;
 
   useEffect(() => {
     let cancelled = false;
@@ -44,15 +51,15 @@ export default function IncidentListPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <h1 className="font-display font-bold text-3xl">{t('incidentList.title')}</h1>
+    <div className={styles.container}>
+      <div className={styles.headerRow}>
+        <h1 className={styles.title}>{t('incidentList.title')}</h1>
 
-        <div className="flex flex-wrap gap-2 font-mono text-xs w-full sm:w-auto">
+        <div className={styles.filtersGroup}>
           <select
             value={filters.category}
             onChange={(e) => updateFilter('category', e.target.value)}
-            className="flex-1 sm:flex-none min-w-[7.5rem] border border-line bg-paper px-2 py-1.5 uppercase"
+            className={styles.selectInput}
           >
             {CATEGORY_VALUES.map((v) => (
               <option key={v} value={v}>{v === '' ? t('category.all') : t(`category.${v}`)}</option>
@@ -62,9 +69,9 @@ export default function IncidentListPage() {
           <select
             value={filters.status}
             onChange={(e) => updateFilter('status', e.target.value)}
-            className="flex-1 sm:flex-none min-w-[7.5rem] border border-line bg-paper px-2 py-1.5 uppercase"
+            className={styles.selectInput}
           >
-            {STATUS_VALUES.map((v) => (
+            {statusOptions.map((v) => (
               <option key={v} value={v}>{v === '' ? t('status.all') : t(`status.${v}`)}</option>
             ))}
           </select>
@@ -72,7 +79,7 @@ export default function IncidentListPage() {
           <select
             value={filters.sortBy}
             onChange={(e) => updateFilter('sortBy', e.target.value)}
-            className="flex-1 sm:flex-none min-w-[7.5rem] border border-line bg-paper px-2 py-1.5 uppercase"
+            className={styles.selectInput}
           >
             <option value="recent">{t('incidentList.sortRecent')}</option>
             <option value="popular">{t('incidentList.sortPopular')}</option>
@@ -81,7 +88,7 @@ export default function IncidentListPage() {
       </div>
 
       {loading && (
-        <div className="space-y-3">
+        <div className={styles.skeletonsList}>
           {Array.from({ length: 4 }).map((_, i) => (
             <IncidentCardSkeleton key={i} />
           ))}
@@ -89,19 +96,19 @@ export default function IncidentListPage() {
       )}
 
       {error && (
-        <p className="text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2">{error}</p>
+        <p className={styles.errorBox}>{error}</p>
       )}
 
       {!loading && !error && items.length === 0 && (
-        <div className="border border-dashed border-line py-16 text-center">
-          <p className="font-mono text-sm text-ink/50">{t('incidentList.empty')}</p>
+        <div className={styles.emptyState}>
+          <p className={styles.emptyText}>{t('incidentList.empty')}</p>
         </div>
       )}
 
       {!loading && items.length > 0 && (
         <>
-          <div className="scroll-panel max-h-[65vh] pr-2 border border-line bg-concrete-dark/30 p-2">
-            <div className="space-y-3">
+          <div className={styles.listPanel}>
+            <div className={styles.itemsSpace}>
               {items.map((incident) => (
                 <IncidentCard key={incident._id} incident={incident} />
               ))}
@@ -109,21 +116,21 @@ export default function IncidentListPage() {
           </div>
 
           {pagination && pagination.totalPages > 1 && (
-            <div className="flex justify-center gap-2 mt-6 font-mono text-sm">
+            <div className={styles.pagination}>
               <button
                 disabled={filters.page <= 1}
                 onClick={() => setFilters((f) => ({ ...f, page: f.page - 1 }))}
-                className="px-3 py-1.5 border border-line disabled:opacity-30"
+                className={styles.pageBtn}
               >
                 {t('incidentList.prev')}
               </button>
-              <span className="px-3 py-1.5 text-ink/60">
+              <span className={styles.pageText}>
                 {t('incidentList.pageOf', { page: pagination.page, totalPages: pagination.totalPages })}
               </span>
               <button
                 disabled={filters.page >= pagination.totalPages}
                 onClick={() => setFilters((f) => ({ ...f, page: f.page + 1 }))}
-                className="px-3 py-1.5 border border-line disabled:opacity-30"
+                className={styles.pageBtn}
               >
                 {t('incidentList.next')}
               </button>

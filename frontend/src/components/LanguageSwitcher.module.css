@@ -1,0 +1,21 @@
+@reference "../index.css";
+
+.switcherGroup {
+  @apply inline-flex border border-white/30 font-mono text-xs;
+}
+
+.langBtn {
+  @apply px-2 py-1 transition-colors;
+}
+
+.borderDivider {
+  @apply border-l border-white/30;
+}
+
+.langActive {
+  @apply bg-signal text-white;
+}
+
+.langInactive {
+  @apply text-white/70 hover:text-white;
+}

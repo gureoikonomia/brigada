@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import styles from './ImageGallery.module.css';
 
 export default function ImageGallery({ images }) {
   const { t } = useTranslation();
@@ -11,21 +12,21 @@ export default function ImageGallery({ images }) {
 
   return (
     <div>
-      <img src={active.url} alt="" className="w-full h-64 object-cover" />
+      <img src={active.url} alt="" className={styles.activeImage} />
 
       {images.length > 1 && (
-        <div className="flex gap-1 p-1 bg-concrete-dark">
+        <div className={styles.thumbnailsTrack}>
           {images.map((img, i) => (
             <button
               key={img.publicId || img.url}
               onClick={() => setActiveIndex(i)}
               aria-label={t('incidentDetail.viewPhoto', { n: i + 1, total: images.length })}
               aria-current={i === activeIndex}
-              className={`flex-1 h-14 overflow-hidden border-2 transition-colors ${
-                i === activeIndex ? 'border-signal' : 'border-transparent opacity-70 hover:opacity-100'
+              className={`${styles.thumbButton} ${
+                i === activeIndex ? styles.thumbActive : styles.thumbInactive
               }`}
             >
-              <img src={img.url} alt="" className="w-full h-full object-cover" />
+              <img src={img.url} alt="" className={styles.thumbImage} />
             </button>
           ))}
         </div>

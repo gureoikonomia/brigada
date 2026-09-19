@@ -45,3 +45,8 @@ export async function unvoteIncident(id) {
   const { data } = await api.delete(`/incidents/${id}/vote`);
   return data;
 }
+
+export async function listVotedIncidents(params = {}) {
+  const { data } = await api.get('/incidents/user/voted', { params });
+  return data;
+}

@@ -1,0 +1,60 @@
+@reference "../index.css";
+
+.container {
+  @apply max-w-3xl mx-auto px-4 py-8;
+}
+
+.headerRow {
+  @apply flex items-center justify-between mb-6 flex-wrap gap-3;
+}
+
+.title {
+  @apply font-display font-bold text-3xl;
+}
+
+.filtersGroup {
+  @apply flex flex-wrap gap-2 font-mono text-xs w-full sm:w-auto;
+}
+
+.selectInput {
+  @apply flex-1 sm:flex-none min-w-[7.5rem] border border-line bg-paper px-2 py-1.5 uppercase;
+}
+
+.skeletonsList {
+  @apply space-y-3;
+}
+
+.errorBox {
+  @apply text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2;
+}
+
+.emptyState {
+  @apply border border-dashed border-line py-16 text-center;
+}
+
+.emptyText {
+  @apply font-mono text-sm text-ink/50;
+}
+
+.listPanel {
+  @apply max-h-[65vh] pr-2 border border-line bg-concrete-dark/30 p-2;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+
+.itemsSpace {
+  @apply space-y-3;
+}
+
+.pagination {
+  @apply flex justify-center gap-2 mt-6 font-mono text-sm;
+}
+
+.pageBtn {
+  @apply px-3 py-1.5 border border-line disabled:opacity-30;
+}
+
+.pageText {
+  @apply px-3 py-1.5 text-ink/60;
+}

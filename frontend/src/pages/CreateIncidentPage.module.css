@@ -1,0 +1,69 @@
+@reference "../index.css";
+
+.container {
+  @apply max-w-xl mx-auto px-4 py-8;
+}
+
+.title {
+  @apply font-display font-bold text-3xl mb-1;
+}
+
+.subtitle {
+  @apply text-ink/60 text-sm mb-6;
+}
+
+.form {
+  @apply space-y-4;
+}
+
+.label {
+  @apply block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1;
+}
+
+.textInput {
+  @apply w-full border border-line bg-paper px-3 py-2 focus:border-signal outline-none;
+}
+
+.textarea {
+  @apply w-full border border-line bg-paper px-3 py-2 focus:border-signal outline-none resize-none;
+}
+
+.selectInput {
+  @apply w-full border border-line bg-paper px-3 py-2 uppercase font-mono text-sm;
+}
+
+.locationHeader {
+  @apply flex items-center justify-between mb-1;
+}
+
+.locateBtn {
+  @apply font-mono text-[11px] text-petrol hover:text-signal underline disabled:opacity-50;
+}
+
+.coordsGrid {
+  @apply grid grid-cols-2 gap-2;
+}
+
+.coordInput {
+  @apply border border-line bg-paper px-3 py-2 focus:border-signal outline-none font-mono text-sm;
+}
+
+.addressInput {
+  @apply w-full border border-line bg-paper px-3 py-2 mt-2 focus:border-signal outline-none;
+}
+
+.photosHint {
+  @apply text-ink/40;
+}
+
+.fileInput {
+  @apply w-full font-mono text-sm;
+}
+
+.errorBox {
+  @apply text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2;
+}
+
+.submitBtn {
+  @apply w-full bg-signal hover:bg-signal-dark text-white font-mono font-medium py-2.5 disabled:opacity-60 transition-colors;
+}
