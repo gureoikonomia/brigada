@@ -45,7 +45,14 @@ app.use(globalLimiter);
 // 3. CORS
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: (origin, callback) => {
+      // Permite peticiones sin origen (como Postman o apps móviles) y cualquier origen de netlify
+      if (!origin || origin.startsWith('https://appbrigada.netlify.app')) {
+        callback(null, true);
+      } else {
+        callback(new Error('No permitido por CORS'));
+      }
+    },
     credentials: true,
   })
 );
