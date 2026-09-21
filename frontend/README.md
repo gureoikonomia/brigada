@@ -1,5 +1,21 @@
 # React + Vite
 
+## Environment variables
+
+For local development, keep `VITE_API_URL=http://localhost:3000/api` in the
+ignored `frontend/.env` file.
+
+For the Render frontend service, create this environment variable in the
+Render dashboard before building:
+
+```env
+VITE_API_URL=https://brigada-8msp.onrender.com/api
+```
+
+Vite embeds `VITE_*` variables into the browser bundle at build time. They
+must not contain secrets. The backend URL is public; database credentials,
+JWT secrets, and email API keys belong only in the backend Render service.
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:
