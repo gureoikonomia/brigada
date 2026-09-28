@@ -2,6 +2,7 @@ import User from '../models/user.model.js';
 import Incident from '../models/incident.model.js';
 import Vote from '../models/vote.model.js';
 import { ServiceError } from '../errors/service.error.js';
+import appSettingsService from './app-settings.service.js';
 
 /**
  * Obtiene métricas y estadísticas del usuario autenticado.
@@ -12,11 +13,12 @@ async function getUserStats(userId) {
     throw new ServiceError('Usuario no encontrado', 404);
   }
 
-  const [incidentsCount, resolvedCount, votesCount] = await Promise.all([
+  const [{ votingEnabled }, incidentsCount, resolvedCount] = await Promise.all([
+    appSettingsService.getSettings(),
     Incident.countDocuments({ createdBy: userId }),
     Incident.countDocuments({ createdBy: userId, status: 'resuelta' }),
-    Vote.countDocuments({ user: userId }),
   ]);
+  const votesCount = votingEnabled ? await Vote.countDocuments({ user: userId }) : 0;
 
   const resolutionRate = incidentsCount > 0 
     ? Math.round((resolvedCount / incidentsCount) * 100) 
@@ -35,7 +37,7 @@ async function getUserStats(userId) {
   return {
     incidentsCount,
     resolvedCount,
-    votesCount,
+    ...(votingEnabled && { votesCount }),
     resolutionRate,
     memberSince: user.createdAt,
     rank,
@@ -54,7 +56,7 @@ async function getAdminStats() {
     inactiveUsersCount,
     totalIncidents,
     incidentsByStatus,
-    totalVotes,
+    { votingEnabled },
   ] = await Promise.all([
     User.countDocuments(),
     User.aggregate([{ $group: { _id: '$role', count: { $sum: 1 } } }]),
@@ -62,8 +64,9 @@ async function getAdminStats() {
     User.countDocuments({ isActive: false }),
     Incident.countDocuments(),
     Incident.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
-    Vote.countDocuments(),
+    appSettingsService.getSettings(),
   ]);
+  const totalVotes = votingEnabled ? await Vote.countDocuments() : undefined;
 
   const rolesMap = { user: 0, moderator: 0, admin: 0 };
   usersByRole.forEach((item) => {
@@ -86,7 +89,7 @@ async function getAdminStats() {
       total: totalIncidents,
       byStatus: statusMap,
     },
-    totalVotes,
+    ...(votingEnabled && { totalVotes }),
   };
 }
 

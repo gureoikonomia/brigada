@@ -1,11 +1,13 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { AppSettingsProvider } from './context/AppSettingsContext';
 import Navbar from './components/Navbar';
 import HtmlLangSync from './components/HtmlLangSync';
 import ProtectedRoute from './components/ProtectedRoute';
 import IncidentListPage from './pages/IncidentListPage';
 import IncidentDetailPage from './pages/IncidentDetailPage';
-import CreateIncidentPage from './pages/CreateIncidentPage';
+const CreateIncidentPage = lazy(() => import('./pages/CreateIncidentPage'));
 import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
 import ModerationPage from './pages/ModerationPage';
@@ -19,18 +21,21 @@ import styles from './App.module.css';
 export default function App() {
   return (
     <AuthProvider>
-      <div className={styles.appContainer}>
-        <HtmlLangSync />
-        <Navbar />
-        <main className={styles.mainContent}>
-          <Routes>
+      <AppSettingsProvider>
+        <div className={styles.appContainer}>
+          <HtmlLangSync />
+          <Navbar />
+          <main className={styles.mainContent}>
+            <Routes>
             <Route path="/" element={<IncidentListPage />} />
             <Route path="/incidencias/:id" element={<IncidentDetailPage />} />
             <Route
               path="/incidencias/nueva"
               element={
                 <ProtectedRoute>
-                  <CreateIncidentPage />
+                  <Suspense fallback={<div className={styles.loadingState}>Cargando…</div>}>
+                    <CreateIncidentPage />
+                  </Suspense>
                 </ProtectedRoute>
               }
             />
@@ -63,9 +68,10 @@ export default function App() {
             <Route path="/olvide-contrasena" element={<ForgotPasswordPage />} />
             <Route path="/recuperar-contrasena" element={<ResetPasswordPage />} />
             <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </main>
-      </div>
+            </Routes>
+          </main>
+        </div>
+      </AppSettingsProvider>
     </AuthProvider>
   );
 }

@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import styles from './ProtectedRoute.module.css';
@@ -6,6 +6,7 @@ import styles from './ProtectedRoute.module.css';
 export default function ProtectedRoute({ children, roles }) {
   const { user, loading } = useAuth();
   const { t } = useTranslation();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -16,7 +17,7 @@ export default function ProtectedRoute({ children, roles }) {
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
   if (roles && !roles.includes(user.role)) {

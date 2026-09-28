@@ -5,5 +5,5 @@
 }
 
 .forbiddenBox {
-  @apply max-w-lg mx-auto mt-16 border border-warn bg-warn/5 p-6 text-warn font-mono text-sm;
+  @apply max-w-lg mx-auto mt-16 border border-warn bg-warn-soft p-6 text-warn font-mono text-sm;
 }

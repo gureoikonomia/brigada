@@ -13,7 +13,7 @@
 }
 
 .thumbActive {
-  @apply border-signal;
+  @apply border-petrol;
 }
 
 .thumbInactive {

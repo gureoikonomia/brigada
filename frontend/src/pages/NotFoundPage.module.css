@@ -5,7 +5,7 @@
 }
 
 .codeLabel {
-  @apply font-mono text-signal text-sm mb-2;
+  @apply font-mono text-warn text-sm mb-2;
 }
 
 .title {

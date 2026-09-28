@@ -1,0 +1,50 @@
+@reference "../index.css";
+
+.container {
+  @apply relative w-full sm:w-auto sm:min-w-[11rem];
+}
+
+.label {
+  @apply block text-xs font-bold uppercase text-ink/60 mb-1;
+}
+
+.trigger {
+  @apply w-full flex items-center justify-between gap-3 border border-line bg-paper px-3 py-2.5 text-left text-sm text-ink hover:border-petrol transition-colors;
+  border-radius: 12px;
+}
+
+.triggerOpen {
+  @apply border-petrol;
+  box-shadow: 0 0 0 3px rgba(82, 122, 105, 0.14);
+}
+
+.allLabel {
+  @apply text-ink/70;
+}
+
+.selectedLabel {
+  @apply font-semibold text-petrol;
+}
+
+.chevron {
+  @apply text-lg leading-none text-petrol;
+}
+
+.menu {
+  @apply absolute z-20 top-full left-0 mt-2 w-full min-w-[13rem] bg-paper border border-line p-2;
+  border-radius: 16px;
+  box-shadow: 0 14px 30px rgba(51, 68, 58, 0.14);
+}
+
+.clearButton {
+  @apply w-full border-b border-line px-2 py-2 text-left text-xs font-bold text-petrol hover:bg-concrete-dark transition-colors disabled:opacity-40;
+}
+
+.option {
+  @apply flex items-center gap-2 px-2 py-2 text-sm text-ink hover:bg-concrete-dark cursor-pointer transition-colors;
+  border-radius: 8px;
+}
+
+.option input {
+  @apply w-4 h-4 accent-petrol;
+}

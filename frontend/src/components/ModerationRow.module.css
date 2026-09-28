@@ -2,6 +2,8 @@
 
 .rowContainer {
   @apply bg-paper border border-line p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(51, 68, 58, 0.05);
 }
 
 .contentBox {
@@ -9,7 +11,7 @@
 }
 
 .titleLink {
-  @apply font-medium hover:text-signal truncate block;
+  @apply font-bold hover:text-petrol truncate block;
 }
 
 .metaText {
@@ -25,7 +27,7 @@
 }
 
 .statusBtn {
-  @apply font-mono text-[10px] uppercase px-2 py-1 border transition-colors disabled:opacity-50;
+  @apply text-[10px] font-bold uppercase px-3 py-1.5 border transition-colors disabled:opacity-50;
 }
 
 .deleteBtn {

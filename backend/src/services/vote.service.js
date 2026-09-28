@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 import Vote from '../models/vote.model.js';
 import Incident from '../models/incident.model.js';
+import appSettingsService from './app-settings.service.js';
 
 import { ServiceError } from '../errors/service.error.js';
 
@@ -12,6 +13,8 @@ async function castVote(
   userId,
   incidentId
 ) {
+  await appSettingsService.requireVotingEnabled();
+
   const session =
     await mongoose.startSession();
 
@@ -82,6 +85,8 @@ async function removeVote(
   userId,
   incidentId
 ) {
+  await appSettingsService.requireVotingEnabled();
+
   const session =
     await mongoose.startSession();
 
@@ -151,6 +156,8 @@ async function hasVoted(
   userId,
   incidentId
 ) {
+  await appSettingsService.requireVotingEnabled();
+
   const vote =
     await Vote.findOne({
       incident: incidentId,

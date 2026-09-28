@@ -5,6 +5,7 @@ import Vote from '../models/vote.model.js';
 
 import uploadService from './upload.service.js';
 import voteService from './vote.service.js';
+import appSettingsService from './app-settings.service.js';
 
 import { ServiceError } from '../errors/service.error.js';
 
@@ -79,26 +80,31 @@ async function listIncidents({
   sortBy = 'recent',
   user,
 }) {
+  const { votingEnabled } = await appSettingsService.getSettings();
   const baseQuery = {};
 
   const isPrivileged = user && ['admin', 'moderator'].includes(user.role);
   const isSelfListing = createdBy && user && user.id === createdBy.toString();
 
+  const selectedStatuses = Array.isArray(status) ? status : status ? [status] : [];
+  const selectedCategories = Array.isArray(category) ? category : category ? [category] : [];
+
   if (isPrivileged || isSelfListing) {
-    if (status) {
-      baseQuery.status = status;
+    if (selectedStatuses.length) {
+      baseQuery.status = { $in: selectedStatuses };
     }
   } else {
     // Para usuarios públicos o estándar, solo se muestran los estados pendientes y resueltas
-    if (status === 'pendiente' || status === 'resuelta') {
-      baseQuery.status = status;
+    const publicStatuses = selectedStatuses.filter((value) => ['pendiente', 'resuelta'].includes(value));
+    if (publicStatuses.length) {
+      baseQuery.status = { $in: publicStatuses };
     } else {
       baseQuery.status = { $in: ['pendiente', 'resuelta'] };
     }
   }
 
-  if (category) {
-    baseQuery.category = category;
+  if (selectedCategories.length) {
+    baseQuery.category = { $in: selectedCategories };
   }
 
   if (createdBy) {
@@ -136,7 +142,7 @@ async function listIncidents({
 
   if (!near) {
     const sort =
-      sortBy === 'popular'
+      votingEnabled && sortBy === 'popular'
         ? {
             votesCount: -1,
             createdAt: -1,
@@ -166,7 +172,7 @@ async function listIncidents({
   let votedIds = new Set();
   const userId = user?.id;
 
-  if (userId && items.length) {
+  if (votingEnabled && userId && items.length) {
     votedIds =
       await voteService.getVotedIncidentIds(
         userId,
@@ -174,13 +180,16 @@ async function listIncidents({
       );
   }
 
-  const enriched = items.map((incident) => ({
-    ...incident,
-
-    hasVoted: votedIds.has(
-      incident._id.toString()
-    ),
-  }));
+  const enriched = items.map((incident) => {
+    const { votesCount, ...incidentData } = incident;
+    return {
+      ...incidentData,
+      ...(votingEnabled && {
+        votesCount,
+        hasVoted: votedIds.has(incident._id.toString()),
+      }),
+    };
+  });
 
   return {
     items: enriched,
@@ -203,6 +212,7 @@ async function getIncidentById(
   incidentId,
   user
 ) {
+  const { votingEnabled } = await appSettingsService.getSettings();
   const incident = await Incident.findById(
     incidentId
   )
@@ -231,16 +241,17 @@ async function getIncidentById(
   }
 
   const userId = user?.id;
-  const hasVoted = userId
+  const hasVoted = votingEnabled && userId
     ? await voteService.hasVoted(
         userId,
         incidentId
       )
     : false;
 
+  const { votesCount, ...incidentData } = incident;
   return {
-    ...incident,
-    hasVoted,
+    ...incidentData,
+    ...(votingEnabled && { votesCount, hasVoted }),
   };
 }
 
@@ -375,6 +386,7 @@ async function deleteIncident(
  * Obtiene las incidencias a las que un usuario ha votado.
  */
 async function listVotedIncidents({ userId, page = 1, limit = 20 }) {
+  await appSettingsService.requireVotingEnabled();
   const skip = (page - 1) * limit;
 
   const [votes, total] = await Promise.all([

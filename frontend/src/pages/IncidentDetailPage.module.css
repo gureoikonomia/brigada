@@ -13,11 +13,11 @@
 }
 
 .errorBox {
-  @apply text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2 max-w-2xl mx-auto mt-8;
+  @apply text-warn text-sm font-mono border border-warn bg-warn-soft px-3 py-2 max-w-2xl mx-auto mt-8;
 }
 
 .errorNotice {
-  @apply mt-4 border border-warn bg-warn/10 p-6;
+  @apply mt-4 border border-warn bg-warn-soft p-6;
 }
 
 .errorNoticeTitle {
@@ -30,14 +30,14 @@
 
 .inReviewBanner {
   @apply mt-4 p-3 border font-mono text-xs flex items-center gap-2 font-semibold;
-  background-color: rgba(27, 58, 75, 0.08);
-  border-color: rgba(27, 58, 75, 0.35);
-  color: #1B3A4B;
+  background-color: var(--color-status-review-bg);
+  border-color: var(--color-status-review);
+  color: var(--color-status-review);
 }
 
 .inReviewDot {
   @apply w-2 h-2 rounded-full flex-shrink-0;
-  background-color: #1B3A4B;
+  background-color: var(--color-status-review);
   animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
@@ -47,6 +47,8 @@
 
 .cardContainer {
   @apply bg-paper border border-line mt-4;
+  border-radius: 24px;
+  box-shadow: 0 12px 28px rgba(51, 68, 58, 0.07);
 }
 
 .cardBody {
@@ -58,15 +60,44 @@
 }
 
 .categoryTag {
-  @apply font-mono text-xs uppercase tracking-wider text-ink/50;
+  @apply inline-flex items-center border px-2.5 py-1 text-sm font-semibold;
+  border-radius: 999px;
+  background-color: transparent;
+  color: var(--color-category-other-ink);
+  border-color: var(--color-category-other-ink);
+}
+
+.categoryTag[data-category='infraestructura'] {
+  color: var(--color-category-infrastructure-ink);
+  border-color: var(--color-category-infrastructure-ink);
+}
+
+.categoryTag[data-category='seguridad'] {
+  color: var(--color-category-security-ink);
+  border-color: var(--color-category-security-ink);
+}
+
+.categoryTag[data-category='limpieza'] {
+  color: var(--color-category-cleaning-ink);
+  border-color: var(--color-category-cleaning-ink);
+}
+
+.categoryTag[data-category='ruido'] {
+  color: var(--color-category-noise-ink);
+  border-color: var(--color-category-noise-ink);
+}
+
+.categoryTag[data-category='trafico'] {
+  color: var(--color-category-traffic-ink);
+  border-color: var(--color-category-traffic-ink);
 }
 
 .title {
-  @apply font-display font-bold text-3xl mb-2;
+  @apply font-display font-extrabold text-3xl text-petrol mb-2;
 }
 
 .metaText {
-  @apply font-mono text-xs text-ink/50 mb-4;
+  @apply flex flex-wrap items-center gap-1 font-mono text-xs text-ink/70 mb-4;
 }
 
 .description {
@@ -78,7 +109,7 @@
 }
 
 .deleteBtn {
-  @apply font-mono text-xs uppercase text-warn border border-warn px-3 py-1.5 hover:bg-warn hover:text-white transition-colors disabled:opacity-50;
+  @apply text-xs font-bold text-warn border border-warn px-3 py-1.5 hover:bg-warn hover:text-white transition-colors disabled:opacity-50;
 }
 
 .moderationPanel {
@@ -90,5 +121,5 @@
 }
 
 .statusSelect {
-  @apply border border-line bg-white px-2 py-1.5 font-mono text-xs uppercase;
+  @apply border border-line bg-white px-3 py-2 text-xs;
 }

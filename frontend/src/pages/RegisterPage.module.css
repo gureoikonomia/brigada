@@ -1,11 +1,13 @@
 @reference "../index.css";
 
 .container {
-  @apply max-w-sm mx-auto mt-16 px-4;
+  @apply max-w-md mx-auto mt-10 px-4 py-10 bg-paper border border-line;
+  border-radius: 28px;
+  box-shadow: 0 16px 40px rgba(51, 68, 58, 0.08);
 }
 
 .title {
-  @apply font-display font-bold text-3xl mb-1;
+  @apply font-display font-extrabold text-3xl text-petrol mb-1;
 }
 
 .subtitle {
@@ -21,7 +23,7 @@
 }
 
 .label {
-  @apply block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1;
+  @apply block font-semibold text-sm text-ink/70 mb-1;
 }
 
 .hint {
@@ -29,15 +31,15 @@
 }
 
 .input {
-  @apply w-full border border-line bg-paper px-3 py-2 focus:border-signal outline-none;
+  @apply w-full border border-line bg-concrete px-3 py-3 focus:border-petrol outline-none;
 }
 
 .errorBox {
-  @apply text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2;
+  @apply text-warn text-sm font-mono border border-warn bg-warn-soft px-3 py-2;
 }
 
 .submitBtn {
-  @apply w-full bg-signal hover:bg-signal-dark text-white font-mono font-medium py-2.5 disabled:opacity-60 transition-colors;
+  @apply w-full border border-line bg-concrete-dark hover:bg-line text-ink font-semibold py-3 disabled:opacity-60 transition-colors;
 }
 
 .footerText {
@@ -45,5 +47,5 @@
 }
 
 .link {
-  @apply text-petrol font-medium hover:text-signal;
+  @apply text-petrol font-bold hover:text-signal;
 }

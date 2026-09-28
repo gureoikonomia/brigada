@@ -13,6 +13,7 @@ import authRoutes from './routes/auth.route.js';
 import incidentRoutes from './routes/incident.route.js';
 import userRoutes from './routes/user.route.js';
 import authResetRoutes from './routes/authReset.route.js';
+import appSettingsRoutes from './routes/app-settings.route.js';
 
 const app = express();
 
@@ -46,8 +47,13 @@ app.use(globalLimiter);
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Permite peticiones sin origen (como Postman o apps móviles) y cualquier origen de netlify
-      if (!origin || origin.startsWith('https://appbrigada.netlify.app')) {
+      // Permite peticiones sin origen, desde Netlify y desde tu entorno local
+      if (
+        !origin || 
+        origin.startsWith('https://appbrigada.netlify.app') || 
+        origin.startsWith('http://localhost:') ||
+        origin.startsWith('http://127.0.0.1:')
+      ) {
         callback(null, true);
       } else {
         callback(new Error('No permitido por CORS'));
@@ -75,6 +81,7 @@ app.use('/api/auth/register', authLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/incidents', incidentRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/settings', appSettingsRoutes);
 app.use('/api/auth', authResetRoutes);
 
 // 5. Manejo de Errores

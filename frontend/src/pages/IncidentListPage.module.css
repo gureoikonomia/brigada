@@ -1,23 +1,56 @@
 @reference "../index.css";
 
 .container {
-  @apply max-w-3xl mx-auto px-4 py-8;
+  @apply max-w-4xl mx-auto px-4 py-10;
 }
 
 .headerRow {
-  @apply flex items-center justify-between mb-6 flex-wrap gap-3;
+  @apply flex flex-col items-stretch mb-6 gap-5;
 }
 
 .title {
-  @apply font-display font-bold text-3xl;
+  @apply font-display font-bold text-3xl text-petrol;
 }
 
-.filtersGroup {
-  @apply flex flex-wrap gap-2 font-mono text-xs w-full sm:w-auto;
+.toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: end;
+}
+
+@media (min-width: 640px) {
+  .toolbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .toolbar {
+    grid-template-columns: minmax(13rem, 1.4fr) repeat(3, minmax(0, 1fr));
+  }
+
+  .toolbarWithoutVoting {
+    grid-template-columns: minmax(13rem, 1.4fr) repeat(2, minmax(0, 1fr));
+  }
+}
+
+.newIncidentButton {
+  @apply inline-flex min-h-12 items-center justify-center bg-action text-action-ink font-bold px-5 py-3 hover:bg-action-hover transition-colors;
+  border-radius: 12px;
+  box-shadow: 0 5px 12px rgba(82, 122, 105, 0.16);
+}
+
+.filterField {
+  @apply block min-w-0;
+}
+
+.filterLabel {
+  @apply block text-sm font-semibold text-ink mb-1;
 }
 
 .selectInput {
-  @apply flex-1 sm:flex-none min-w-[7.5rem] border border-line bg-paper px-2 py-1.5 uppercase;
+  @apply w-full min-h-12 border border-line bg-paper px-3 py-2.5 text-base;
 }
 
 .skeletonsList {
@@ -25,7 +58,7 @@
 }
 
 .errorBox {
-  @apply text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2;
+  @apply text-warn text-sm font-mono border border-warn bg-warn-soft px-3 py-2;
 }
 
 .emptyState {
@@ -33,28 +66,21 @@
 }
 
 .emptyText {
-  @apply font-mono text-sm text-ink/50;
-}
-
-.listPanel {
-  @apply max-h-[65vh] pr-2 border border-line bg-concrete-dark/30 p-2;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-line) transparent;
+  @apply text-base text-ink/70;
 }
 
 .itemsSpace {
-  @apply space-y-3;
+  @apply space-y-4;
 }
 
 .pagination {
-  @apply flex justify-center gap-2 mt-6 font-mono text-sm;
+  @apply flex justify-center gap-2 mt-6 text-sm;
 }
 
 .pageBtn {
-  @apply px-3 py-1.5 border border-line disabled:opacity-30;
+  @apply min-h-11 px-4 py-2 border border-line bg-paper disabled:opacity-40;
 }
 
 .pageText {
-  @apply px-3 py-1.5 text-ink/60;
+  @apply flex items-center px-3 py-1.5 text-ink/70;
 }

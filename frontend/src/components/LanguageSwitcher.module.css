@@ -1,21 +1,23 @@
 @reference "../index.css";
 
 .switcherGroup {
-  @apply inline-flex border border-white/30 font-mono text-xs;
+  @apply inline-flex border border-line bg-concrete text-xs;
+  border-radius: 999px;
+  overflow: hidden;
 }
 
 .langBtn {
-  @apply px-2 py-1 transition-colors;
+  @apply px-3 py-1.5 text-ink/70 transition-colors;
 }
 
 .borderDivider {
-  @apply border-l border-white/30;
+  @apply border-l border-line;
 }
 
 .langActive {
-  @apply bg-signal text-white;
+  @apply bg-concrete-dark text-ink font-semibold;
 }
 
 .langInactive {
-  @apply text-white/70 hover:text-white;
+  @apply text-ink/70 hover:text-petrol;
 }

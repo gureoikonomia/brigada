@@ -1,7 +1,8 @@
 @reference "../index.css";
 
 .badge {
-  @apply inline-flex items-center gap-1.5 px-2 py-0.5 font-mono text-xs uppercase tracking-wide border;
+  @apply inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold border;
+  border-radius: 8px;
 }
 
 .indicatorDot {

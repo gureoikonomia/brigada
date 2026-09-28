@@ -16,6 +16,11 @@ const STATUSES = [
   'rechazada',
 ];
 
+const queryArray = (values) => z.preprocess(
+  (value) => (Array.isArray(value) ? value : value == null ? value : [value]),
+  z.array(z.enum(values)).min(1).optional()
+);
+
 // POST /api/incidents
 // req.body llega de multipart/form-data,
 // por lo que lat y lng llegan como strings.
@@ -65,13 +70,9 @@ export const updateStatusSchema = z.object({
 
 // GET /api/incidents
 export const listIncidentsQuerySchema = z.object({
-  status: z
-    .enum(STATUSES)
-    .optional(),
+  status: queryArray(STATUSES),
 
-  category: z
-    .enum(CATEGORIES)
-    .optional(),
+  category: queryArray(CATEGORIES),
 
   createdBy: z
     .string()

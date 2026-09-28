@@ -29,7 +29,7 @@
 }
 
 .input {
-  @apply w-full border border-line bg-white px-3 py-2 focus:border-signal outline-none;
+  @apply w-full border border-line bg-white px-3 py-2 focus:border-petrol outline-none;
 }
 
 .hint {
@@ -37,17 +37,17 @@
 }
 
 .errorBox {
-  @apply text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2;
+  @apply text-warn text-sm font-mono border border-warn bg-warn-soft px-3 py-2;
 }
 
 .successBox {
-  @apply text-ok text-sm font-mono border border-ok bg-ok/5 px-3 py-2;
+  @apply text-ok text-sm font-mono border border-ok bg-ok-soft px-3 py-2;
 }
 
 .saveProfileBtn {
-  @apply bg-petrol hover:bg-petrol-light text-white font-mono font-medium px-4 py-2 disabled:opacity-60 transition-colors;
+  @apply bg-action hover:bg-action-hover text-action-ink font-mono font-medium px-4 py-2 disabled:opacity-60 transition-colors;
 }
 
 .savePasswordBtn {
-  @apply bg-signal hover:bg-signal-dark text-white font-mono font-medium px-4 py-2 disabled:opacity-60 transition-colors;
+  @apply bg-action hover:bg-action-hover text-action-ink font-mono font-medium px-4 py-2 disabled:opacity-60 transition-colors;
 }

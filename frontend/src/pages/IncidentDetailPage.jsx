@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getIncident, deleteIncident, updateIncidentStatus } from '../services/incident.service';
 import { useAuth } from '../context/AuthContext';
+import useAppSettings from '../hooks/useAppSettings';
 import StatusBadge from '../components/StatusBadge';
 import VoteButton from '../components/VoteButton';
 import ImageGallery from '../components/ImageGallery';
@@ -14,6 +15,7 @@ const STATUS_OPTIONS = ['pendiente', 'en_revision', 'resuelta', 'rechazada'];
 export default function IncidentDetailPage() {
   const { id } = useParams();
   const { user } = useAuth();
+  const { votingEnabled } = useAppSettings();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
@@ -40,7 +42,7 @@ export default function IncidentDetailPage() {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, votingEnabled]);
 
   const handleDelete = async () => {
     if (!window.confirm(t('incidentDetail.confirmDelete'))) return;
@@ -95,30 +97,33 @@ export default function IncidentDetailPage() {
 
         <div className={styles.cardBody}>
           <div className={styles.badgeRow}>
-            <span className={styles.categoryTag}>
-              {t(`category.${incident.category}`, { defaultValue: incident.category })}
-            </span>
             <StatusBadge status={incident.status} />
           </div>
 
           <h1 className={styles.title}>{incident.title}</h1>
 
           <p className={styles.metaText}>
-            {incident.location?.address} · {new Date(incident.createdAt).toLocaleDateString(i18n.resolvedLanguage)} ·{' '}
+            <span className={styles.categoryTag} data-category={incident.category}>
+              {t(`category.${incident.category}`, { defaultValue: incident.category })}
+            </span>
+            {incident.location?.address ? ` · ${incident.location.address}` : ''} · {new Date(incident.createdAt).toLocaleDateString(i18n.resolvedLanguage)} ·{' '}
             {t('incidentDetail.reportedBy')} {incident.createdBy?.name || 'usuario'}
           </p>
 
           <p className={styles.description}>{incident.description}</p>
 
-          <div className={styles.actionsRow}>
-            <VoteButton
-              incidentId={incident._id}
-              initialVoted={incident.hasVoted}
-              initialCount={incident.votesCount}
-              size="lg"
-            />
+          {(votingEnabled || isOwner || canModerate) && (
+            <div className={styles.actionsRow}>
+              {votingEnabled && (
+                <VoteButton
+                  incidentId={incident._id}
+                  initialVoted={incident.hasVoted}
+                  initialCount={incident.votesCount}
+                  size="lg"
+                />
+              )}
 
-            {(isOwner || canModerate) && (
+              {(isOwner || canModerate) && (
               <button
                 onClick={handleDelete}
                 disabled={deleting}
@@ -126,8 +131,9 @@ export default function IncidentDetailPage() {
               >
                 {deleting ? t('incidentDetail.deleting') : t('incidentDetail.deleteIncident')}
               </button>
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
           {canModerate && (
             <div className={styles.moderationPanel}>

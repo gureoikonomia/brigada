@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { listIncidents } from '../services/incident.service';
 import { useAuth } from '../context/AuthContext';
+import useAppSettings from '../hooks/useAppSettings';
 import IncidentCard from '../components/IncidentCard';
 import IncidentCardSkeleton from '../components/IncidentCardSkeleton';
 import styles from './IncidentListPage.module.css';
 
-const CATEGORY_VALUES = ['', 'infraestructura', 'seguridad', 'limpieza', 'ruido', 'trafico', 'otros'];
-const PUBLIC_STATUS_VALUES = ['', 'pendiente', 'resuelta'];
-const ALL_STATUS_VALUES = ['', 'pendiente', 'en_revision', 'resuelta', 'rechazada'];
+const CATEGORY_VALUES = ['infraestructura', 'seguridad', 'limpieza', 'ruido', 'trafico', 'otros'];
+const STATUS_VALUES = ['pendiente', 'en_revision', 'resuelta', 'rechazada'];
+const PUBLIC_STATUS_VALUES = ['pendiente', 'resuelta'];
 
 export default function IncidentListPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { votingEnabled } = useAppSettings();
   const [items, setItems] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -20,7 +23,7 @@ export default function IncidentListPage() {
   const [filters, setFilters] = useState({ category: '', status: '', sortBy: 'recent', page: 1 });
 
   const isPrivileged = user && ['admin', 'moderator'].includes(user.role);
-  const statusOptions = isPrivileged ? ALL_STATUS_VALUES : PUBLIC_STATUS_VALUES;
+  const statusOptions = isPrivileged ? STATUS_VALUES : PUBLIC_STATUS_VALUES;
 
   useEffect(() => {
     let cancelled = false;
@@ -44,7 +47,7 @@ export default function IncidentListPage() {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters]);
+  }, [filters, votingEnabled]);
 
   const updateFilter = (key, value) => {
     setFilters((f) => ({ ...f, [key]: value, page: 1 }));
@@ -55,35 +58,57 @@ export default function IncidentListPage() {
       <div className={styles.headerRow}>
         <h1 className={styles.title}>{t('incidentList.title')}</h1>
 
-        <div className={styles.filtersGroup}>
-          <select
-            value={filters.category}
-            onChange={(e) => updateFilter('category', e.target.value)}
-            className={styles.selectInput}
-          >
-            {CATEGORY_VALUES.map((v) => (
-              <option key={v} value={v}>{v === '' ? t('category.all') : t(`category.${v}`)}</option>
-            ))}
-          </select>
+        <div className={`${styles.toolbar} ${!votingEnabled ? styles.toolbarWithoutVoting : ''}`}>
+          <Link to="/incidencias/nueva" className={styles.newIncidentButton}>
+            {t('nav.newIncidentFull')}
+          </Link>
 
-          <select
-            value={filters.status}
-            onChange={(e) => updateFilter('status', e.target.value)}
-            className={styles.selectInput}
-          >
-            {statusOptions.map((v) => (
-              <option key={v} value={v}>{v === '' ? t('status.all') : t(`status.${v}`)}</option>
-            ))}
-          </select>
+          <div className={styles.filterField}>
+            <label htmlFor="incident-category" className={styles.filterLabel}>
+              {t('incidentList.categoryFilter')}
+            </label>
+            <select
+              id="incident-category"
+              value={filters.category}
+              onChange={(e) => updateFilter('category', e.target.value)}
+              className={styles.selectInput}
+            >
+              <option value="">{t('category.all')}</option>
+              {CATEGORY_VALUES.map((category) => (
+                <option key={category} value={category}>{t(`category.${category}`)}</option>
+              ))}
+            </select>
+          </div>
 
-          <select
-            value={filters.sortBy}
-            onChange={(e) => updateFilter('sortBy', e.target.value)}
-            className={styles.selectInput}
-          >
-            <option value="recent">{t('incidentList.sortRecent')}</option>
-            <option value="popular">{t('incidentList.sortPopular')}</option>
-          </select>
+          <label htmlFor="incident-status" className={styles.filterField}>
+            <span className={styles.filterLabel}>{t('incidentList.statusFilter')}</span>
+            <select
+              id="incident-status"
+              value={filters.status}
+              onChange={(e) => updateFilter('status', e.target.value)}
+              className={styles.selectInput}
+            >
+              <option value="">{t('status.all')}</option>
+              {statusOptions.map((status) => (
+                <option key={status} value={status}>{t(`status.${status}`)}</option>
+              ))}
+            </select>
+          </label>
+
+          {votingEnabled && (
+            <label htmlFor="incident-sort" className={styles.filterField}>
+              <span className={styles.filterLabel}>{t('incidentList.sortFilter')}</span>
+              <select
+                id="incident-sort"
+                value={filters.sortBy}
+                onChange={(e) => updateFilter('sortBy', e.target.value)}
+                className={styles.selectInput}
+              >
+                <option value="recent">{t('incidentList.sortRecent')}</option>
+                <option value="popular">{t('incidentList.sortPopular')}</option>
+              </select>
+            </label>
+          )}
         </div>
       </div>
 
@@ -107,12 +132,10 @@ export default function IncidentListPage() {
 
       {!loading && items.length > 0 && (
         <>
-          <div className={styles.listPanel}>
-            <div className={styles.itemsSpace}>
-              {items.map((incident) => (
-                <IncidentCard key={incident._id} incident={incident} />
-              ))}
-            </div>
+          <div className={styles.itemsSpace}>
+            {items.map((incident) => (
+              <IncidentCard key={incident._id} incident={incident} />
+            ))}
           </div>
 
           {pagination && pagination.totalPages > 1 && (

@@ -2,10 +2,10 @@ import { useTranslation } from 'react-i18next';
 import styles from './StatusBadge.module.css';
 
 const STATUS_COLORS = {
-  pendiente: { color: '#8A7B4F', bg: '#F1ECD8' },
-  en_revision: { color: '#1B3A4B', bg: '#DCE7EC' },
-  resuelta: { color: '#2F6D4F', bg: '#DCEDE3' },
-  rechazada: { color: '#B3261E', bg: '#F6DFDC' },
+  pendiente: { color: 'var(--color-status-pending)', bg: 'var(--color-status-pending-bg)' },
+  en_revision: { color: 'var(--color-status-review)', bg: 'var(--color-status-review-bg)' },
+  resuelta: { color: 'var(--color-status-resolved)', bg: 'var(--color-status-resolved-bg)' },
+  rechazada: { color: 'var(--color-status-rejected)', bg: 'var(--color-status-rejected-bg)' },
 };
 
 export default function StatusBadge({ status }) {

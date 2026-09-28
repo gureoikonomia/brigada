@@ -1,11 +1,11 @@
 @reference "../index.css";
 
 .voteBtn {
-  @apply font-mono font-medium border transition-colors disabled:opacity-60;
+  @apply min-h-11 font-semibold border transition-colors disabled:opacity-60;
 }
 
 .sizeMd {
-  @apply px-3 py-1.5 text-sm;
+  @apply px-3 py-2 text-sm;
 }
 
 .sizeLg {
@@ -13,9 +13,9 @@
 }
 
 .voted {
-  @apply bg-signal text-white border-signal;
+  @apply bg-concrete-dark text-ink border-line;
 }
 
 .notVoted {
-  @apply bg-transparent text-petrol border-petrol hover:bg-petrol hover:text-white;
+  @apply bg-paper text-ink border-line hover:bg-concrete-dark;
 }

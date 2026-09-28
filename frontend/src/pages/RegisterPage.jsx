@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import styles from './RegisterPage.module.css';
@@ -8,6 +8,7 @@ export default function RegisterPage() {
   const { register } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -18,7 +19,7 @@ export default function RegisterPage() {
     setSubmitting(true);
     try {
       await register(form);
-      navigate('/');
+      navigate(location.state?.from || '/');
     } catch (err) {
       setError(err.response?.data?.message || t('register.error'));
     } finally {
@@ -87,7 +88,7 @@ export default function RegisterPage() {
 
       <p className={styles.footerText}>
         {t('register.hasAccount')}{' '}
-        <Link to="/login" className={styles.link}>
+        <Link to="/login" state={location.state} className={styles.link}>
           {t('register.loginLink')}
         </Link>
       </p>

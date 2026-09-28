@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import useAppSettings from '../hooks/useAppSettings';
 import { listIncidents, listVotedIncidents } from '../services/incident.service';
-import { getUserStats } from '../services/user.service';
 import { updateProfile, changePassword } from '../services/auth.service';
 import IncidentCard from '../components/IncidentCard';
 import IncidentCardSkeleton from '../components/IncidentCardSkeleton';
 import AdminStatsWidget from '../components/AdminStatsWidget';
+import VotingFeatureControl from '../components/VotingFeatureControl';
 import UserManagementTable from '../components/UserManagementTable';
 import ModerationRow from '../components/ModerationRow';
 import styles from './ProfilePage.module.css';
@@ -21,10 +23,12 @@ function initials(name = '') {
 }
 
 export default function ProfilePage() {
-  const { user, updateUser } = useAuth();
+  const { user, logout, updateUser } = useAuth();
+  const { votingEnabled } = useAppSettings();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState('incidents'); // 'incidents' | 'voted' | 'stats' | 'moderation' | 'admin' | 'settings'
+  const [activeTab, setActiveTab] = useState('incidents');
 
   // Tab 1: Mis incidencias
   const [myIncidents, setMyIncidents] = useState([]);
@@ -37,13 +41,7 @@ export default function ProfilePage() {
   const [errorVoted, setErrorVoted] = useState(null);
   const [votedLoaded, setVotedLoaded] = useState(false);
 
-  // Tab 3: Estadísticas del usuario
-  const [stats, setStats] = useState(null);
-  const [loadingStats, setLoadingStats] = useState(false);
-  const [errorStats, setErrorStats] = useState(null);
-  const [statsLoaded, setStatsLoaded] = useState(false);
-
-  // Tab Moderación: Incidencias En Revisión
+  // Incidencias en revisión para moderadores.
   const [inReviewIncidents, setInReviewIncidents] = useState([]);
   const [loadingInReview, setLoadingInReview] = useState(false);
   const [errorInReview, setErrorInReview] = useState(null);
@@ -79,11 +77,11 @@ export default function ProfilePage() {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, votingEnabled]);
 
   // Cargar incidencias votadas si se selecciona la pestaña 2
   useEffect(() => {
-    if (activeTab === 'voted' && !votedLoaded) {
+    if (activeTab === 'voted' && votingEnabled && !votedLoaded) {
       setLoadingVoted(true);
       setErrorVoted(null);
       listVotedIncidents()
@@ -98,26 +96,7 @@ export default function ProfilePage() {
           setLoadingVoted(false);
         });
     }
-  }, [activeTab, votedLoaded, t]);
-
-  // Cargar estadísticas si se selecciona la pestaña 3
-  useEffect(() => {
-    if (activeTab === 'stats' && !statsLoaded) {
-      setLoadingStats(true);
-      setErrorStats(null);
-      getUserStats()
-        .then((data) => {
-          setStats(data);
-          setStatsLoaded(true);
-        })
-        .catch(() => {
-          setErrorStats(t('profile.loadError'));
-        })
-        .finally(() => {
-          setLoadingStats(false);
-        });
-    }
-  }, [activeTab, statsLoaded, t]);
+  }, [activeTab, votedLoaded, t, votingEnabled]);
 
   // Cargar incidencias en revisión si se selecciona la pestaña de Moderación
   useEffect(() => {
@@ -135,17 +114,22 @@ export default function ProfilePage() {
           setLoadingInReview(false);
         });
     }
-  }, [activeTab, t]);
+  }, [activeTab, t, votingEnabled]);
 
   if (!user) return null;
 
   const isAdminOrMod = ['admin', 'moderator'].includes(user.role);
+  const visibleTab = !votingEnabled && activeTab === 'voted' ? 'incidents' : activeTab;
 
   const handleModeratedChange = (id) => {
     setInReviewIncidents((prev) => prev.filter((item) => item._id !== id));
   };
 
-  // Guardar datos de perfil
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
     setProfileError(null);
@@ -162,7 +146,6 @@ export default function ProfilePage() {
     }
   };
 
-  // Cambiar contraseña
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     setPasswordError(null);
@@ -188,12 +171,6 @@ export default function ProfilePage() {
     }
   };
 
-  const getRoleBadgeStyle = (role) => {
-    if (role === 'admin') return `${styles.roleBadge} ${styles.roleAdmin}`;
-    if (role === 'moderator') return `${styles.roleBadge} ${styles.roleModerator}`;
-    return `${styles.roleBadge} ${styles.roleUser}`;
-  };
-
   return (
     <div className={styles.container}>
       {/* Tarjeta Header de Perfil con Insignia de Rol */}
@@ -208,25 +185,15 @@ export default function ProfilePage() {
           )}
 
           <div className={styles.userInfo}>
-            <div className={styles.titleBadgeRow}>
-              <h1 className={styles.userName}>{user.name}</h1>
-              {/* Badge cromático según rol */}
-              <span className={getRoleBadgeStyle(user.role)}>
-                {t(`role.${user.role}`, { defaultValue: user.role })}
-              </span>
-            </div>
+            <h1 className={styles.userName}>{user.name}</h1>
             <p className={styles.userEmail}>{user.email}</p>
-            <p className={styles.verifiedBadge}>✓ {t('profile.verified')}</p>
           </div>
 
-          <button
-            onClick={() => setActiveTab('settings')}
-            className={`${styles.editButton} ${
-              activeTab === 'settings' ? styles.editButtonActive : styles.editButtonInactive
-            }`}
-          >
-            {t('profile.edit')}
-          </button>
+          <div className={styles.profileActions}>
+            <button onClick={handleLogout} className={styles.logoutButton}>
+              {t('nav.logout')}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -235,35 +202,28 @@ export default function ProfilePage() {
         <button
           onClick={() => setActiveTab('incidents')}
           className={`${styles.tabBtn} ${
-            activeTab === 'incidents' ? styles.tabBtnActive : styles.tabBtnInactive
+            visibleTab === 'incidents' ? styles.tabBtnActive : styles.tabBtnInactive
           }`}
         >
           📋 {t('profile.tabMyIncidents')} ({myIncidents.length})
         </button>
 
-        <button
+        {votingEnabled && (
+          <button
           onClick={() => setActiveTab('voted')}
           className={`${styles.tabBtn} ${
-            activeTab === 'voted' ? styles.tabBtnActive : styles.tabBtnInactive
+            visibleTab === 'voted' ? styles.tabBtnActive : styles.tabBtnInactive
           }`}
-        >
-          ⭐ {t('profile.tabVotedIncidents')}
-        </button>
-
-        <button
-          onClick={() => setActiveTab('stats')}
-          className={`${styles.tabBtn} ${
-            activeTab === 'stats' ? styles.tabBtnActive : styles.tabBtnInactive
-          }`}
-        >
-          📊 {t('profile.tabStats')}
-        </button>
+          >
+            ⭐ {t('profile.tabVotedIncidents')}
+          </button>
+        )}
 
         {isAdminOrMod && (
           <button
             onClick={() => setActiveTab('moderation')}
             className={`${styles.tabBtn} ${
-              activeTab === 'moderation' ? styles.tabBtnActive : styles.tabBtnInactive
+              visibleTab === 'moderation' ? styles.tabBtnActive : styles.tabBtnInactive
             }`}
           >
             ⚖️ {t('profile.tabModeration')}
@@ -274,7 +234,7 @@ export default function ProfilePage() {
           <button
             onClick={() => setActiveTab('admin')}
             className={`${styles.tabBtn} ${
-              activeTab === 'admin' ? styles.tabAdminActive : styles.tabAdminInactive
+              visibleTab === 'admin' ? styles.tabAdminActive : styles.tabAdminInactive
             }`}
           >
             🛡️ {t('profile.tabUsersAdmin')}
@@ -284,7 +244,7 @@ export default function ProfilePage() {
         <button
           onClick={() => setActiveTab('settings')}
           className={`${styles.tabBtn} ${
-            activeTab === 'settings' ? styles.tabBtnActive : styles.tabBtnInactive
+            visibleTab === 'settings' ? styles.tabBtnActive : styles.tabBtnInactive
           }`}
         >
           ⚙️ {t('profile.tabSettings')}
@@ -294,7 +254,7 @@ export default function ProfilePage() {
       {/* CONTENIDO DE LAS PESTAÑAS */}
 
       {/* Pestaña 1: Mis Incidencias */}
-      {activeTab === 'incidents' && (
+      {visibleTab === 'incidents' && (
         <div>
           <h2 className={styles.sectionTitle}>{t('profile.yourIncidents')}</h2>
           {loadingMy && (
@@ -324,7 +284,7 @@ export default function ProfilePage() {
       )}
 
       {/* Pestaña 2: Incidencias Votadas */}
-      {activeTab === 'voted' && (
+      {visibleTab === 'voted' && votingEnabled && (
         <div>
           <h2 className={styles.sectionTitle}>{t('profile.tabVotedIncidents')}</h2>
           {loadingVoted && (
@@ -353,62 +313,8 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* Pestaña 3: Estadísticas del Usuario */}
-      {activeTab === 'stats' && (
-        <div className={styles.statsWrapper}>
-          <h2 className={styles.sectionTitle}>{t('stats.title')}</h2>
-          {loadingStats && <p className={styles.emptyText}>{t('common.loading')}</p>}
-          {errorStats && <p className={styles.errorBox}>{errorStats}</p>}
-          {!loadingStats && stats && (
-            <div className={styles.statsWrapper}>
-              {/* Tarjeta de Rango Comunitario */}
-              <div className={styles.rankCard}>
-                <div>
-                  <span className={styles.rankLabel}>{t('stats.reputationRank')}</span>
-                  <h3 className={styles.rankTitle}>
-                    {stats.rank === 'legend' && '🏆 ' + t('stats.rankLegend')}
-                    {stats.rank === 'honor' && '🎖️ ' + t('stats.rankHonor')}
-                    {stats.rank === 'active' && '🌟 ' + t('stats.rankActive')}
-                    {stats.rank === 'novice' && '🔰 ' + t('stats.rankNovice')}
-                  </h3>
-                  <p className={styles.rankSubtext}>
-                    Basado en tus reportes e interacciones en la brigada.
-                  </p>
-                </div>
-                <div className={styles.memberSince}>
-                  <span>{t('stats.memberSince')}: </span>
-                  <span className={styles.memberSinceBold}>
-                    {new Date(stats.memberSince).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-
-              {/* Grid de Métricas */}
-              <div className={styles.statsGrid}>
-                <div className={styles.statItem}>
-                  <span className={styles.statItemLabel}>{t('stats.incidentsCount')}</span>
-                  <span className={styles.statValuePetrol}>{stats.incidentsCount}</span>
-                </div>
-                <div className={styles.statItem}>
-                  <span className={styles.statItemLabel}>{t('stats.resolvedCount')}</span>
-                  <span className={styles.statValueSuccess}>{stats.resolvedCount}</span>
-                </div>
-                <div className={styles.statItem}>
-                  <span className={styles.statItemLabel}>{t('stats.votesCount')}</span>
-                  <span className={styles.statValuePetrol}>{stats.votesCount}</span>
-                </div>
-                <div className={styles.statItem}>
-                  <span className={styles.statItemLabel}>{t('stats.resolutionRate')}</span>
-                  <span className={styles.statValueSignal}>{stats.resolutionRate}%</span>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
       {/* Pestaña Moderación (Moderadores y Admins): Incidencias En Revisión */}
-      {activeTab === 'moderation' && isAdminOrMod && (
+      {visibleTab === 'moderation' && isAdminOrMod && (
         <div className={styles.adminSection}>
           <h2 className={styles.sectionTitle}>{t('profile.tabModeration')}</h2>
           <p className={styles.subTitle + ' mb-4'}>
@@ -443,15 +349,16 @@ export default function ProfilePage() {
       )}
 
       {/* Pestaña 4: Panel Admin & Gestión de Usuarios */}
-      {activeTab === 'admin' && user.role === 'admin' && (
+      {visibleTab === 'admin' && user.role === 'admin' && (
         <div className={styles.adminSection}>
+          <VotingFeatureControl />
           <AdminStatsWidget />
           <UserManagementTable />
         </div>
       )}
 
       {/* Pestaña 5: Seguridad & Ajustes */}
-      {activeTab === 'settings' && (
+      {visibleTab === 'settings' && (
         <div className={styles.settingsGrid}>
           {/* Datos Personales */}
           <section className={styles.sectionCard}>

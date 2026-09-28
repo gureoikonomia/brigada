@@ -2,44 +2,107 @@
 
 .cardLink {
   @apply block bg-paper border border-line hover:border-petrol transition-colors;
+  border-radius: 12px;
+  box-shadow: 0 5px 18px rgba(51, 68, 58, 0.06);
 }
 
 .cardContainer {
-  @apply flex;
+  @apply grid items-center gap-3 p-2;
+  grid-template-columns: 7rem minmax(0, 1fr);
 }
 
 .thumbnailImage {
-  @apply w-24 h-24 sm:w-28 sm:h-28 object-cover flex-shrink-0 grayscale-[15%];
+  @apply block w-full aspect-square object-cover;
+  border-radius: 8px;
 }
 
 .noPhotoBox {
-  @apply w-24 h-24 sm:w-28 sm:h-28 flex-shrink-0 bg-concrete-dark flex items-center justify-center font-mono text-[10px] text-ink/40 uppercase tracking-wide text-center px-2;
+  @apply flex aspect-square w-full items-center justify-center bg-concrete-dark px-2 text-center text-xs text-ink/60;
+  border-radius: 8px;
 }
 
 .cardContent {
-  @apply flex-1 min-w-0 p-3 flex flex-col justify-between gap-2;
+  @apply flex min-w-0 flex-col justify-between gap-3;
+  padding-block: 4px;
 }
 
-.headerRow {
-  @apply flex items-center justify-between gap-2 mb-1 flex-wrap;
+.titleRow {
+  @apply grid min-w-0 items-start gap-3;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.mainContent {
+  @apply min-w-0;
 }
 
 .categoryTag {
-  @apply font-mono text-[10px] uppercase tracking-wider text-ink/50;
+  @apply inline-flex items-center border px-2.5 py-1 text-xs font-semibold;
+  border-radius: 999px;
+  background-color: transparent;
+  color: var(--color-category-other-ink);
+  border-color: var(--color-category-other-ink);
+}
+
+.categoryTag[data-category='infraestructura'] {
+  color: var(--color-category-infrastructure-ink);
+  border-color: var(--color-category-infrastructure-ink);
+}
+
+.categoryTag[data-category='seguridad'] {
+  color: var(--color-category-security-ink);
+  border-color: var(--color-category-security-ink);
+}
+
+.categoryTag[data-category='limpieza'] {
+  color: var(--color-category-cleaning-ink);
+  border-color: var(--color-category-cleaning-ink);
+}
+
+.categoryTag[data-category='ruido'] {
+  color: var(--color-category-noise-ink);
+  border-color: var(--color-category-noise-ink);
+}
+
+.categoryTag[data-category='trafico'] {
+  color: var(--color-category-traffic-ink);
+  border-color: var(--color-category-traffic-ink);
 }
 
 .cardTitle {
-  @apply font-display font-semibold text-lg leading-tight truncate group-hover:text-signal transition-colors;
+  @apply min-w-0 font-display font-bold text-lg leading-snug line-clamp-2 group-hover:text-petrol transition-colors;
 }
 
 .cardAddress {
-  @apply text-sm text-ink/70 line-clamp-1;
+  @apply mt-1 text-sm text-ink/80 line-clamp-1;
 }
 
 .footerRow {
-  @apply flex items-center justify-between gap-2 flex-wrap;
+  @apply flex items-center justify-between gap-2;
+}
+
+.footerMeta {
+  @apply flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1;
 }
 
 .cardDate {
-  @apply font-mono text-[11px] text-ink/40;
+  @apply text-sm text-ink/70;
+}
+
+@media (max-width: 480px) {
+  .cardContainer {
+    grid-template-columns: 5rem minmax(0, 1fr);
+  }
+
+  .titleRow {
+    column-gap: 0.5rem;
+  }
+
+  .cardTitle {
+    font-size: 1rem;
+  }
+
+  .footerRow {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
 }

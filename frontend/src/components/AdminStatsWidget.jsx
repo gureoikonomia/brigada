@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getAdminStats } from '../services/user.service';
+import useAppSettings from '../hooks/useAppSettings';
 import styles from './AdminStatsWidget.module.css';
 
 export default function AdminStatsWidget() {
   const { t } = useTranslation();
+  const { votingEnabled } = useAppSettings();
+  const statsGridClass = `${styles.statsGrid} ${!votingEnabled ? styles.statsGridWithoutVotes : ''}`;
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,17 +27,16 @@ export default function AdminStatsWidget() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [votingEnabled]);
 
   if (loading) {
     return (
       <div className={styles.skeletonWidget}>
         <div className={styles.skeletonHeader}></div>
-        <div className={styles.skeletonGrid}>
-          <div className={styles.skeletonBox}></div>
-          <div className={styles.skeletonBox}></div>
-          <div className={styles.skeletonBox}></div>
-          <div className={styles.skeletonBox}></div>
+          <div className={`${styles.skeletonGrid} ${!votingEnabled ? styles.skeletonGridWithoutVotes : ''}`}>
+            {Array.from({ length: votingEnabled ? 4 : 3 }, (_, index) => (
+              <div className={styles.skeletonBox} key={index}></div>
+            ))}
         </div>
       </div>
     );
@@ -61,7 +63,7 @@ export default function AdminStatsWidget() {
         </span>
       </div>
 
-      <div className={styles.statsGrid}>
+      <div className={statsGridClass}>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>{t('admin.usersTotal')}</span>
           <span className={styles.statValue}>
@@ -82,13 +84,13 @@ export default function AdminStatsWidget() {
           </span>
         </div>
 
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>{t('admin.totalVotes')}</span>
-          <span className={styles.statValue}>
-            {stats.totalVotes || 0}
-          </span>
-          <span className={styles.statSubtext}>apoyos en comunidad</span>
-        </div>
+        {votingEnabled && (
+          <div className={styles.statCard}>
+            <span className={styles.statLabel}>{t('admin.totalVotes')}</span>
+            <span className={styles.statValue}>{stats.totalVotes || 0}</span>
+            <span className={styles.statSubtext}>apoyos en comunidad</span>
+          </div>
+        )}
 
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Resueltas</span>

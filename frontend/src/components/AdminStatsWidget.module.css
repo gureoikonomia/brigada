@@ -12,12 +12,23 @@
   @apply grid grid-cols-2 md:grid-cols-4 gap-4;
 }
 
+.skeletonGridWithoutVotes {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .skeletonGridWithoutVotes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 .skeletonBox {
   @apply h-16 bg-line/20;
 }
 
 .widgetContainer {
-  @apply bg-paper border-2 border-amber-500/40 p-5 mb-6 shadow-sm relative overflow-hidden;
+  @apply bg-paper border-2 border-amber-200 p-5 mb-6 shadow-sm relative overflow-hidden;
+  border-radius: 22px;
 }
 
 .widgetHeader {
@@ -29,7 +40,7 @@
 }
 
 .pingDot {
-  @apply w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping;
+  @apply w-2.5 h-2.5 rounded-full bg-amber-300 animate-ping;
 }
 
 .title {
@@ -37,15 +48,26 @@
 }
 
 .badge {
-  @apply font-mono text-xs text-amber-600 bg-amber-500/10 px-2 py-0.5 border border-amber-500/30;
+  @apply font-mono text-xs text-amber-800 bg-amber-50 px-2 py-0.5 border border-amber-200;
 }
 
 .statsGrid {
   @apply grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4;
 }
 
+.statsGridWithoutVotes {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  .statsGridWithoutVotes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 .statCard {
   @apply bg-concrete-dark/30 border border-line p-3 text-center;
+  border-radius: 14px;
 }
 
 .statLabel {
@@ -61,7 +83,7 @@
 }
 
 .statValueSuccess {
-  @apply font-display font-extrabold text-2xl text-emerald-600;
+  @apply font-display font-extrabold text-2xl text-emerald-700;
 }
 
 .statSubtext {
@@ -69,7 +91,7 @@
 }
 
 .statSubtextHighlight {
-  @apply block font-mono text-[10px] text-signal font-semibold;
+  @apply block font-mono text-[10px] text-petrol font-semibold;
 }
 
 .breakdownSection {
@@ -85,13 +107,13 @@
 }
 
 .progressPending {
-  @apply bg-signal transition-all;
+  @apply bg-amber-300 transition-all;
 }
 
 .progressReview {
-  @apply bg-amber-400 transition-all;
+  @apply bg-sky-300 transition-all;
 }
 
 .progressResolved {
-  @apply bg-emerald-500 transition-all;
+  @apply bg-emerald-300 transition-all;
 }

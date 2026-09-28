@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { listIncidents } from '../services/incident.service';
 import { useAuth } from '../context/AuthContext';
+import useAppSettings from '../hooks/useAppSettings';
 import ModerationRow from '../components/ModerationRow';
 import AdminStatsWidget from '../components/AdminStatsWidget';
 import UserManagementTable from '../components/UserManagementTable';
@@ -18,6 +19,7 @@ const TAB_KEYS = {
 export default function ModerationPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { votingEnabled } = useAppSettings();
   const [activeTab, setActiveTab] = useState('pendiente'); // 'pendiente' | 'en_revision' | 'resuelta' | 'rechazada' | 'usuarios'
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +47,7 @@ export default function ModerationPage() {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab]);
+  }, [activeTab, votingEnabled]);
 
   const handleChanged = (id) => {
     setItems((prev) => prev.filter((i) => i._id !== id));

@@ -5,79 +5,76 @@
 }
 
 .profileCard {
-  @apply bg-paper border border-line p-6 mb-8 shadow-sm;
+  @apply bg-paper border border-line p-5 mb-6 shadow-sm;
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(51, 68, 58, 0.07);
 }
 
 .profileCardInner {
   @apply flex flex-col sm:flex-row items-start sm:items-center gap-5;
 }
 
+.profileActions {
+  @apply flex flex-wrap items-center gap-2 flex-shrink-0;
+}
+
 .avatarImage {
   @apply w-20 h-20 object-cover flex-shrink-0 border-2 border-line;
+  border-radius: 22px;
 }
 
 .avatarPlaceholder {
   @apply w-20 h-20 flex-shrink-0 bg-petrol text-white font-display font-bold text-2xl flex items-center justify-center border-2 border-line;
+  border-radius: 22px;
 }
 
 .userInfo {
   @apply min-w-0 flex-1;
 }
 
-.titleBadgeRow {
-  @apply flex flex-wrap items-center gap-2 mb-1;
-}
-
 .userName {
-  @apply font-display font-bold text-3xl truncate;
-}
-
-.roleBadge {
-  @apply font-mono text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 border;
-}
-
-.roleAdmin {
-  @apply border-amber-500 text-amber-700 bg-amber-500/10;
-}
-
-.roleModerator {
-  @apply border-purple-600 text-purple-700 bg-purple-500/10;
-}
-
-.roleUser {
-  @apply border-petrol text-petrol bg-petrol/5;
+  @apply font-display font-bold text-2xl text-petrol break-words;
 }
 
 .userEmail {
   @apply text-ink/60 text-sm font-mono truncate;
 }
 
-.verifiedBadge {
-  @apply text-ink/40 text-xs font-mono mt-1;
-}
-
-.editButton {
-  @apply font-mono text-xs uppercase px-4 py-2 border transition-colors flex-shrink-0;
-}
-
-.editButtonActive {
-  @apply bg-petrol text-white border-petrol;
-}
-
-.editButtonInactive {
-  @apply border-petrol text-petrol hover:bg-petrol hover:text-white;
+.logoutButton {
+  @apply min-h-11 text-sm font-semibold text-ink/70 border border-line px-4 py-2 hover:bg-concrete-dark transition-colors;
 }
 
 .tabsRow {
-  @apply flex flex-wrap gap-2 mb-6 font-mono text-xs border-b border-line pb-px;
+  @apply flex flex-nowrap gap-2 mb-6 text-sm border-b border-line pb-2;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-petrol-light) var(--color-concrete-dark);
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabsRow::-webkit-scrollbar {
+  height: 8px;
+}
+
+.tabsRow::-webkit-scrollbar-track {
+  background: var(--color-concrete-dark);
+  border-radius: 4px;
+}
+
+.tabsRow::-webkit-scrollbar-thumb {
+  background: var(--color-petrol-light);
+  border-radius: 4px;
 }
 
 .tabBtn {
-  @apply px-4 py-2.5 font-semibold uppercase tracking-wide border-b-2 transition-colors;
+  @apply min-h-11 px-3 py-2 font-semibold border-b-2 transition-colors;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .tabBtnActive {
-  @apply border-signal text-signal font-bold;
+  @apply border-petrol text-petrol font-bold;
 }
 
 .tabBtnInactive {
@@ -85,11 +82,11 @@
 }
 
 .tabAdminActive {
-  @apply border-amber-500 text-amber-600 font-bold bg-amber-50/50;
+  @apply border-amber-200 text-amber-800 font-bold bg-amber-50;
 }
 
 .tabAdminInactive {
-  @apply border-transparent text-amber-700/80 hover:text-amber-800;
+  @apply border-transparent text-amber-800 hover:text-amber-900;
 }
 
 .sectionTitle {
@@ -101,7 +98,7 @@
 }
 
 .errorBox {
-  @apply text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2;
+  @apply text-warn text-sm font-mono border border-warn bg-warn-soft px-3 py-2;
 }
 
 .emptyState {
@@ -109,14 +106,11 @@
 }
 
 .emptyText {
-  @apply font-mono text-sm text-ink/50;
+  @apply text-base text-ink/70;
 }
 
 .listPanel {
-  @apply max-h-[60vh] pr-2 border border-line bg-concrete-dark/30 p-2;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-line) transparent;
+  @apply w-full;
 }
 
 .itemsSpace {
@@ -129,6 +123,7 @@
 
 .rankCard {
   @apply bg-paper border-2 border-petrol p-6 flex flex-col sm:flex-row items-center justify-between gap-4;
+  border-radius: 22px;
 }
 
 .rankLabel {
@@ -157,6 +152,8 @@
 
 .statItem {
   @apply bg-paper border border-line p-4 text-center;
+  border-radius: 18px;
+  box-shadow: 0 6px 16px rgba(51, 68, 58, 0.05);
 }
 
 .statItemLabel {
@@ -168,11 +165,11 @@
 }
 
 .statValueSuccess {
-  @apply font-display font-bold text-3xl text-emerald-600;
+  @apply font-display font-bold text-3xl text-emerald-700;
 }
 
 .statValueSignal {
-  @apply font-display font-bold text-3xl text-signal;
+  @apply font-display font-bold text-3xl text-signal-dark;
 }
 
 .adminSection {
@@ -204,21 +201,21 @@
 }
 
 .formInput {
-  @apply w-full border border-line bg-white px-3 py-2 font-mono text-sm focus:border-signal outline-none;
+  @apply w-full border border-line bg-white px-3 py-2 font-mono text-sm focus:border-petrol outline-none;
 }
 
 .formError {
-  @apply text-warn text-xs font-mono border border-warn bg-warn/5 p-2;
+  @apply text-warn text-xs font-mono border border-warn bg-warn-soft p-2;
 }
 
 .formSuccess {
-  @apply text-ok text-xs font-mono border border-ok bg-ok/5 p-2;
+  @apply text-ok text-xs font-mono border border-ok bg-ok-soft p-2;
 }
 
 .saveProfileBtn {
-  @apply bg-petrol text-white font-mono text-xs uppercase font-semibold px-4 py-2 hover:bg-petrol/90 disabled:opacity-60 transition-colors w-full;
+  @apply bg-action text-action-ink font-mono text-xs uppercase font-semibold px-4 py-2 hover:bg-action-hover disabled:opacity-60 transition-colors w-full;
 }
 
 .savePasswordBtn {
-  @apply bg-signal text-white font-mono text-xs uppercase font-semibold px-4 py-2 hover:bg-signal/90 disabled:opacity-60 transition-colors w-full;
+  @apply bg-action text-action-ink font-mono text-xs uppercase font-semibold px-4 py-2 hover:bg-action-hover disabled:opacity-60 transition-colors w-full;
 }

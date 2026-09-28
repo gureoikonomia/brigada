@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import styles from './LoginPage.module.css';
@@ -8,6 +8,7 @@ export default function LoginPage() {
   const { login } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -18,7 +19,7 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       await login(form);
-      navigate('/');
+      navigate(location.state?.from || '/');
     } catch (err) {
       setError(err.response?.data?.message || t('login.error'));
     } finally {
@@ -78,7 +79,7 @@ export default function LoginPage() {
 
       <p className={styles.footerText}>
         {t('login.noAccount')}{' '}
-        <Link to="/registro" className={styles.link}>
+        <Link to="/registro" state={location.state} className={styles.link}>
           {t('login.registerLink')}
         </Link>
       </p>

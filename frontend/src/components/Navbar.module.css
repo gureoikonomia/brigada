@@ -1,43 +1,55 @@
 @reference "../index.css";
 
 .header {
-  @apply bg-petrol text-white border-b-4 border-signal relative;
+  @apply bg-paper text-ink border-b border-line relative;
+  box-shadow: 0 4px 20px rgba(51, 68, 58, 0.07);
 }
 
 .container {
-  @apply max-w-5xl mx-auto px-4 h-16 flex items-center justify-between;
+  @apply max-w-6xl mx-auto px-4 h-[76px] flex items-center justify-between;
 }
 
 .brand {
-  @apply font-display font-bold text-2xl tracking-wide;
+  @apply font-display font-extrabold text-2xl text-petrol;
+}
+
+.brand::after {
+  content: '.';
+  color: var(--color-signal);
 }
 
 .desktopNav {
-  @apply hidden md:flex items-center gap-4 font-mono text-sm;
+  @apply hidden md:flex items-center gap-5 text-sm font-semibold;
 }
 
 .navLink {
-  @apply hover:text-signal transition-colors;
+  @apply text-ink/70 hover:text-petrol transition-colors;
 }
 
 .primaryButton {
-  @apply px-3 py-1.5 bg-signal hover:bg-signal-dark transition-colors;
+  @apply px-4 py-2.5 border border-line bg-paper text-ink hover:bg-concrete-dark transition-colors font-semibold;
 }
 
 .moderationLink {
-  @apply px-2.5 py-1 border border-amber-400/50 text-amber-300 hover:bg-amber-500/20 transition-colors flex items-center gap-1 font-bold;
+  @apply px-3 py-2 border border-amber-200 text-amber-800 bg-amber-50 hover:bg-amber-100 transition-colors flex items-center gap-1 font-bold;
 }
 
 .pulseDot {
-  @apply w-2 h-2 rounded-full bg-amber-400 animate-pulse;
+  @apply w-2 h-2 rounded-full bg-amber-300 animate-pulse;
 }
 
 .userLink {
-  @apply flex items-center gap-2 hover:text-signal transition-colors;
+  @apply flex items-center gap-2 px-2.5 py-1.5 bg-concrete border border-line hover:border-petrol hover:bg-concrete-dark transition-colors;
+  border-radius: 999px;
 }
 
 .userName {
-  @apply text-white/90 font-semibold;
+  @apply text-ink font-semibold max-w-32 truncate;
+}
+
+.userAvatar {
+  @apply w-8 h-8 flex items-center justify-center bg-petrol text-white text-sm font-bold;
+  border-radius: 999px;
 }
 
 .roleBadge {
@@ -45,19 +57,19 @@
 }
 
 .roleAdmin {
-  @apply border-amber-400 text-amber-300 bg-amber-400/10;
+  @apply border-amber-200 text-amber-800 bg-amber-50;
 }
 
 .roleModerator {
-  @apply border-purple-300 text-purple-200 bg-purple-500/10;
+  @apply border-violet-200 text-violet-800 bg-violet-50;
 }
 
 .roleUser {
-  @apply border-white/30 text-white/70;
+  @apply border-petrol/30 text-petrol bg-petrol/5;
 }
 
 .logoutButton {
-  @apply hover:text-signal transition-colors;
+  @apply text-ink/60 hover:text-signal transition-colors;
 }
 
 .hamburgerButton {
@@ -65,7 +77,7 @@
 }
 
 .hamburgerLine {
-  @apply block w-6 h-0.5 bg-white transition-transform;
+  @apply block w-6 h-0.5 bg-petrol transition-transform;
 }
 
 .hamburgerLineTopOpen {
@@ -81,7 +93,7 @@
 }
 
 .mobileNav {
-  @apply md:hidden border-t border-white/10 bg-petrol font-mono text-sm;
+  @apply md:hidden border-t border-line bg-paper text-ink text-sm;
 }
 
 .mobileNavContent {
@@ -93,11 +105,12 @@
 }
 
 .mobileModerationLink {
-  @apply py-2.5 text-amber-300 font-bold hover:text-amber-200 transition-colors flex items-center gap-1.5;
+  @apply py-2.5 text-amber-800 font-bold hover:text-amber-900 transition-colors flex items-center gap-1.5;
 }
 
 .mobileUserLink {
-  @apply py-2.5 text-white/90 hover:text-signal transition-colors flex items-center justify-between;
+  @apply py-2.5 px-3 text-ink hover:text-signal transition-colors flex items-center gap-2 bg-concrete;
+  border-radius: 14px;
 }
 
 .mobileLogoutButton {
@@ -105,5 +118,14 @@
 }
 
 .mobileSwitcherContainer {
-  @apply pt-2 mt-1 border-t border-white/10;
+  @apply pt-2 mt-1 border-t border-line flex items-center gap-3;
+}
+
+.themeButton {
+  @apply w-10 h-10 flex items-center justify-center bg-concrete text-petrol border border-line text-lg hover:bg-concrete-dark transition-colors;
+  border-radius: 999px;
+}
+
+.mobileThemeButton {
+  @apply px-3 py-2 text-sm font-semibold text-petrol hover:text-signal transition-colors;
 }

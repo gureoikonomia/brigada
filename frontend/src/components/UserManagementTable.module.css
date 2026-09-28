@@ -29,7 +29,7 @@
 }
 
 .searchBtn {
-  @apply bg-petrol text-white font-mono text-xs uppercase px-3 py-1.5 hover:bg-petrol/90 transition-colors;
+  @apply bg-paper border border-line text-ink font-mono text-xs uppercase px-3 py-1.5 hover:bg-concrete-dark transition-colors;
 }
 
 .roleSelectFilter {
@@ -37,15 +37,15 @@
 }
 
 .feedbackSuccess {
-  @apply p-3 mb-4 font-mono text-xs border border-emerald-500 bg-emerald-500/10 text-emerald-800;
+  @apply p-3 mb-4 font-mono text-xs border border-emerald-200 bg-emerald-50 text-emerald-800;
 }
 
 .feedbackError {
-  @apply p-3 mb-4 font-mono text-xs border border-warn bg-warn/10 text-warn;
+  @apply p-3 mb-4 font-mono text-xs border border-warn bg-warn-soft text-warn;
 }
 
 .errorMessage {
-  @apply text-warn text-xs font-mono border border-warn bg-warn/5 p-3 mb-4;
+  @apply text-warn text-xs font-mono border border-warn bg-warn-soft p-3 mb-4;
 }
 
 .loadingText {
@@ -117,7 +117,7 @@
 }
 
 .selfLabel {
-  @apply text-[10px] text-amber-600 uppercase font-semibold;
+  @apply text-[10px] text-amber-800 uppercase font-semibold;
 }
 
 .selectRole {
@@ -125,11 +125,11 @@
 }
 
 .selectRoleAdmin {
-  @apply border-amber-500 text-amber-700 bg-amber-50;
+  @apply border-amber-200 text-amber-800 bg-amber-50;
 }
 
 .selectRoleModerator {
-  @apply border-purple-500 text-purple-700 bg-purple-50;
+  @apply border-violet-200 text-violet-800 bg-violet-50;
 }
 
 .selectRoleUser {
@@ -141,11 +141,11 @@
 }
 
 .statusActive {
-  @apply border-emerald-500 text-emerald-700 bg-emerald-50;
+  @apply border-emerald-200 text-emerald-800 bg-emerald-50;
 }
 
 .statusInactive {
-  @apply border-warn text-warn bg-warn/10;
+  @apply border-warn text-warn bg-warn-soft;
 }
 
 .toggleStatusBtn {
@@ -157,7 +157,7 @@
 }
 
 .toggleStatusBtnInactive {
-  @apply border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white;
+  @apply border-emerald-300 text-emerald-800 hover:bg-emerald-100;
 }
 
 .paginationRow {

@@ -3,18 +3,20 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { updateIncidentStatus, deleteIncident } from '../services/incident.service';
 import { useAuth } from '../context/AuthContext';
+import useAppSettings from '../hooks/useAppSettings';
 import styles from './ModerationRow.module.css';
 
 const STATUS_STEPS = [
-  { value: 'pendiente', color: '#8A7B4F' },
-  { value: 'en_revision', color: '#1B3A4B' },
-  { value: 'resuelta', color: '#2F6D4F' },
-  { value: 'rechazada', color: '#B3261E' },
+  { value: 'pendiente', color: 'var(--color-status-pending)', background: 'var(--color-status-pending-bg)' },
+  { value: 'en_revision', color: 'var(--color-status-review)', background: 'var(--color-status-review-bg)' },
+  { value: 'resuelta', color: 'var(--color-status-resolved)', background: 'var(--color-status-resolved-bg)' },
+  { value: 'rechazada', color: 'var(--color-status-rejected)', background: 'var(--color-status-rejected-bg)' },
 ];
 
 export default function ModerationRow({ incident, onChanged, onDeleted, allowedStatuses }) {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
+  const { votingEnabled } = useAppSettings();
   const [status, setStatus] = useState(incident.status);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
@@ -53,6 +55,11 @@ export default function ModerationRow({ incident, onChanged, onDeleted, allowedS
   };
 
   const isModerator = user?.role === 'moderator';
+  const metaParts = [
+    t('moderation.rowMeta', { author: incident.createdBy?.name || 'usuario', date: formatDate(incident.createdAt) }),
+  ];
+  if (votingEnabled) metaParts.push(t('moderation.votesCount', { count: incident.votesCount }));
+  if (incident.location?.address) metaParts.push(incident.location.address);
 
   // Determinar los estados que se pueden seleccionar
   const availableSteps = STATUS_STEPS.filter((s) => {
@@ -73,10 +80,7 @@ export default function ModerationRow({ incident, onChanged, onDeleted, allowedS
           {incident.title}
         </Link>
         <p className={styles.metaText}>
-          {t('moderation.rowMeta', { author: incident.createdBy?.name || 'usuario', date: formatDate(incident.createdAt) })}
-          {' · '}
-          {t('moderation.votesCount', { count: incident.votesCount })}
-          {incident.location?.address ? ` · ${incident.location.address}` : ''}
+          {metaParts.join(' · ')}
         </p>
         {error && <p className={styles.errorMsg}>{error}</p>}
       </div>
@@ -91,7 +95,7 @@ export default function ModerationRow({ incident, onChanged, onDeleted, allowedS
             className={styles.statusBtn}
             style={
               status === s.value
-                ? { backgroundColor: s.color, borderColor: s.color, color: 'white' }
+                ? { backgroundColor: s.background, borderColor: s.color, color: s.color }
                 : { borderColor: s.color, color: s.color, backgroundColor: 'transparent' }
             }
           >

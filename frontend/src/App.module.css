@@ -6,4 +6,9 @@
 
 .mainContent {
   @apply w-full;
+  min-height: calc(100vh - 76px);
+}
+
+.loadingState {
+  @apply max-w-2xl mx-auto px-4 py-10 text-lg text-ink/70;
 }

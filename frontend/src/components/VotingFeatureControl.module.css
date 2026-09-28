@@ -1,0 +1,30 @@
+@reference "../index.css";
+
+.panel {
+  @apply flex flex-col gap-4 border border-line bg-paper p-5 sm:flex-row sm:items-center sm:justify-between;
+  border-radius: 12px;
+}
+
+.copy {
+  @apply min-w-0;
+}
+
+.title {
+  @apply font-display text-lg font-bold text-ink;
+}
+
+.description {
+  @apply mt-1 text-sm text-ink/70;
+}
+
+.toggleLabel {
+  @apply flex min-h-11 shrink-0 cursor-pointer items-center gap-3 font-semibold text-ink;
+}
+
+.toggle {
+  @apply h-6 w-6 accent-petrol;
+}
+
+.error {
+  @apply mt-2 text-sm font-semibold text-warn;
+}

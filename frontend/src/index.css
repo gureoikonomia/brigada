@@ -1,45 +1,128 @@
-@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 @theme {
-  /* Paleta: señalética municipal, no genérica de "AI design" */
-  --color-concrete: #EAE7DF;      /* fondo principal, gris hormigón cálido */
-  --color-concrete-dark: #DCD8CE; /* paneles / hover sobre el fondo */
-  --color-ink: #16262E;           /* texto principal, tinta azul-petróleo casi negra */
-  --color-petrol: #1B3A4B;        /* azul petróleo, superficies oscuras (nav, footer) */
-  --color-petrol-light: #2C5266;
-  --color-signal: #E8590C;        /* naranja aviso — acento de acción */
-  --color-signal-dark: #C64A08;
-  --color-signal-soft: #FBE3D2;   /* tinte del acento, para badges/fondos suaves */
-  --color-line: #C9C2B4;          /* líneas divisorias / bordes */
-  --color-ok: #2F6D4F;            /* estado resuelta */
-  --color-warn: #B3261E;          /* estado rechazada / errores */
-  --color-paper: #F6F4EE;         /* superficies tipo "ficha" sobre el fondo */
+  --color-concrete: #FBFCFA;
+  --color-concrete-dark: #EEF3EF;
+  --color-ink: #293A30;
+  --color-petrol: #3F624D;
+  --color-petrol-light: #B6D1C1;
+  --color-signal: #E7BFA9;
+  --color-signal-dark: #96614F;
+  --color-signal-soft: #F7E9E1;
+  --color-action: #DCEBDD;
+  --color-action-hover: #C9E0CC;
+  --color-action-ink: #355C43;
+  --color-line: #DCE6DD;
+  --color-ok: #4E7958;
+  --color-ok-soft: #E3EFE5;
+  --color-warn: #8E5661;
+  --color-warn-soft: #F4E4E7;
+  --color-paper: #FFFFFF;
+  --color-status-pending: #77643C;
+  --color-status-pending-bg: #F3EEDC;
+  --color-status-review: #4F6E78;
+  --color-status-review-bg: #E4EDF0;
+  --color-status-resolved: #456D51;
+  --color-status-resolved-bg: #E2EFE5;
+  --color-status-rejected: #8E5661;
+  --color-status-rejected-bg: #F4E4E7;
+  --color-category-infrastructure-ink: #476876;
+  --color-category-infrastructure-bg: #E4EEF2;
+  --color-category-security-ink: #84545D;
+  --color-category-security-bg: #F4E6E8;
+  --color-category-cleaning-ink: #486B4F;
+  --color-category-cleaning-bg: #E4EFE5;
+  --color-category-noise-ink: #75633E;
+  --color-category-noise-bg: #F3EEDC;
+  --color-category-traffic-ink: #665F82;
+  --color-category-traffic-bg: #EBE8F3;
+  --color-category-other-ink: #805F4B;
+  --color-category-other-bg: #F3E9DF;
 
-  --font-display: 'Big Shoulders Display', sans-serif;
-  --font-body: 'IBM Plex Sans', sans-serif;
-  --font-mono: 'IBM Plex Mono', monospace;
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Sans', sans-serif;
 
   --radius-none: 0px;
-  --radius-sm: 2px;
+  --radius-sm: 12px;
 }
 
 @layer base {
   body {
+    min-width: 320px;
     background-color: var(--color-concrete);
+    background-image: linear-gradient(135deg, rgba(182, 209, 193, 0.18) 0%, transparent 36%), linear-gradient(315deg, rgba(231, 191, 169, 0.12) 0%, transparent 34%);
     color: var(--color-ink);
     font-family: var(--font-body);
   }
 
   h1, h2, h3, .font-display {
     font-family: var(--font-display);
-    letter-spacing: 0.01em;
+    letter-spacing: 0;
+  }
+
+  button, input, select, textarea {
+    border-radius: 12px;
+  }
+
+  button {
+    cursor: pointer;
   }
 
   /* Foco de teclado visible en toda la app, sin excepción */
   :focus-visible {
-    outline: 2px solid var(--color-signal);
+    outline: 2px solid var(--color-petrol);
     outline-offset: 2px;
+  }
+
+  [data-theme='dark'] {
+    --color-concrete: #27362F;
+    --color-concrete-dark: #35463D;
+    --color-ink: #EDF2ED;
+    --color-petrol: #B6D1C1;
+    --color-petrol-light: #C9DED0;
+    --color-signal: #E7BFA9;
+    --color-signal-dark: #F0C8B5;
+    --color-signal-soft: #57443B;
+    --color-action: #435C4A;
+    --color-action-hover: #526D59;
+    --color-action-ink: #F1F5F0;
+    --color-line: #495A50;
+    --color-ok: #A9CDB0;
+    --color-ok-soft: #364A3B;
+    --color-warn: #E8B9C0;
+    --color-warn-soft: #513A40;
+    --color-paper: #303F36;
+    --color-status-pending: #E5D4A7;
+    --color-status-pending-bg: #514B39;
+    --color-status-review: #B9D0D6;
+    --color-status-review-bg: #3D5055;
+    --color-status-resolved: #B8D7BE;
+    --color-status-resolved-bg: #3B5140;
+    --color-status-rejected: #E8B9C0;
+    --color-status-rejected-bg: #513A40;
+    --color-category-infrastructure-ink: #BBD4DC;
+    --color-category-infrastructure-bg: #3D5259;
+    --color-category-security-ink: #E6BFC5;
+    --color-category-security-bg: #523E43;
+    --color-category-cleaning-ink: #B9D4BC;
+    --color-category-cleaning-bg: #3E5142;
+    --color-category-noise-ink: #E5D4A7;
+    --color-category-noise-bg: #514B39;
+    --color-category-traffic-ink: #C9C0E3;
+    --color-category-traffic-bg: #474354;
+    --color-category-other-ink: #E6CDB8;
+    --color-category-other-bg: #51453A;
+  }
+
+  [data-theme='dark'] body {
+    background-image: linear-gradient(135deg, rgba(182, 209, 193, 0.08) 0%, transparent 36%), linear-gradient(315deg, rgba(231, 191, 169, 0.08) 0%, transparent 34%);
+  }
+
+  [data-theme='dark'] .bg-white {
+    background-color: var(--color-paper);
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -6,7 +6,9 @@ export async function listIncidents(params = {}) {
   // vacía) — por eso quitamos aquí cualquier valor vacío antes de mandarlo,
   // en vez de dejar que viaje como status=&category=.
   const cleanParams = Object.fromEntries(
-    Object.entries(params).filter(([, value]) => value !== '' && value !== null && value !== undefined)
+    Object.entries(params).filter(([, value]) => (
+      value !== '' && value !== null && value !== undefined && (!Array.isArray(value) || value.length > 0)
+    ))
   );
 
   const { data } = await api.get('/incidents', { params: cleanParams });

@@ -1,11 +1,11 @@
 @reference "../index.css";
 
 .container {
-  @apply max-w-xl mx-auto px-4 py-8;
+  @apply max-w-2xl mx-auto px-4 py-10;
 }
 
 .title {
-  @apply font-display font-bold text-3xl mb-1;
+  @apply font-display font-extrabold text-4xl text-petrol mb-1;
 }
 
 .subtitle {
@@ -17,19 +17,19 @@
 }
 
 .label {
-  @apply block font-mono text-xs uppercase tracking-wide text-ink/60 mb-1;
+  @apply block font-semibold text-sm text-ink/70 mb-1;
 }
 
 .textInput {
-  @apply w-full border border-line bg-paper px-3 py-2 focus:border-signal outline-none;
+  @apply w-full border border-line bg-paper px-3 py-3 focus:border-petrol outline-none;
 }
 
 .textarea {
-  @apply w-full border border-line bg-paper px-3 py-2 focus:border-signal outline-none resize-none;
+  @apply w-full border border-line bg-paper px-3 py-3 focus:border-petrol outline-none resize-none;
 }
 
 .selectInput {
-  @apply w-full border border-line bg-paper px-3 py-2 uppercase font-mono text-sm;
+  @apply w-full border border-line bg-paper px-3 py-3 text-sm;
 }
 
 .locationHeader {
@@ -37,33 +37,83 @@
 }
 
 .locateBtn {
-  @apply font-mono text-[11px] text-petrol hover:text-signal underline disabled:opacity-50;
+  @apply font-mono text-[11px] text-petrol hover:text-signal-dark underline disabled:opacity-50;
 }
 
 .coordsGrid {
   @apply grid grid-cols-2 gap-2;
 }
 
+.addressSearch {
+  @apply flex flex-col sm:flex-row gap-2;
+}
+
 .coordInput {
-  @apply border border-line bg-paper px-3 py-2 focus:border-signal outline-none font-mono text-sm;
+  @apply border border-line bg-paper px-3 py-2 focus:border-petrol outline-none font-mono text-sm;
 }
 
 .addressInput {
-  @apply w-full border border-line bg-paper px-3 py-2 mt-2 focus:border-signal outline-none;
+  @apply w-full min-w-0 border border-line bg-paper px-3 py-3 focus:border-petrol outline-none;
+}
+
+.searchAddressBtn {
+  @apply min-h-12 shrink-0 bg-concrete-dark px-4 font-semibold text-petrol hover:bg-line disabled:opacity-60;
+}
+
+.locationHint {
+  @apply mt-2 text-sm text-ink/70;
+}
+
+.map {
+  @apply mt-3 w-full border border-line;
+  height: 300px;
+  border-radius: 12px;
+  z-index: 0;
+}
+
+.locationSelected {
+  @apply mt-2 text-sm font-semibold text-ok;
+}
+
+.locationError {
+  @apply mt-2 text-sm font-semibold text-warn;
 }
 
 .photosHint {
   @apply text-ink/40;
 }
 
+.photoSection {
+  @apply border-t border-line pt-4;
+}
+
+.photoPickerWrap {
+  @apply mt-2;
+}
+
 .fileInput {
-  @apply w-full font-mono text-sm;
+  @apply sr-only;
+}
+
+.photoPicker {
+  @apply flex min-h-14 w-full cursor-pointer items-center justify-center border-2 border-dashed border-petrol bg-action px-4 py-3 text-base font-bold text-action-ink transition-colors hover:bg-action-hover;
+  border-radius: 8px;
+}
+
+.fileInput:focus-visible + .photoPicker {
+  outline: 3px solid var(--color-petrol);
+  outline-offset: 3px;
+}
+
+.fileSelectionStatus {
+  @apply mt-2 text-sm text-ink/70;
 }
 
 .errorBox {
-  @apply text-warn text-sm font-mono border border-warn bg-warn/5 px-3 py-2;
+  @apply text-warn text-sm font-mono border border-warn bg-warn-soft px-3 py-2;
 }
 
 .submitBtn {
-  @apply w-full bg-signal hover:bg-signal-dark text-white font-mono font-medium py-2.5 disabled:opacity-60 transition-colors;
+  @apply w-full bg-action hover:bg-action-hover text-action-ink font-bold py-3 disabled:opacity-60 transition-colors;
+  box-shadow: 0 6px 14px rgba(82, 122, 105, 0.16);
 }
