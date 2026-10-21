@@ -2,8 +2,13 @@
 
 .cardLink {
   @apply block bg-paper border border-line hover:border-petrol transition-colors;
-  border-radius: 12px;
-  box-shadow: 0 5px 18px rgba(51, 68, 58, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(31, 41, 51, 0.06);
+}
+
+.cardLink:hover {
+  box-shadow: 0 8px 22px rgba(31, 41, 51, 0.1);
+  transform: translateY(-1px);
 }
 
 .cardContainer {
@@ -13,12 +18,12 @@
 
 .thumbnailImage {
   @apply block w-full aspect-square object-cover;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
 .noPhotoBox {
   @apply flex aspect-square w-full items-center justify-center bg-concrete-dark px-2 text-center text-xs text-ink/60;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
 .cardContent {
@@ -38,32 +43,37 @@
 .categoryTag {
   @apply inline-flex items-center border px-2.5 py-1 text-xs font-semibold;
   border-radius: 999px;
-  background-color: transparent;
+  background-color: var(--color-category-other-bg);
   color: var(--color-category-other-ink);
   border-color: var(--color-category-other-ink);
 }
 
 .categoryTag[data-category='infraestructura'] {
+  background-color: var(--color-category-infrastructure-bg);
   color: var(--color-category-infrastructure-ink);
   border-color: var(--color-category-infrastructure-ink);
 }
 
 .categoryTag[data-category='seguridad'] {
+  background-color: var(--color-category-security-bg);
   color: var(--color-category-security-ink);
   border-color: var(--color-category-security-ink);
 }
 
 .categoryTag[data-category='limpieza'] {
+  background-color: var(--color-category-cleaning-bg);
   color: var(--color-category-cleaning-ink);
   border-color: var(--color-category-cleaning-ink);
 }
 
 .categoryTag[data-category='ruido'] {
+  background-color: var(--color-category-noise-bg);
   color: var(--color-category-noise-ink);
   border-color: var(--color-category-noise-ink);
 }
 
 .categoryTag[data-category='trafico'] {
+  background-color: var(--color-category-traffic-bg);
   color: var(--color-category-traffic-ink);
   border-color: var(--color-category-traffic-ink);
 }

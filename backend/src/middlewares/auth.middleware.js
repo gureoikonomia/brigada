@@ -43,7 +43,7 @@ export async function protect(req, res, next) {
 
 /**
  * Restringe una ruta a ciertos roles. Debe usarse SIEMPRE después de `protect`.
- * Ejemplo: router.delete('/:id', protect, restrictTo('admin', 'moderator'), ...)
+ * Ejemplo: router.delete('/:id', protect, restrictTo('admin'), ...)
  */
 export function restrictTo(...roles) {
   return (req, res, next) => {

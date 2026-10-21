@@ -2,11 +2,11 @@
 
 .header {
   @apply bg-paper text-ink border-b border-line relative;
-  box-shadow: 0 4px 20px rgba(51, 68, 58, 0.07);
+  box-shadow: 0 2px 10px rgba(31, 41, 51, 0.06);
 }
 
 .container {
-  @apply max-w-6xl mx-auto px-4 h-[76px] flex items-center justify-between;
+  @apply max-w-6xl mx-auto px-4 h-[72px] flex items-center justify-between;
 }
 
 .brand {
@@ -23,19 +23,11 @@
 }
 
 .navLink {
-  @apply text-ink/70 hover:text-petrol transition-colors;
+  @apply min-h-11 inline-flex items-center text-ink/80 hover:text-petrol transition-colors;
 }
 
 .primaryButton {
-  @apply px-4 py-2.5 border border-line bg-paper text-ink hover:bg-concrete-dark transition-colors font-semibold;
-}
-
-.moderationLink {
-  @apply px-3 py-2 border border-amber-200 text-amber-800 bg-amber-50 hover:bg-amber-100 transition-colors flex items-center gap-1 font-bold;
-}
-
-.pulseDot {
-  @apply w-2 h-2 rounded-full bg-amber-300 animate-pulse;
+  @apply min-h-11 inline-flex items-center justify-center px-4 py-2 border border-action bg-action text-action-ink hover:bg-action-hover transition-colors font-semibold;
 }
 
 .userLink {
@@ -48,84 +40,53 @@
 }
 
 .userAvatar {
-  @apply w-8 h-8 flex items-center justify-center bg-petrol text-white text-sm font-bold;
+  @apply w-9 h-9 flex items-center justify-center bg-petrol text-white text-sm font-bold;
   border-radius: 999px;
-}
-
-.roleBadge {
-  @apply text-[10px] font-bold uppercase px-1.5 py-0.5 border;
-}
-
-.roleAdmin {
-  @apply border-amber-200 text-amber-800 bg-amber-50;
-}
-
-.roleModerator {
-  @apply border-violet-200 text-violet-800 bg-violet-50;
-}
-
-.roleUser {
-  @apply border-petrol/30 text-petrol bg-petrol/5;
+  object-fit: cover;
 }
 
 .logoutButton {
   @apply text-ink/60 hover:text-signal transition-colors;
 }
 
-.hamburgerButton {
-  @apply md:hidden w-9 h-9 flex flex-col items-center justify-center gap-1.5 flex-shrink-0;
-}
-
-.hamburgerLine {
-  @apply block w-6 h-0.5 bg-petrol transition-transform;
-}
-
-.hamburgerLineTopOpen {
-  @apply translate-y-2 rotate-45;
-}
-
-.hamburgerLineMiddleOpen {
-  @apply opacity-0;
-}
-
-.hamburgerLineBottomOpen {
-  @apply -translate-y-2 -rotate-45;
-}
-
-.mobileNav {
-  @apply md:hidden border-t border-line bg-paper text-ink text-sm;
-}
-
-.mobileNavContent {
-  @apply max-w-5xl mx-auto px-4 py-3 flex flex-col gap-1;
-}
-
-.mobileNavLink {
-  @apply py-2.5 hover:text-signal transition-colors;
-}
-
-.mobileModerationLink {
-  @apply py-2.5 text-amber-800 font-bold hover:text-amber-900 transition-colors flex items-center gap-1.5;
-}
-
-.mobileUserLink {
-  @apply py-2.5 px-3 text-ink hover:text-signal transition-colors flex items-center gap-2 bg-concrete;
-  border-radius: 14px;
-}
-
-.mobileLogoutButton {
-  @apply py-2.5 text-left hover:text-signal transition-colors;
-}
-
-.mobileSwitcherContainer {
-  @apply pt-2 mt-1 border-t border-line flex items-center gap-3;
+.mobileActions {
+  @apply flex items-center gap-2 md:hidden;
 }
 
 .themeButton {
-  @apply w-10 h-10 flex items-center justify-center bg-concrete text-petrol border border-line text-lg hover:bg-concrete-dark transition-colors;
+  @apply w-11 h-11 flex items-center justify-center bg-concrete text-petrol border border-line text-lg hover:bg-concrete-dark transition-colors;
   border-radius: 999px;
 }
 
-.mobileThemeButton {
-  @apply px-3 py-2 text-sm font-semibold text-petrol hover:text-signal transition-colors;
+.mobileBottomNav {
+  @apply md:hidden fixed inset-x-0 bottom-0 z-40 flex items-stretch justify-around border-t border-line bg-paper;
+  padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom));
+  box-shadow: 0 -4px 18px rgba(31, 41, 51, 0.1);
+}
+
+.mobileBottomLink {
+  @apply flex min-h-12 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-1 text-xs font-semibold text-ink/70 transition-colors;
+  text-decoration: none;
+}
+
+.mobileBottomLinkActive {
+  @apply text-petrol;
+}
+
+.mobileBottomCreate {
+  @apply text-action;
+}
+
+.mobileBottomCreate .mobileBottomIcon {
+  @apply rounded-full bg-action text-action-ink;
+  box-sizing: content-box;
+  padding: 0.3rem;
+}
+
+.mobileBottomIcon {
+  @apply h-6 w-6 shrink-0;
+}
+
+.mobileBottomAvatar {
+  @apply h-6 w-6 shrink-0 rounded-full object-cover;
 }

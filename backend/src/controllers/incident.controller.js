@@ -22,7 +22,7 @@ async function create(req, res, next) {
       category,
       locationInput: { lat, lng, address },
       files: req.files,
-      userId: req.user.id,
+      user: req.user,
     });
 
     return res.status(201).json(incident);
@@ -123,6 +123,27 @@ async function updateStatus(req, res, next) {
 }
 
 /**
+ * PATCH /api/incidents/:id
+ * Actualiza el contenido de una incidencia (solo administradores).
+ */
+async function update(req, res, next) {
+  try {
+    const incident = await incidentService.updateIncident(
+      req.validated.params.id,
+      req.validated.body,
+      req.files || [],
+      req.user
+    );
+    return res.status(200).json(incident);
+  } catch (err) {
+    if (err.statusCode) {
+      return res.status(err.statusCode).json({ message: err.message });
+    }
+    return next(err);
+  }
+}
+
+/**
  * DELETE /api/incidents/:id
  */
 async function remove(req, res, next) {
@@ -150,6 +171,7 @@ async function listVoted(req, res, next) {
 
     const result = await incidentService.listVotedIncidents({
       userId: req.user.id,
+      user: req.user,
       page,
       limit,
     });
@@ -165,6 +187,7 @@ export default {
   list,
   getById,
   updateStatus,
+  update,
   remove,
   listVoted,
 };

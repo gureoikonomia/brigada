@@ -146,10 +146,11 @@ export default function CreateIncidentPage() {
 
       <form onSubmit={handleSubmit} className={styles.form}>
         <div>
-          <label className={styles.label}>
+          <label htmlFor="incident-title" className={styles.label}>
             {t('createIncident.titleLabel')}
           </label>
           <input
+            id="incident-title"
             type="text"
             required
             maxLength={150}
@@ -160,10 +161,11 @@ export default function CreateIncidentPage() {
         </div>
 
         <div>
-          <label className={styles.label}>
+          <label htmlFor="incident-description" className={styles.label}>
             {t('createIncident.descriptionLabel')}
           </label>
           <textarea
+            id="incident-description"
             required
             minLength={10}
             maxLength={3000}
@@ -175,10 +177,11 @@ export default function CreateIncidentPage() {
         </div>
 
         <div>
-          <label className={styles.label}>
+          <label htmlFor="incident-category" className={styles.label}>
             {t('createIncident.categoryLabel')}
           </label>
           <select
+            id="incident-category"
             value={form.category}
             onChange={(e) => setForm({ ...form, category: e.target.value })}
             className={styles.selectInput}
@@ -191,7 +194,7 @@ export default function CreateIncidentPage() {
 
         <div>
           <div className={styles.locationHeader}>
-            <label className={styles.label}>
+            <label htmlFor="incident-address" className={styles.label}>
               {t('createIncident.locationLabel')}
             </label>
             <button
@@ -205,6 +208,7 @@ export default function CreateIncidentPage() {
           </div>
           <div className={styles.addressSearch}>
             <input
+              id="incident-address"
               type="text"
               placeholder={t('createIncident.addressPlaceholder')}
               value={form.address}

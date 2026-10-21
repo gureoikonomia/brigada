@@ -19,7 +19,7 @@ export default function AdminStatsWidget() {
         if (!cancelled) setStats(data);
       })
       .catch((err) => {
-        if (!cancelled) setError(err?.response?.data?.message || 'Error al cargar estadísticas de admin');
+        if (!cancelled) setError(err?.response?.data?.message || t('admin.statsError'));
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -27,7 +27,7 @@ export default function AdminStatsWidget() {
     return () => {
       cancelled = true;
     };
-  }, [votingEnabled]);
+  }, [t, votingEnabled]);
 
   if (loading) {
     return (
@@ -42,7 +42,9 @@ export default function AdminStatsWidget() {
     );
   }
 
-  if (error || !stats) return null;
+  if (error || !stats) {
+    return <p className={styles.error} role="alert">{error || t('admin.statsError')}</p>;
+  }
 
   const pendingCount = stats.incidents?.byStatus?.pendiente || 0;
   const inReviewCount = stats.incidents?.byStatus?.en_revision || 0;
@@ -53,14 +55,10 @@ export default function AdminStatsWidget() {
     <div className={styles.widgetContainer}>
       <div className={styles.widgetHeader}>
         <div className={styles.headerTitleBox}>
-          <span className={styles.pingDot}></span>
           <h3 className={styles.title}>
-            {t('admin.title')}
+            {t('admin.overview')}
           </h3>
         </div>
-        <span className={styles.badge}>
-          PANEL CONTROL ADMIN
-        </span>
       </div>
 
       <div className={statsGridClass}>
@@ -70,7 +68,7 @@ export default function AdminStatsWidget() {
             {stats.users?.total || 0}
           </span>
           <span className={styles.statSubtext}>
-            ({stats.users?.active || 0} activos)
+            {t('admin.activeUsersCount', { count: stats.users?.active || 0 })}
           </span>
         </div>
 
@@ -80,7 +78,7 @@ export default function AdminStatsWidget() {
             {totalIncidents}
           </span>
           <span className={styles.statSubtextHighlight}>
-            {pendingCount} pendientes
+            {t('admin.pendingCount', { count: pendingCount })}
           </span>
         </div>
 
@@ -88,12 +86,12 @@ export default function AdminStatsWidget() {
           <div className={styles.statCard}>
             <span className={styles.statLabel}>{t('admin.totalVotes')}</span>
             <span className={styles.statValue}>{stats.totalVotes || 0}</span>
-            <span className={styles.statSubtext}>apoyos en comunidad</span>
+            <span className={styles.statSubtext}>{t('admin.communityVotes')}</span>
           </div>
         )}
 
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Resueltas</span>
+          <span className={styles.statLabel}>{t('status.resuelta')}</span>
           <span className={styles.statValueSuccess}>
             {resolvedCount}
           </span>
@@ -106,9 +104,13 @@ export default function AdminStatsWidget() {
       {/* Desglose de estados */}
       <div className={styles.breakdownSection}>
         <div className={styles.breakdownLabelRow}>
-          <span>Estado general de la plataforma:</span>
+          <span>{t('admin.platformStatus')}</span>
           <span>
-            {pendingCount} pendientes · {inReviewCount} en revisión · {resolvedCount} resueltas
+            {t('admin.statusSummary', {
+              pending: pendingCount,
+              inReview: inReviewCount,
+              resolved: resolvedCount,
+            })}
           </span>
         </div>
         <div className={styles.progressBarTrack}>
@@ -125,7 +127,7 @@ export default function AdminStatsWidget() {
           <div
             className={styles.progressResolved}
             style={{ width: `${totalIncidents ? (resolvedCount / totalIncidents) * 100 : 0}%` }}
-            title={`Resueltas: ${resolvedCount}`}
+            title={t('admin.resolvedCount', { count: resolvedCount })}
           ></div>
         </div>
       </div>

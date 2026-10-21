@@ -2,6 +2,12 @@
 
 .skeletonWidget {
   @apply bg-paper border border-line p-4 animate-pulse space-y-3 mb-6;
+  border-radius: 16px;
+}
+
+.error {
+  @apply border border-warn bg-warn-soft p-3 text-sm text-warn;
+  border-radius: 10px;
 }
 
 .skeletonHeader {
@@ -27,8 +33,8 @@
 }
 
 .widgetContainer {
-  @apply bg-paper border-2 border-amber-200 p-5 mb-6 shadow-sm relative overflow-hidden;
-  border-radius: 22px;
+  @apply bg-paper border border-line p-5 mb-6 shadow-sm relative overflow-hidden;
+  border-radius: 16px;
 }
 
 .widgetHeader {
@@ -39,16 +45,8 @@
   @apply flex items-center gap-2;
 }
 
-.pingDot {
-  @apply w-2.5 h-2.5 rounded-full bg-amber-300 animate-ping;
-}
-
 .title {
-  @apply font-display font-bold text-lg text-ink uppercase tracking-wider;
-}
-
-.badge {
-  @apply font-mono text-xs text-amber-800 bg-amber-50 px-2 py-0.5 border border-amber-200;
+  @apply font-display font-bold text-lg text-ink;
 }
 
 .statsGrid {
@@ -67,11 +65,11 @@
 
 .statCard {
   @apply bg-concrete-dark/30 border border-line p-3 text-center;
-  border-radius: 14px;
+  border-radius: 12px;
 }
 
 .statLabel {
-  @apply block font-mono text-xs uppercase text-ink/60;
+  @apply block text-sm font-medium text-ink/80;
 }
 
 .statValue {
@@ -87,11 +85,11 @@
 }
 
 .statSubtext {
-  @apply block font-mono text-[10px] text-ink/40;
+  @apply block text-xs text-ink/70;
 }
 
 .statSubtextHighlight {
-  @apply block font-mono text-[10px] text-petrol font-semibold;
+  @apply block text-xs text-petrol font-semibold;
 }
 
 .breakdownSection {
@@ -99,11 +97,12 @@
 }
 
 .breakdownLabelRow {
-  @apply flex justify-between font-mono text-[11px] text-ink/70;
+  @apply flex justify-between text-sm text-ink/80;
 }
 
 .progressBarTrack {
   @apply w-full h-2 bg-concrete-dark flex overflow-hidden border border-line;
+  border-radius: 999px;
 }
 
 .progressPending {

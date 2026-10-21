@@ -68,6 +68,16 @@ export const updateStatusSchema = z.object({
   }),
 });
 
+// PATCH /api/incidents/:id
+export const updateIncidentSchema = z.object({
+  title: z.string().trim().min(3).max(150).optional(),
+  description: z.string().trim().min(10).max(3000).optional(),
+  category: z.enum(CATEGORIES).optional(),
+  address: z.string().trim().max(300).optional(),
+}).refine((data) => Object.keys(data).length > 0, {
+  message: 'Debes indicar al menos un campo para actualizar',
+});
+
 // GET /api/incidents
 export const listIncidentsQuerySchema = z.object({
   status: queryArray(STATUSES),

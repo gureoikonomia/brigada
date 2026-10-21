@@ -23,6 +23,13 @@ export async function updateProfile({ name, email }) {
   return data;
 }
 
+export async function uploadProfileAvatar(file) {
+  const formData = new FormData();
+  formData.append('avatar', file);
+  const { data } = await api.patch('/auth/me/avatar', formData);
+  return data;
+}
+
 export async function changePassword({ currentPassword, newPassword }) {
   const { data } = await api.patch('/auth/me/password', { currentPassword, newPassword });
   return data;

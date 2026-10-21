@@ -15,6 +15,7 @@ import { validate } from '../middlewares/validate.middleware.js';
 
 import {
   createIncidentSchema,
+  updateIncidentSchema,
   updateStatusSchema,
   listIncidentsQuerySchema,
   mongoIdParamSchema,
@@ -74,6 +75,17 @@ router.delete(
   protect,
   validate(mongoIdParamSchema, 'params'),
   incidentController.remove
+);
+
+// Editar el contenido de una incidencia: solo administradores.
+router.patch(
+  '/:id',
+  protect,
+  restrictTo('admin'),
+  handleUploadErrors,
+  validate(mongoIdParamSchema, 'params'),
+  validate(updateIncidentSchema),
+  incidentController.update
 );
 
 // ============================================

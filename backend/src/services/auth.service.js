@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 
 import User from '../models/user.model.js';
 import { ServiceError } from '../errors/service.error.js';
+import uploadService from './upload.service.js';
 
 const SALT_ROUNDS = 10;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
@@ -55,6 +56,7 @@ async function register({ name, email, password }) {
       name: user.name,
       email: user.email,
       role: user.role,
+      avatarUrl: user.avatarUrl,
     },
   };
 }
@@ -95,6 +97,7 @@ async function login({ email, password }) {
       name: user.name,
       email: user.email,
       role: user.role,
+      avatarUrl: user.avatarUrl,
     },
   };
 }
@@ -143,6 +146,46 @@ async function updateProfile(userId, { name, email }) {
   return user;
 }
 
+async function updateAvatar(userId, file) {
+  const user = await User.findById(userId).select('+avatarPublicId');
+  if (!user) {
+    throw new ServiceError('Usuario no encontrado', 404);
+  }
+
+  const previousPublicId = user.avatarPublicId;
+  const avatar = await uploadService.uploadAvatar(file);
+
+  user.avatarUrl = avatar.url;
+  user.avatarPublicId = avatar.publicId;
+
+  try {
+    await user.save();
+  } catch (err) {
+    try {
+      await uploadService.deleteImage(avatar.publicId);
+    } catch (cleanupError) {
+      console.error('No se pudo limpiar la nueva foto de perfil tras fallar el guardado', cleanupError);
+    }
+    throw err;
+  }
+
+  if (previousPublicId) {
+    try {
+      await uploadService.deleteImage(previousPublicId);
+    } catch (err) {
+      console.error('No se pudo borrar la foto de perfil anterior de Cloudinary', err);
+    }
+  }
+
+  return {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    avatarUrl: user.avatarUrl,
+  };
+}
+
 /**
  * Cambia la contraseña del usuario autenticado, verificando primero la
  * contraseña actual — así una sesión robada no basta para tomar la cuenta
@@ -171,5 +214,6 @@ export default {
   login,
   getProfile,
   updateProfile,
+  updateAvatar,
   changePassword
 };

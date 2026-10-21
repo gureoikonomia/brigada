@@ -2,10 +2,13 @@
 
 .skeletonCard {
   @apply flex bg-paper border border-line animate-pulse;
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 .thumbBox {
   @apply w-28 h-28 flex-shrink-0 bg-concrete-dark;
+  border-radius: 10px;
 }
 
 .contentBox {
@@ -18,18 +21,22 @@
 
 .lineCategory {
   @apply h-2.5 w-20 bg-concrete-dark;
+  border-radius: 999px;
 }
 
 .lineBadge {
   @apply h-4 w-16 bg-concrete-dark;
+  border-radius: 999px;
 }
 
 .lineTitle {
   @apply h-4 w-3/4 bg-concrete-dark mb-2;
+  border-radius: 999px;
 }
 
 .lineAddress {
   @apply h-3 w-1/2 bg-concrete-dark;
+  border-radius: 999px;
 }
 
 .footerRow {
@@ -38,8 +45,10 @@
 
 .lineDate {
   @apply h-2.5 w-16 bg-concrete-dark;
+  border-radius: 999px;
 }
 
 .lineButton {
   @apply h-7 w-20 bg-concrete-dark;
+  border-radius: 999px;
 }

@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import useAppSettings from '../hooks/useAppSettings';
 import { listIncidents, listVotedIncidents } from '../services/incident.service';
-import { updateProfile, changePassword } from '../services/auth.service';
+import { updateProfile, uploadProfileAvatar, changePassword } from '../services/auth.service';
 import IncidentCard from '../components/IncidentCard';
 import IncidentCardSkeleton from '../components/IncidentCardSkeleton';
 import AdminStatsWidget from '../components/AdminStatsWidget';
 import VotingFeatureControl from '../components/VotingFeatureControl';
 import UserManagementTable from '../components/UserManagementTable';
-import ModerationRow from '../components/ModerationRow';
+import ModerationPage from './ModerationPage';
 import styles from './ProfilePage.module.css';
 
 function initials(name = '') {
@@ -27,8 +27,16 @@ export default function ProfilePage() {
   const { votingEnabled } = useAppSettings();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const [activeTab, setActiveTab] = useState('incidents');
+  const [activeTab, setActiveTab] = useState(() => {
+    const requestedTab = searchParams.get('tab');
+    if (requestedTab === 'settings') return 'settings';
+    if (requestedTab === 'moderation' && ['admin', 'moderator'].includes(user?.role)) {
+      return 'moderation';
+    }
+    return 'incidents';
+  });
 
   // Tab 1: Mis incidencias
   const [myIncidents, setMyIncidents] = useState([]);
@@ -41,16 +49,14 @@ export default function ProfilePage() {
   const [errorVoted, setErrorVoted] = useState(null);
   const [votedLoaded, setVotedLoaded] = useState(false);
 
-  // Incidencias en revisión para moderadores.
-  const [inReviewIncidents, setInReviewIncidents] = useState([]);
-  const [loadingInReview, setLoadingInReview] = useState(false);
-  const [errorInReview, setErrorInReview] = useState(null);
-
   // Tab 5: Formulario de ajustes de perfil y contraseña
-  const [profileForm, setProfileForm] = useState({ name: user?.name || '', email: user?.email || '', avatarUrl: user?.avatarUrl || '' });
+  const [profileForm, setProfileForm] = useState({ name: user?.name || '', email: user?.email || '' });
   const [profileError, setProfileError] = useState(null);
   const [profileSuccess, setProfileSuccess] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
+  const [avatarError, setAvatarError] = useState(null);
+  const [avatarSuccess, setAvatarSuccess] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [passwordError, setPasswordError] = useState(null);
@@ -98,32 +104,9 @@ export default function ProfilePage() {
     }
   }, [activeTab, votedLoaded, t, votingEnabled]);
 
-  // Cargar incidencias en revisión si se selecciona la pestaña de Moderación
-  useEffect(() => {
-    if (activeTab === 'moderation') {
-      setLoadingInReview(true);
-      setErrorInReview(null);
-      listIncidents({ status: 'en_revision', sortBy: 'recent', limit: 50 })
-        .then((data) => {
-          setInReviewIncidents(data.items);
-        })
-        .catch(() => {
-          setErrorInReview(t('moderation.loadError'));
-        })
-        .finally(() => {
-          setLoadingInReview(false);
-        });
-    }
-  }, [activeTab, t, votingEnabled]);
-
   if (!user) return null;
 
-  const isAdminOrMod = ['admin', 'moderator'].includes(user.role);
   const visibleTab = !votingEnabled && activeTab === 'voted' ? 'incidents' : activeTab;
-
-  const handleModeratedChange = (id) => {
-    setInReviewIncidents((prev) => prev.filter((item) => item._id !== id));
-  };
 
   const handleLogout = () => {
     logout();
@@ -143,6 +126,35 @@ export default function ProfilePage() {
       setProfileError(err.response?.data?.message || t('editProfile.saveError'));
     } finally {
       setSavingProfile(false);
+    }
+  };
+
+  const handleAvatarChange = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+
+    setAvatarError(null);
+    setAvatarSuccess(false);
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      setAvatarError(t('profile.avatarInvalidType'));
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setAvatarError(t('profile.avatarTooLarge'));
+      return;
+    }
+
+    setUploadingAvatar(true);
+    try {
+      const updated = await uploadProfileAvatar(file);
+      updateUser({ avatarUrl: updated.avatarUrl });
+      setAvatarSuccess(true);
+    } catch (err) {
+      setAvatarError(err.response?.data?.message || t('profile.avatarUploadError'));
+    } finally {
+      setUploadingAvatar(false);
     }
   };
 
@@ -190,65 +202,60 @@ export default function ProfilePage() {
           </div>
 
           <div className={styles.profileActions}>
+            <label className={styles.avatarPicker}>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleAvatarChange}
+                disabled={uploadingAvatar}
+                className={styles.avatarInput}
+                aria-label={t('profile.changeAvatar')}
+              />
+              {uploadingAvatar ? t('profile.avatarUploading') : t('profile.changeAvatar')}
+            </label>
             <button onClick={handleLogout} className={styles.logoutButton}>
               {t('nav.logout')}
             </button>
           </div>
         </div>
+        {(avatarError || avatarSuccess) && (
+          <p
+            className={avatarError ? styles.avatarError : styles.avatarSuccess}
+            role={avatarError ? 'alert' : 'status'}
+          >
+            {avatarError || t('profile.avatarUploadSuccess')}
+          </p>
+        )}
       </div>
 
-      {/* Barra de Pestañas Navegables */}
-      <div className={styles.tabsRow}>
-        <button
-          onClick={() => setActiveTab('incidents')}
-          className={`${styles.tabBtn} ${
-            visibleTab === 'incidents' ? styles.tabBtnActive : styles.tabBtnInactive
-          }`}
+      <div className={styles.sectionSelector}>
+        <label htmlFor="profile-section" className={styles.sectionSelectorLabel}>
+          {t('profile.sectionSelectorLabel')}
+        </label>
+        <select
+          id="profile-section"
+          value={visibleTab}
+          onChange={(event) => setActiveTab(event.target.value)}
+          className={styles.sectionSelectorInput}
         >
-          📋 {t('profile.tabMyIncidents')} ({myIncidents.length})
-        </button>
-
-        {votingEnabled && (
-          <button
-          onClick={() => setActiveTab('voted')}
-          className={`${styles.tabBtn} ${
-            visibleTab === 'voted' ? styles.tabBtnActive : styles.tabBtnInactive
-          }`}
-          >
-            ⭐ {t('profile.tabVotedIncidents')}
-          </button>
-        )}
-
-        {isAdminOrMod && (
-          <button
-            onClick={() => setActiveTab('moderation')}
-            className={`${styles.tabBtn} ${
-              visibleTab === 'moderation' ? styles.tabBtnActive : styles.tabBtnInactive
-            }`}
-          >
-            ⚖️ {t('profile.tabModeration')}
-          </button>
-        )}
-
-        {user.role === 'admin' && (
-          <button
-            onClick={() => setActiveTab('admin')}
-            className={`${styles.tabBtn} ${
-              visibleTab === 'admin' ? styles.tabAdminActive : styles.tabAdminInactive
-            }`}
-          >
-            🛡️ {t('profile.tabUsersAdmin')}
-          </button>
-        )}
-
-        <button
-          onClick={() => setActiveTab('settings')}
-          className={`${styles.tabBtn} ${
-            visibleTab === 'settings' ? styles.tabBtnActive : styles.tabBtnInactive
-          }`}
-        >
-          ⚙️ {t('profile.tabSettings')}
-        </button>
+          <optgroup label={t('profile.sectionGroupActivity')}>
+            <option value="incidents">📍 {t('profile.tabMyIncidents')}</option>
+            {votingEnabled && (
+              <option value="voted">❤️ {t('profile.tabVotedIncidents')}</option>
+            )}
+          </optgroup>
+          {['admin', 'moderator'].includes(user.role) && (
+            <optgroup label={t('profile.sectionGroupManagement')}>
+              <option value="moderation">🔎 {t('nav.moderation')}</option>
+              {user.role === 'admin' && (
+                <option value="admin">⚙️ {t('profile.adminPanel')}</option>
+              )}
+            </optgroup>
+          )}
+          <optgroup label={t('profile.sectionGroupAccount')}>
+            <option value="settings">🔐 {t('profile.tabSettings')}</option>
+          </optgroup>
+        </select>
       </div>
 
       {/* CONTENIDO DE LAS PESTAÑAS */}
@@ -313,51 +320,19 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* Pestaña Moderación (Moderadores y Admins): Incidencias En Revisión */}
-      {visibleTab === 'moderation' && isAdminOrMod && (
-        <div className={styles.adminSection}>
-          <h2 className={styles.sectionTitle}>{t('profile.tabModeration')}</h2>
-          <p className={styles.subTitle + ' mb-4'}>
-            Revisión de incidencias reportadas en estado En Revisión. Puedes pasarlas a Pendientes o Rechazadas.
-          </p>
-
-          {loadingInReview && <p className={styles.loadingText}>{t('common.loading')}</p>}
-          {errorInReview && <p className={styles.errorBox}>{errorInReview}</p>}
-
-          {!loadingInReview && !errorInReview && inReviewIncidents.length === 0 && (
-            <div className={styles.emptyState}>
-              <p className={styles.emptyText}>No hay incidencias en revisión pendiente de moderación.</p>
-            </div>
-          )}
-
-          {!loadingInReview && inReviewIncidents.length > 0 && (
-            <div className={styles.listPanel}>
-              <div className={styles.itemsSpace}>
-                {inReviewIncidents.map((incident) => (
-                  <ModerationRow
-                    key={incident._id}
-                    incident={incident}
-                    onChanged={handleModeratedChange}
-                    onDeleted={handleModeratedChange}
-                    allowedStatuses={['pendiente', 'rechazada']}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Pestaña 4: Panel Admin & Gestión de Usuarios */}
       {visibleTab === 'admin' && user.role === 'admin' && (
         <div className={styles.adminSection}>
+          <h2 className={styles.sectionTitle}>{t('profile.adminPanel')}</h2>
           <VotingFeatureControl />
           <AdminStatsWidget />
           <UserManagementTable />
         </div>
       )}
 
-      {/* Pestaña 5: Seguridad & Ajustes */}
+      {visibleTab === 'moderation' && ['admin', 'moderator'].includes(user.role) && (
+        <ModerationPage embedded />
+      )}
+
       {visibleTab === 'settings' && (
         <div className={styles.settingsGrid}>
           {/* Datos Personales */}
@@ -365,10 +340,11 @@ export default function ProfilePage() {
             <h3 className={styles.subSectionTitle}>{t('editProfile.accountData')}</h3>
             <form onSubmit={handleProfileSubmit} className={styles.formSpace}>
               <div>
-                <label className={styles.fieldLabel}>
+                <label htmlFor="profile-name" className={styles.fieldLabel}>
                   {t('editProfile.nameLabel')}
                 </label>
                 <input
+                  id="profile-name"
                   type="text"
                   required
                   value={profileForm.name}
@@ -381,10 +357,11 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label className={styles.fieldLabel}>
+                <label htmlFor="profile-email" className={styles.fieldLabel}>
                   {t('editProfile.emailLabel')}
                 </label>
                 <input
+                  id="profile-email"
                   type="email"
                   required
                   value={profileForm.email}
@@ -420,10 +397,11 @@ export default function ProfilePage() {
             <h3 className={styles.subSectionTitle}>{t('editProfile.changePassword')}</h3>
             <form onSubmit={handlePasswordSubmit} className={styles.formSpace}>
               <div>
-                <label className={styles.fieldLabel}>
+                <label htmlFor="profile-current-password" className={styles.fieldLabel}>
                   {t('editProfile.currentPasswordLabel')}
                 </label>
                 <input
+                  id="profile-current-password"
                   type="password"
                   required
                   value={passwordForm.currentPassword}
@@ -436,10 +414,11 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label className={styles.fieldLabel}>
+                <label htmlFor="profile-new-password" className={styles.fieldLabel}>
                   {t('editProfile.newPasswordLabel')}
                 </label>
                 <input
+                  id="profile-new-password"
                   type="password"
                   required
                   minLength={8}
@@ -453,10 +432,11 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label className={styles.fieldLabel}>
+                <label htmlFor="profile-confirm-password" className={styles.fieldLabel}>
                   {t('editProfile.confirmPasswordLabel')}
                 </label>
                 <input
+                  id="profile-confirm-password"
                   type="password"
                   required
                   minLength={8}

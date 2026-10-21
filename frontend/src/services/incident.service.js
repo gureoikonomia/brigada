@@ -33,6 +33,15 @@ export async function updateIncidentStatus(id, status) {
   return data;
 }
 
+export async function updateIncident(id, updates, images = []) {
+  const formData = new FormData();
+  Object.entries(updates).forEach(([key, value]) => formData.append(key, value));
+  images.forEach((image) => formData.append('images', image));
+
+  const { data } = await api.patch(`/incidents/${id}`, formData);
+  return data;
+}
+
 export async function deleteIncident(id) {
   const { data } = await api.delete(`/incidents/${id}`);
   return data;

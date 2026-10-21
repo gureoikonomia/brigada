@@ -1,13 +1,13 @@
 @reference "../index.css";
 
 .switcherGroup {
-  @apply inline-flex border border-line bg-concrete text-xs;
-  border-radius: 999px;
+  @apply inline-flex border border-line bg-concrete text-sm;
+  border-radius: 10px;
   overflow: hidden;
 }
 
 .langBtn {
-  @apply px-3 py-1.5 text-ink/70 transition-colors;
+  @apply min-h-11 px-3 py-1.5 text-ink/80 transition-colors;
 }
 
 .borderDivider {
@@ -15,7 +15,7 @@
 }
 
 .langActive {
-  @apply bg-concrete-dark text-ink font-semibold;
+  @apply bg-action text-action-ink font-semibold;
 }
 
 .langInactive {

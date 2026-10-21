@@ -5,7 +5,7 @@
 }
 
 .title {
-  @apply font-display font-extrabold text-4xl text-petrol mb-1;
+  @apply font-display font-bold text-3xl text-ink mb-1;
 }
 
 .subtitle {
@@ -17,7 +17,7 @@
 }
 
 .label {
-  @apply block font-semibold text-sm text-ink/70 mb-1;
+  @apply block font-semibold text-sm text-ink mb-1;
 }
 
 .textInput {
@@ -37,7 +37,7 @@
 }
 
 .locateBtn {
-  @apply font-mono text-[11px] text-petrol hover:text-signal-dark underline disabled:opacity-50;
+  @apply min-h-11 text-sm font-semibold text-petrol hover:text-signal-dark underline underline-offset-2 disabled:opacity-50;
 }
 
 .coordsGrid {
@@ -67,7 +67,7 @@
 .map {
   @apply mt-3 w-full border border-line;
   height: 300px;
-  border-radius: 12px;
+  border-radius: 14px;
   z-index: 0;
 }
 
@@ -97,7 +97,7 @@
 
 .photoPicker {
   @apply flex min-h-14 w-full cursor-pointer items-center justify-center border-2 border-dashed border-petrol bg-action px-4 py-3 text-base font-bold text-action-ink transition-colors hover:bg-action-hover;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
 .fileInput:focus-visible + .photoPicker {
@@ -110,10 +110,10 @@
 }
 
 .errorBox {
-  @apply text-warn text-sm font-mono border border-warn bg-warn-soft px-3 py-2;
+  @apply text-warn text-sm border border-warn bg-warn-soft px-3 py-3;
 }
 
 .submitBtn {
   @apply w-full bg-action hover:bg-action-hover text-action-ink font-bold py-3 disabled:opacity-60 transition-colors;
-  box-shadow: 0 6px 14px rgba(82, 122, 105, 0.16);
+  box-shadow: 0 4px 12px rgba(15, 105, 107, 0.2);
 }

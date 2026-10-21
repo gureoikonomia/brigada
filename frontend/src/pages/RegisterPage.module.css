@@ -1,9 +1,9 @@
 @reference "../index.css";
 
 .container {
-  @apply max-w-md mx-auto mt-10 px-4 py-10 bg-paper border border-line;
-  border-radius: 28px;
-  box-shadow: 0 16px 40px rgba(51, 68, 58, 0.08);
+  @apply max-w-md mx-auto mt-10 px-6 py-10 bg-paper border border-line;
+  border-radius: 20px;
+  box-shadow: 0 12px 32px rgba(31, 41, 51, 0.08);
 }
 
 .title {
@@ -23,7 +23,7 @@
 }
 
 .label {
-  @apply block font-semibold text-sm text-ink/70 mb-1;
+  @apply block font-semibold text-sm text-ink mb-1;
 }
 
 .hint {
@@ -31,7 +31,7 @@
 }
 
 .input {
-  @apply w-full border border-line bg-concrete px-3 py-3 focus:border-petrol outline-none;
+  @apply w-full border border-line bg-paper px-3 py-3 focus:border-petrol outline-none;
 }
 
 .errorBox {
@@ -39,7 +39,7 @@
 }
 
 .submitBtn {
-  @apply w-full border border-line bg-concrete-dark hover:bg-line text-ink font-semibold py-3 disabled:opacity-60 transition-colors;
+  @apply w-full bg-action hover:bg-action-hover text-action-ink font-bold py-3 disabled:opacity-60 transition-colors;
 }
 
 .footerText {
@@ -47,5 +47,5 @@
 }
 
 .link {
-  @apply text-petrol font-bold hover:text-signal;
+  @apply text-petrol font-bold underline underline-offset-2 hover:text-signal-dark;
 }

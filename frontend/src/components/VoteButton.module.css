@@ -2,6 +2,7 @@
 
 .voteBtn {
   @apply min-h-11 font-semibold border transition-colors disabled:opacity-60;
+  border-radius: 10px;
 }
 
 .sizeMd {
@@ -13,7 +14,7 @@
 }
 
 .voted {
-  @apply bg-concrete-dark text-ink border-line;
+  @apply bg-action text-action-ink border-action;
 }
 
 .notVoted {

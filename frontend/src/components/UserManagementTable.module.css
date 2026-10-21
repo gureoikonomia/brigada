@@ -2,6 +2,7 @@
 
 .container {
   @apply bg-paper border border-line p-5;
+  border-radius: 16px;
 }
 
 .headerRow {
@@ -9,11 +10,11 @@
 }
 
 .title {
-  @apply font-display font-bold text-xl;
+  @apply font-display font-bold text-xl text-ink;
 }
 
 .subTitle {
-  @apply text-ink/60 text-xs font-mono;
+  @apply text-ink/70 text-sm;
 }
 
 .controlsGroup {
@@ -25,15 +26,15 @@
 }
 
 .searchInput {
-  @apply bg-concrete-dark/30 border border-line px-3 py-1.5 font-mono text-xs focus:outline-none focus:border-petrol;
+  @apply bg-paper border border-line px-3 py-2 text-base focus:outline-none focus:border-petrol;
 }
 
 .searchBtn {
-  @apply bg-paper border border-line text-ink font-mono text-xs uppercase px-3 py-1.5 hover:bg-concrete-dark transition-colors;
+  @apply bg-paper border border-line text-ink font-semibold px-3 py-2 hover:bg-concrete-dark transition-colors;
 }
 
 .roleSelectFilter {
-  @apply bg-concrete-dark/30 border border-line px-3 py-1.5 font-mono text-xs uppercase focus:outline-none focus:border-petrol;
+  @apply bg-paper border border-line px-3 py-2 text-base focus:outline-none focus:border-petrol;
 }
 
 .feedbackSuccess {
@@ -62,6 +63,7 @@
 
 .tableWrapper {
   @apply overflow-x-auto border border-line;
+  border-radius: 10px;
 }
 
 .table {
@@ -69,7 +71,7 @@
 }
 
 .tableHeaderRow {
-  @apply bg-concrete-dark/50 border-b border-line font-mono text-xs uppercase text-ink/70;
+  @apply bg-concrete-dark border-b border-line text-sm font-semibold text-ink;
 }
 
 .thCell {
@@ -81,7 +83,7 @@
 }
 
 .tbody {
-  @apply divide-y divide-line font-mono text-xs;
+  @apply divide-y divide-line text-sm;
 }
 
 .trRow {
@@ -117,7 +119,7 @@
 }
 
 .selfLabel {
-  @apply text-[10px] text-amber-800 uppercase font-semibold;
+  @apply text-xs text-amber-800 font-semibold;
 }
 
 .selectRole {
@@ -137,7 +139,8 @@
 }
 
 .statusTag {
-  @apply inline-block px-2 py-0.5 text-[10px] uppercase font-bold border;
+  @apply inline-block px-2 py-1 text-xs font-bold border;
+  border-radius: 999px;
 }
 
 .statusActive {
@@ -149,7 +152,7 @@
 }
 
 .toggleStatusBtn {
-  @apply px-2.5 py-1 text-[11px] font-mono uppercase tracking-wide border transition-colors disabled:opacity-30 disabled:pointer-events-none;
+  @apply min-h-11 px-3 py-1 text-sm font-semibold border transition-colors disabled:opacity-30 disabled:pointer-events-none;
 }
 
 .toggleStatusBtnActive {
@@ -165,5 +168,5 @@
 }
 
 .pageBtn {
-  @apply px-3 py-1 border border-line hover:bg-concrete-dark disabled:opacity-30;
+  @apply min-h-11 px-3 py-1 border border-line hover:bg-concrete-dark disabled:opacity-30;
 }

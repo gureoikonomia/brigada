@@ -6,8 +6,8 @@
 
 .profileCard {
   @apply bg-paper border border-line p-5 mb-6 shadow-sm;
-  border-radius: 12px;
-  box-shadow: 0 12px 28px rgba(51, 68, 58, 0.07);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(31, 41, 51, 0.07);
 }
 
 .profileCardInner {
@@ -16,6 +16,33 @@
 
 .profileActions {
   @apply flex flex-wrap items-center gap-2 flex-shrink-0;
+}
+
+.avatarPicker {
+  @apply min-h-11 inline-flex cursor-pointer items-center justify-center border border-petrol px-4 py-2 text-sm font-semibold text-petrol hover:bg-concrete-dark;
+  border-radius: 10px;
+}
+
+.avatarInput {
+  @apply sr-only;
+}
+
+.avatarPicker:focus-within {
+  outline: 3px solid var(--color-action);
+  outline-offset: 3px;
+}
+
+.avatarError,
+.avatarSuccess {
+  @apply mt-3 text-sm;
+}
+
+.avatarError {
+  @apply text-warn;
+}
+
+.avatarSuccess {
+  @apply text-ok;
 }
 
 .avatarImage {
@@ -33,7 +60,7 @@
 }
 
 .userName {
-  @apply font-display font-bold text-2xl text-petrol break-words;
+  @apply font-display font-bold text-2xl text-ink break-words;
 }
 
 .userEmail {
@@ -44,49 +71,21 @@
   @apply min-h-11 text-sm font-semibold text-ink/70 border border-line px-4 py-2 hover:bg-concrete-dark transition-colors;
 }
 
-.tabsRow {
-  @apply flex flex-nowrap gap-2 mb-6 text-sm border-b border-line pb-2;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-petrol-light) var(--color-concrete-dark);
-  -webkit-overflow-scrolling: touch;
+.sectionSelector {
+  @apply mb-6;
 }
 
-.tabsRow::-webkit-scrollbar {
-  height: 8px;
+.sectionSelectorLabel {
+  @apply mb-2 block text-base font-semibold text-ink;
 }
 
-.tabsRow::-webkit-scrollbar-track {
-  background: var(--color-concrete-dark);
-  border-radius: 4px;
+.sectionSelectorInput {
+  @apply min-h-12 w-full border border-line bg-paper px-3 py-2 text-base font-semibold text-ink;
 }
 
-.tabsRow::-webkit-scrollbar-thumb {
-  background: var(--color-petrol-light);
-  border-radius: 4px;
-}
-
-.tabBtn {
-  @apply min-h-11 px-3 py-2 font-semibold border-b-2 transition-colors;
-  flex: 0 0 auto;
-  white-space: nowrap;
-}
-
-.tabBtnActive {
-  @apply border-petrol text-petrol font-bold;
-}
-
-.tabBtnInactive {
-  @apply border-transparent text-ink/60 hover:text-ink;
-}
-
-.tabAdminActive {
-  @apply border-amber-200 text-amber-800 font-bold bg-amber-50;
-}
-
-.tabAdminInactive {
-  @apply border-transparent text-amber-800 hover:text-amber-900;
+.sectionSelectorInput:focus-visible {
+  outline: 3px solid var(--color-action);
+  outline-offset: 2px;
 }
 
 .sectionTitle {
@@ -122,8 +121,8 @@
 }
 
 .rankCard {
-  @apply bg-paper border-2 border-petrol p-6 flex flex-col sm:flex-row items-center justify-between gap-4;
-  border-radius: 22px;
+  @apply bg-paper border border-line p-6 flex flex-col sm:flex-row items-center justify-between gap-4;
+  border-radius: 16px;
 }
 
 .rankLabel {
@@ -186,6 +185,7 @@
 
 .sectionCard {
   @apply bg-paper border border-line p-6;
+  border-radius: 14px;
 }
 
 .subSectionTitle {
@@ -201,7 +201,7 @@
 }
 
 .formInput {
-  @apply w-full border border-line bg-white px-3 py-2 font-mono text-sm focus:border-petrol outline-none;
+  @apply w-full border border-line bg-white px-3 py-2 text-base focus:border-petrol outline-none;
 }
 
 .formError {
@@ -213,9 +213,9 @@
 }
 
 .saveProfileBtn {
-  @apply bg-action text-action-ink font-mono text-xs uppercase font-semibold px-4 py-2 hover:bg-action-hover disabled:opacity-60 transition-colors w-full;
+  @apply bg-action text-action-ink font-semibold px-4 py-2 hover:bg-action-hover disabled:opacity-60 transition-colors w-full;
 }
 
 .savePasswordBtn {
-  @apply bg-action text-action-ink font-mono text-xs uppercase font-semibold px-4 py-2 hover:bg-action-hover disabled:opacity-60 transition-colors w-full;
+  @apply bg-action text-action-ink font-semibold px-4 py-2 hover:bg-action-hover disabled:opacity-60 transition-colors w-full;
 }

@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Navigate, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { AppSettingsProvider } from './context/AppSettingsContext';
 import Navbar from './components/Navbar';
@@ -9,8 +9,6 @@ import IncidentListPage from './pages/IncidentListPage';
 import IncidentDetailPage from './pages/IncidentDetailPage';
 const CreateIncidentPage = lazy(() => import('./pages/CreateIncidentPage'));
 import ProfilePage from './pages/ProfilePage';
-import EditProfilePage from './pages/EditProfilePage';
-import ModerationPage from './pages/ModerationPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
@@ -47,19 +45,12 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/perfil/editar"
-              element={
-                <ProtectedRoute>
-                  <EditProfilePage />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/perfil/editar" element={<Navigate to="/perfil?tab=settings" replace />} />
             <Route
               path="/moderacion"
               element={
                 <ProtectedRoute roles={['admin', 'moderator']}>
-                  <ModerationPage />
+                  <Navigate to="/perfil?tab=moderation" replace />
                 </ProtectedRoute>
               }
             />

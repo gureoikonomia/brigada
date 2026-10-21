@@ -1,7 +1,7 @@
 @reference "../index.css";
 
 .container {
-  @apply max-w-4xl mx-auto px-4 py-10;
+  @apply max-w-5xl mx-auto px-4 py-10;
 }
 
 .headerRow {
@@ -9,7 +9,7 @@
 }
 
 .title {
-  @apply font-display font-bold text-3xl text-petrol;
+  @apply font-display font-bold text-3xl text-ink;
 }
 
 .toolbar {
@@ -37,8 +37,8 @@
 
 .newIncidentButton {
   @apply inline-flex min-h-12 items-center justify-center bg-action text-action-ink font-bold px-5 py-3 hover:bg-action-hover transition-colors;
-  border-radius: 12px;
-  box-shadow: 0 5px 12px rgba(82, 122, 105, 0.16);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(15, 105, 107, 0.2);
 }
 
 .filterField {
@@ -58,11 +58,12 @@
 }
 
 .errorBox {
-  @apply text-warn text-sm font-mono border border-warn bg-warn-soft px-3 py-2;
+  @apply text-warn text-sm border border-warn bg-warn-soft px-3 py-3;
 }
 
 .emptyState {
-  @apply border border-dashed border-line py-16 text-center;
+  @apply border border-dashed border-line bg-paper py-16 text-center;
+  border-radius: 16px;
 }
 
 .emptyText {

@@ -10,6 +10,8 @@
 
 .cardContainer {
   @apply bg-paper border border-line;
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 .imagePlaceholder {
@@ -26,18 +28,22 @@
 
 .lineCategory {
   @apply h-3 w-24 bg-concrete-dark;
+  border-radius: 999px;
 }
 
 .lineBadge {
   @apply h-4 w-20 bg-concrete-dark;
+  border-radius: 999px;
 }
 
 .lineTitle {
   @apply h-8 w-2/3 bg-concrete-dark mb-3;
+  border-radius: 999px;
 }
 
 .lineAddress {
   @apply h-3 w-1/2 bg-concrete-dark mb-6;
+  border-radius: 999px;
 }
 
 .textLines {
@@ -46,12 +52,15 @@
 
 .lineFull {
   @apply h-3 w-full bg-concrete-dark;
+  border-radius: 999px;
 }
 
 .lineShort {
   @apply h-3 w-2/3 bg-concrete-dark;
+  border-radius: 999px;
 }
 
 .buttonPlaceholder {
   @apply h-9 w-32 bg-concrete-dark;
+  border-radius: 999px;
 }

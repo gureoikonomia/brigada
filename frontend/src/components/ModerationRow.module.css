@@ -2,8 +2,8 @@
 
 .rowContainer {
   @apply bg-paper border border-line p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(51, 68, 58, 0.05);
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(31, 41, 51, 0.05);
 }
 
 .contentBox {
@@ -15,21 +15,25 @@
 }
 
 .metaText {
-  @apply font-mono text-[11px] text-ink/50 truncate;
+  @apply text-sm text-ink/70 truncate;
 }
 
 .errorMsg {
-  @apply font-mono text-[11px] text-warn mt-1;
+  @apply text-sm text-warn mt-1;
 }
 
 .actionsGroup {
-  @apply flex items-center gap-1 flex-wrap;
+  @apply flex items-center gap-2 flex-wrap;
+}
+
+.statusField {
+  @apply block;
+}
+
+.statusSelect {
+  @apply min-h-11 min-w-36 border border-line bg-paper px-3 py-2 text-sm;
 }
 
 .statusBtn {
-  @apply text-[10px] font-bold uppercase px-3 py-1.5 border transition-colors disabled:opacity-50;
-}
-
-.deleteBtn {
-  @apply font-mono text-[10px] uppercase px-2 py-1 border border-warn text-warn hover:bg-warn hover:text-white transition-colors disabled:opacity-50 ml-1;
+  @apply min-h-11 text-sm font-bold px-4 py-2 bg-action text-action-ink hover:bg-action-hover transition-colors disabled:opacity-50;
 }

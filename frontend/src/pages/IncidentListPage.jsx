@@ -20,7 +20,7 @@ export default function IncidentListPage() {
   const [pagination, setPagination] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filters, setFilters] = useState({ category: '', status: '', sortBy: 'recent', page: 1 });
+  const [filters, setFilters] = useState({ category: '', status: 'pendiente', sortBy: 'recent', page: 1 });
 
   const isPrivileged = user && ['admin', 'moderator'].includes(user.role);
   const statusOptions = isPrivileged ? STATUS_VALUES : PUBLIC_STATUS_VALUES;
@@ -59,9 +59,11 @@ export default function IncidentListPage() {
         <h1 className={styles.title}>{t('incidentList.title')}</h1>
 
         <div className={`${styles.toolbar} ${!votingEnabled ? styles.toolbarWithoutVoting : ''}`}>
-          <Link to="/incidencias/nueva" className={styles.newIncidentButton}>
-            {t('nav.newIncidentFull')}
-          </Link>
+          {user && (
+            <Link to="/incidencias/nueva" className={styles.newIncidentButton}>
+              {t('nav.newIncidentFull')}
+            </Link>
+          )}
 
           <div className={styles.filterField}>
             <label htmlFor="incident-category" className={styles.filterLabel}>

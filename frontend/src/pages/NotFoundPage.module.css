@@ -5,7 +5,7 @@
 }
 
 .codeLabel {
-  @apply font-mono text-warn text-sm mb-2;
+  @apply font-semibold text-warn text-base mb-2;
 }
 
 .title {
@@ -17,5 +17,5 @@
 }
 
 .homeLink {
-  @apply font-mono text-sm text-petrol hover:text-signal underline;
+  @apply inline-flex min-h-11 items-center text-base font-semibold text-petrol hover:text-signal-dark underline underline-offset-2;
 }

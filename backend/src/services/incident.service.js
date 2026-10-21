@@ -9,6 +9,34 @@ import appSettingsService from './app-settings.service.js';
 
 import { ServiceError } from '../errors/service.error.js';
 
+export function presentIncident(incident, user) {
+  const result = { ...incident };
+  const isPrivileged = ['admin', 'moderator'].includes(user?.role);
+
+  if (!isPrivileged) {
+    const creatorId = result.createdBy?._id || result.createdBy;
+    result.isOwner = Boolean(
+      user?.id &&
+      creatorId &&
+      user.id === creatorId.toString()
+    );
+    delete result.createdBy;
+  }
+
+  return result;
+}
+
+async function cleanupUploadedImages(images, originalError, message) {
+  const publicIds = images.map((image) => image.publicId).filter(Boolean);
+  if (!publicIds.length) return;
+
+  try {
+    await uploadService.deleteImages(publicIds);
+  } catch (cleanupError) {
+    throw new AggregateError([originalError, cleanupError], message);
+  }
+}
+
 /**
  * Crea una incidencia.
  */
@@ -18,7 +46,7 @@ async function createIncident({
   category,
   locationInput,
   files,
-  userId,
+  user,
 }) {
   if (!locationInput) {
     throw new ServiceError(
@@ -51,20 +79,30 @@ async function createIncident({
       ? await uploadService.uploadIncidentImages(files)
       : [];
 
-  const incident = await Incident.create({
-    title,
-    description,
-    category,
-    location: {
-      type: 'Point',
-      coordinates,
-      address: locationInput.address || null,
-    },
-    images,
-    createdBy: userId,
-  });
+  let incident;
+  try {
+    incident = await Incident.create({
+      title,
+      description,
+      category,
+      location: {
+        type: 'Point',
+        coordinates,
+        address: locationInput.address || null,
+      },
+      images,
+      createdBy: user.id,
+    });
+  } catch (error) {
+    await cleanupUploadedImages(
+      images,
+      error,
+      'No se pudo guardar la incidencia ni limpiar las imágenes subidas'
+    );
+    throw error;
+  }
 
-  return incident;
+  return presentIncident(incident.toObject(), user);
 }
 
 /**
@@ -182,13 +220,13 @@ async function listIncidents({
 
   const enriched = items.map((incident) => {
     const { votesCount, ...incidentData } = incident;
-    return {
+    return presentIncident({
       ...incidentData,
       ...(votingEnabled && {
         votesCount,
         hasVoted: votedIds.has(incident._id.toString()),
       }),
-    };
+    }, user);
   });
 
   return {
@@ -230,7 +268,8 @@ async function getIncidentById(
   }
 
   const isPrivileged = user && ['admin', 'moderator'].includes(user.role);
-  const isOwner = user && user.id === incident.createdBy._id.toString();
+  const creatorId = incident.createdBy?._id || incident.createdBy;
+  const isOwner = Boolean(user && creatorId && user.id === creatorId.toString());
 
   // Si la incidencia está en estado 'en_revision' o 'rechazada', solo el autor o un admin/moderador pueden verla.
   if (['en_revision', 'rechazada'].includes(incident.status) && !isOwner && !isPrivileged) {
@@ -249,10 +288,10 @@ async function getIncidentById(
     : false;
 
   const { votesCount, ...incidentData } = incident;
-  return {
+  return presentIncident({
     ...incidentData,
     ...(votingEnabled && { votesCount, hasVoted }),
-  };
+  }, user);
 }
 
 /**
@@ -275,24 +314,9 @@ async function updateStatus(
   const isModerator = requestingUser?.role === 'moderator';
 
   if (isModerator) {
-    // Si la incidencia está en 'en_revision', el moderador solo puede cambiarla a 'pendiente' o 'rechazada'
-    if (existing.status === 'en_revision') {
-      if (!['pendiente', 'rechazada'].includes(status)) {
-        throw new ServiceError(
-          'Los moderadores solo pueden cambiar el estado de incidencias En Revisión a Pendiente o Rechazada',
-          403
-        );
-      }
-    } else if (existing.status === 'pendiente') {
-      if (!['en_revision', 'rechazada'].includes(status)) {
-        throw new ServiceError(
-          'Los moderadores solo pueden cambiar incidencias Pendientes a En Revisión o Rechazada',
-          403
-        );
-      }
-    } else {
+    if (existing.status !== 'en_revision' || !['pendiente', 'rechazada'].includes(status)) {
       throw new ServiceError(
-        'Los moderadores solo pueden moderar incidencias en revisión o pendientes',
+        'Los moderadores solo pueden decidir si una incidencia en revisión queda pendiente o se rechaza',
         403
       );
     }
@@ -305,12 +329,64 @@ async function updateStatus(
 }
 
 /**
+ * Actualiza el contenido de una incidencia. Solo los administradores pueden hacerlo.
+ */
+async function updateIncident(incidentId, updates, files = [], requestingUser) {
+  if (requestingUser?.role !== 'admin') {
+    throw new ServiceError('Solo los administradores pueden editar incidencias', 403);
+  }
+
+  const incident = await Incident.findById(incidentId);
+
+  if (!incident) {
+    throw new ServiceError('Incidencia no encontrada', 404);
+  }
+
+  if (incident.images.length + files.length > 5) {
+    throw new ServiceError('Cada incidencia puede tener como máximo 5 fotos', 400);
+  }
+
+  if (updates.title !== undefined) incident.title = updates.title;
+  if (updates.description !== undefined) incident.description = updates.description;
+  if (updates.category !== undefined) incident.category = updates.category;
+  if (updates.address !== undefined) incident.location.address = updates.address || null;
+
+  const newImages = files.length
+    ? await uploadService.uploadIncidentImages(files)
+    : [];
+
+  try {
+    incident.images.push(...newImages);
+    await incident.save();
+  } catch (error) {
+    await cleanupUploadedImages(
+      newImages,
+      error,
+      'No se pudo guardar la incidencia ni limpiar las imágenes nuevas'
+    );
+    throw error;
+  }
+
+  const updated = await Incident.findById(incidentId)
+    .populate('createdBy', 'name avatarUrl')
+    .lean();
+  return presentIncident(updated, requestingUser);
+}
+
+/**
  * Elimina una incidencia.
  */
 async function deleteIncident(
   incidentId,
   requestingUser
 ) {
+  if (requestingUser.role === 'moderator') {
+    throw new ServiceError(
+      'Los moderadores no pueden borrar incidencias',
+      403
+    );
+  }
+
   const incident =
     await Incident.findById(incidentId);
 
@@ -325,10 +401,7 @@ async function deleteIncident(
     incident.createdBy.toString() ===
     requestingUser.id;
 
-  const isPrivileged =
-    ['admin', 'moderator'].includes(
-      requestingUser.role
-    );
+  const isPrivileged = requestingUser.role === 'admin';
 
   if (!isOwner && !isPrivileged) {
     throw new ServiceError(
@@ -385,7 +458,7 @@ async function deleteIncident(
 /**
  * Obtiene las incidencias a las que un usuario ha votado.
  */
-async function listVotedIncidents({ userId, page = 1, limit = 20 }) {
+async function listVotedIncidents({ userId, user, page = 1, limit = 20 }) {
   await appSettingsService.requireVotingEnabled();
   const skip = (page - 1) * limit;
 
@@ -420,10 +493,10 @@ async function listVotedIncidents({ userId, page = 1, limit = 20 }) {
   const orderedItems = incidentIds
     .map((id) => itemsMap.get(id.toString()))
     .filter(Boolean)
-    .map((incident) => ({
+    .map((incident) => presentIncident({
       ...incident,
       hasVoted: true,
-    }));
+    }, user));
 
   return {
     items: orderedItems,
@@ -441,6 +514,7 @@ export default {
   listIncidents,
   getIncidentById,
   updateStatus,
+  updateIncident,
   deleteIncident,
   listVotedIncidents,
 };

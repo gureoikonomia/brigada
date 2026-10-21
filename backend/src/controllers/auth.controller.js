@@ -76,6 +76,26 @@ async function updateProfile(req, res, next) {
 }
 
 /**
+ * PATCH /api/auth/me/avatar
+ * multipart/form-data: avatar
+ */
+async function updateAvatar(req, res, next) {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'Selecciona una imagen de perfil' });
+    }
+
+    const updated = await authService.updateAvatar(req.user.id, req.file);
+    return res.status(200).json(updated);
+  } catch (err) {
+    if (err.statusCode) {
+      return res.status(err.statusCode).json({ message: err.message });
+    }
+    return next(err);
+  }
+}
+
+/**
  * PATCH /api/auth/me/password
  * body: { currentPassword, newPassword }
  */
@@ -97,5 +117,6 @@ export default {
   login,
   me,
   updateProfile,
+  updateAvatar,
   changePassword,
 };

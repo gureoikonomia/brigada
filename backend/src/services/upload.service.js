@@ -8,16 +8,17 @@ cloudinary.config({
 });
 
 const FOLDER = 'incidents';
+const AVATAR_FOLDER = 'avatars';
 
 /**
  * Sube un único buffer (el que llega de multer en memoria) a Cloudinary
  * usando un stream, sin escribir nada a disco.
  */
-function uploadBuffer(buffer) {
+function uploadBuffer(buffer, folder) {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
-        folder: FOLDER,
+        folder,
         resource_type: 'image',
         // limitamos el tamaño máximo de salida para no guardar imágenes gigantes
         transformation: [{ width: 1600, height: 1600, crop: 'limit', quality: 'auto' }],
@@ -40,8 +41,35 @@ function uploadBuffer(buffer) {
 async function uploadIncidentImages(files = []) {
   if (!files.length) return [];
 
-  const uploads = files.map((file) => uploadBuffer(file.buffer));
-  return Promise.all(uploads);
+  const results = await Promise.allSettled(
+    files.map((file) => uploadBuffer(file.buffer, FOLDER))
+  );
+  const uploadedImages = results
+    .filter((result) => result.status === 'fulfilled')
+    .map((result) => result.value);
+  const uploadErrors = results
+    .filter((result) => result.status === 'rejected')
+    .map((result) => result.reason);
+
+  if (uploadErrors.length) {
+    try {
+      await deleteImages(uploadedImages.map((image) => image.publicId));
+    } catch (cleanupError) {
+      throw new AggregateError(
+        [...uploadErrors, cleanupError],
+        'No se pudieron subir ni limpiar todas las imágenes'
+      );
+    }
+
+    if (uploadErrors.length === 1) throw uploadErrors[0];
+    throw new AggregateError(uploadErrors, 'No se pudieron subir todas las imágenes');
+  }
+
+  return uploadedImages;
+}
+
+async function uploadAvatar(file) {
+  return uploadBuffer(file.buffer, AVATAR_FOLDER);
 }
 
 /**
@@ -62,6 +90,7 @@ async function deleteImages(publicIds = []) {
 
 export default {
   uploadIncidentImages,
+  uploadAvatar,
   deleteImage,
   deleteImages,
 };

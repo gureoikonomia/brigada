@@ -4,12 +4,16 @@
   @apply max-w-4xl mx-auto px-4 py-8;
 }
 
+.embedded {
+  @apply max-w-none px-0 py-0;
+}
+
 .header {
   @apply mb-6;
 }
 
 .title {
-  @apply font-display font-extrabold text-3xl text-petrol mb-1;
+  @apply font-display font-bold text-3xl text-ink mb-1;
 }
 
 .subtitle {
@@ -17,11 +21,11 @@
 }
 
 .tabsRow {
-  @apply flex flex-wrap gap-1 mb-4 font-mono text-xs border-b border-line;
+  @apply flex flex-wrap gap-1 mb-4 text-sm border-b border-line;
 }
 
 .tabBtn {
-  @apply px-3 py-2 uppercase tracking-wide border-b-2 -mb-px transition-colors;
+  @apply min-h-11 px-4 py-2 font-semibold border-b-2 -mb-px transition-colors;
 }
 
 .tabActive {
@@ -30,14 +34,6 @@
 
 .tabInactive {
   @apply border-transparent text-ink/50 hover:text-ink;
-}
-
-.tabAdminActive {
-  @apply border-amber-200 text-amber-800 font-bold bg-amber-50;
-}
-
-.tabAdminInactive {
-  @apply border-transparent text-amber-800 hover:text-amber-900;
 }
 
 .loadingText {
@@ -58,7 +54,7 @@
 
 .listPanel {
   @apply max-h-[65vh] pr-2 border border-line bg-white/60 p-3;
-  border-radius: 20px;
+  border-radius: 16px;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--color-line) transparent;

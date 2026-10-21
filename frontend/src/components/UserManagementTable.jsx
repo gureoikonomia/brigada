@@ -100,7 +100,7 @@ export default function UserManagementTable() {
       <div className={styles.headerRow}>
         <div>
           <h2 className={styles.title}>{t('admin.manageUsers')}</h2>
-          <p className={styles.subTitle}>Total registrados: {pagination.total}</p>
+          <p className={styles.subTitle}>{t('admin.usersCount', { count: pagination.total })}</p>
         </div>
 
         {/* Filtro y Búsqueda */}
@@ -109,12 +109,13 @@ export default function UserManagementTable() {
             <input
               type="text"
               placeholder={t('admin.searchPlaceholder')}
+              aria-label={t('admin.searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className={styles.searchInput}
             />
             <button type="submit" className={styles.searchBtn}>
-              Buscar
+              {t('admin.search')}
             </button>
           </form>
 
@@ -122,8 +123,9 @@ export default function UserManagementTable() {
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
             className={styles.roleSelectFilter}
+            aria-label={t('admin.filterByRole')}
           >
-            <option value="">Todos los roles</option>
+            <option value="">{t('admin.allRoles')}</option>
             <option value="user">{t('role.user')}</option>
             <option value="moderator">{t('role.moderator')}</option>
             <option value="admin">{t('role.admin')}</option>
@@ -147,7 +149,7 @@ export default function UserManagementTable() {
 
       {!loading && users.length === 0 && (
         <div className={styles.emptyState}>
-          <p className={styles.emptyText}>No se encontraron usuarios.</p>
+          <p className={styles.emptyText}>{t('admin.noUsers')}</p>
         </div>
       )}
 
@@ -156,11 +158,11 @@ export default function UserManagementTable() {
           <table className={styles.table}>
             <thead>
               <tr className={styles.tableHeaderRow}>
-                <th className={styles.thCell}>Usuario</th>
-                <th className={styles.thCell}>Email</th>
-                <th className={styles.thCell}>Rol</th>
-                <th className={styles.thCell}>Estado</th>
-                <th className={styles.thCellRight}>Acciones</th>
+                <th className={styles.thCell}>{t('admin.userColumn')}</th>
+                <th className={styles.thCell}>{t('admin.emailColumn')}</th>
+                <th className={styles.thCell}>{t('admin.roleColumn')}</th>
+                <th className={styles.thCell}>{t('admin.statusColumn')}</th>
+                <th className={styles.thCellRight}>{t('admin.actionsColumn')}</th>
               </tr>
             </thead>
             <tbody className={styles.tbody}>
@@ -188,7 +190,7 @@ export default function UserManagementTable() {
                           <span className={styles.userName}>{u.name}</span>
                           {isSelf && (
                             <span className={styles.selfLabel}>
-                              (Tú)
+                              {t('admin.you')}
                             </span>
                           )}
                         </div>
