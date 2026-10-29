@@ -80,7 +80,9 @@ export default function ResetPasswordPage() {
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div>
-            <label className={styles.label}>{t('resetPassword.newPasswordLabel')}</label>
+            <label htmlFor="reset-new-password" className={styles.label}>
+              {t('resetPassword.newPasswordLabel')}
+            </label>
             <input
               id="reset-new-password"
               type="password"
@@ -95,7 +97,9 @@ export default function ResetPasswordPage() {
           </div>
 
           <div>
-            <label className={styles.label}>{t('resetPassword.confirmPasswordLabel')}</label>
+            <label htmlFor="reset-confirm-password" className={styles.label}>
+              {t('resetPassword.confirmPasswordLabel')}
+            </label>
             <input
               id="reset-confirm-password"
               type="password"
@@ -108,7 +112,7 @@ export default function ResetPasswordPage() {
             />
           </div>
 
-          {error && <p className={styles.errorBox}>{error}</p>}
+          {error && <p className={styles.errorBox} role="alert">{error}</p>}
 
           <button
             id="reset-submit"

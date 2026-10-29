@@ -27,6 +27,23 @@ const userSchema = new mongoose.Schema(
       enum: ['user', 'moderator', 'admin'],
       default: 'user',
     },
+    tokenVersion: {
+      type: Number,
+      default: 0,
+      select: false,
+    },
+    emailVerified: {
+      type: Boolean,
+      default: true,
+    },
+    privacyNoticeAcknowledgedAt: {
+      type: Date,
+      default: null,
+    },
+    privacyNoticeVersion: {
+      type: String,
+      default: null,
+    },
     avatarUrl: {
       type: String,
       default: null,

@@ -9,7 +9,11 @@ import {
   attachUserIfPresent,
 } from '../middlewares/auth.middleware.js';
 
-import { handleUploadErrors } from '../middlewares/upload.middleware.js';
+import {
+  handleUploadErrors,
+  validateImageContent,
+} from '../middlewares/upload.middleware.js';
+import { uploadLimiter } from '../middlewares/rate-limiters.js';
 
 import { validate } from '../middlewares/validate.middleware.js';
 
@@ -19,6 +23,7 @@ import {
   updateStatusSchema,
   listIncidentsQuerySchema,
   mongoIdParamSchema,
+  listVotedIncidentsQuerySchema,
 } from '../validators/incident.validator.js';
 
 const router = express.Router();
@@ -41,6 +46,7 @@ router.get(
 router.get(
   '/user/voted',
   protect,
+  validate(listVotedIncidentsQuerySchema, 'query'),
   incidentController.listVoted
 );
 
@@ -64,7 +70,9 @@ router.get(
 router.post(
   '/',
   protect,
+  uploadLimiter,
   handleUploadErrors,
+  validateImageContent,
   validate(createIncidentSchema),
   incidentController.create
 );
@@ -82,7 +90,9 @@ router.patch(
   '/:id',
   protect,
   restrictTo('admin'),
+  uploadLimiter,
   handleUploadErrors,
+  validateImageContent,
   validate(mongoIdParamSchema, 'params'),
   validate(updateIncidentSchema),
   incidentController.update

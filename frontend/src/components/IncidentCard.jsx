@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import useAppSettings from '../hooks/useAppSettings';
 import StatusBadge from './StatusBadge';
 import VoteButton from './VoteButton';
+import { getCloudinaryImageUrl } from '../services/media';
 import styles from './IncidentCard.module.css';
 
 function formatDate(iso, locale) {
@@ -15,29 +16,43 @@ export default function IncidentCard({ incident }) {
   const thumbnail = incident.images?.[0]?.url;
 
   return (
-    <Link
-      to={`/incidencias/${incident._id}`}
-      className={`group ${styles.cardLink}`}
-    >
+    <article className={styles.cardLink}>
       <div className={styles.cardContainer}>
-        {thumbnail ? (
-          <img src={thumbnail} alt="" className={styles.thumbnailImage} />
-        ) : (
-          <div className={styles.noPhotoBox}>
-            {t('incidentCard.noPhoto')}
-          </div>
-        )}
+        <Link
+          to={`/incidencias/${incident._id}`}
+          className={styles.mediaLink}
+          aria-label={t('incidentCard.photoAlt', { title: incident.title })}
+        >
+          {thumbnail ? (
+            <img
+              src={getCloudinaryImageUrl(thumbnail, 480)}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className={styles.thumbnailImage}
+            />
+          ) : (
+            <span className={styles.noPhotoBox}>
+              {t('incidentCard.noPhoto')}
+            </span>
+          )}
+        </Link>
 
         <div className={styles.cardContent}>
-          <div className={styles.mainContent}>
-            <div className={styles.titleRow}>
-              <h3 className={styles.cardTitle}>{incident.title}</h3>
-              <StatusBadge status={incident.status} />
+          <Link
+            to={`/incidencias/${incident._id}`}
+            className={`group ${styles.cardMain}`}
+          >
+            <div className={styles.mainContent}>
+              <div className={styles.titleRow}>
+                <h3 className={styles.cardTitle}>{incident.title}</h3>
+                <StatusBadge status={incident.status} />
+              </div>
+              {incident.location?.address && (
+                <p className={styles.cardAddress}>{incident.location.address}</p>
+              )}
             </div>
-            {incident.location?.address && (
-              <p className={styles.cardAddress}>{incident.location.address}</p>
-            )}
-          </div>
+          </Link>
 
           <div className={styles.footerRow}>
             <div className={styles.footerMeta}>
@@ -58,6 +73,6 @@ export default function IncidentCard({ incident }) {
           </div>
         </div>
       </div>
-    </Link>
+    </article>
   );
 }

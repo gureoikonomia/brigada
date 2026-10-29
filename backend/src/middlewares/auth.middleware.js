@@ -1,5 +1,11 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/user.model.js';
+import { isSessionActive } from '../services/session.service.js';
+import { SESSION_COOKIE_NAME, sessionVersionMatches } from '../utils/security.js';
+
+function getSessionToken(req) {
+  return req.cookies?.[SESSION_COOKIE_NAME];
+}
 
 /**
  * Protege una ruta: exige un JWT válido en el header Authorization.
@@ -10,13 +16,8 @@ import User from '../models/user.model.js';
  */
 export async function protect(req, res, next) {
   try {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ message: 'No autenticado: falta el token' });
-    }
-
-    const token = authHeader.split(' ')[1];
+    const token = getSessionToken(req);
+    if (!token) return res.status(401).json({ message: 'No autenticado' });
 
     let decoded;
     try {
@@ -29,8 +30,16 @@ export async function protect(req, res, next) {
 
     // Comprobamos que el usuario todavía existe y está activo
     // (por si se borró la cuenta o se desactivó después de emitir el token)
-    const user = await User.findById(decoded.id).select('_id role isActive');
-    if (!user || !user.isActive) {
+    const [user, activeSession] = await Promise.all([
+      User.findById(decoded.id).select('_id role isActive +tokenVersion'),
+      isSessionActive(decoded),
+    ]);
+    if (
+      !user ||
+      !user.isActive ||
+      !activeSession ||
+      !sessionVersionMatches(decoded.tokenVersion, user.tokenVersion || 0)
+    ) {
       return res.status(401).json({ message: 'Usuario no válido o inactivo' });
     }
 
@@ -62,12 +71,8 @@ export function restrictTo(...roles) {
  */
 export async function attachUserIfPresent(req, res, next) {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return next();
-    }
-
-    const token = authHeader.split(' ')[1];
+    const token = getSessionToken(req);
+    if (!token) return next();
 
     let decoded;
     try {
@@ -76,8 +81,16 @@ export async function attachUserIfPresent(req, res, next) {
       return next(); // token inválido/expirado -> seguimos como anónimo, sin romper la petición
     }
 
-    const user = await User.findById(decoded.id).select('_id role isActive');
-    if (user && user.isActive) {
+    const [user, activeSession] = await Promise.all([
+      User.findById(decoded.id).select('_id role isActive +tokenVersion'),
+      isSessionActive(decoded),
+    ]);
+    if (
+      user &&
+      user.isActive &&
+      activeSession &&
+      sessionVersionMatches(decoded.tokenVersion, user.tokenVersion || 0)
+    ) {
       req.user = { id: user._id.toString(), role: user.role };
     }
     return next();

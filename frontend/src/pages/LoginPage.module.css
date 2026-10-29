@@ -27,11 +27,15 @@
 }
 
 .input {
-  @apply w-full border border-line bg-paper px-3 py-3 focus:border-petrol outline-none;
+  @apply w-full border border-line bg-paper px-3 py-3 focus:border-petrol;
 }
 
 .errorBox {
   @apply text-warn text-sm font-mono border border-warn bg-warn-soft px-3 py-2;
+}
+
+.infoBox {
+  @apply mb-4 border border-petrol bg-concrete px-3 py-2 text-sm text-ink;
 }
 
 .submitBtn {

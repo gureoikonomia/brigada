@@ -28,6 +28,9 @@
     "saving": "GORDETZEN…",
     "cancel": "Utzi"
   },
+  "auth": {
+    "sessionCheckFailed": "Ezin izan da saioa egiaztatu konexio-arazo baten ondorioz. Gordetako saioa mantendu da; saiatu berriro."
+  },
   "category": {
     "infraestructura": "Azpiegitura",
     "seguridad": "Segurtasuna",
@@ -54,7 +57,8 @@
     "voted": "Babestuta"
   },
   "incidentCard": {
-    "noPhoto": "Argazkirik ez"
+    "noPhoto": "Argazkirik ez",
+    "photoAlt": "Gertakariaren argazkia: {{title}}"
   },
   "incidentList": {
     "title": "Herriko gertakariak",
@@ -96,7 +100,8 @@
     "newPhotosSelected": "Hautatutako argazki berriak: {{count}}",
     "editImagesLimit": "Gertakari bakoitzak gehienez 5 argazki izan ditzake.",
     "editImagesInvalid": "Aukeratu JPG, PNG edo WEBP formatuko argazkiak (gehienez 5 MB bakoitza).",
-    "viewPhoto": "{{total}} argazkietatik {{n}}. argazkia ikusi"
+    "viewPhoto": "{{total}} argazkietatik {{n}}. argazkia ikusi",
+    "photoAlt": "Gertakariaren argazkia, {{n}}. irudia"
   },
   "createIncident": {
     "title": "Gertakari berria",
@@ -133,6 +138,8 @@
     "submit": "Saioa hasi",
     "submitting": "Saioa hasten…",
     "error": "Ezin izan da saioa hasi.",
+    "passwordChanged": "Pasahitza eguneratu da. Hasi saioa berriro.",
+    "accountDeleted": "Zure kontua eta haren datuak ezabatu dira.",
     "noAccount": "Ez duzu konturik?",
     "registerLink": "Eman izena",
     "forgotPassword": "Pasahitza ahaztu duzu?"
@@ -176,8 +183,24 @@
     "submit": "Kontua sortu",
     "submitting": "Kontua sortzen…",
     "error": "Ezin izan da kontua sortu",
+    "verificationSent": "Helbide horrekin erregistroa osatu ahal bada, egiaztatzeko argibideak jasoko dituzu. Begiratu spam karpeta ere.",
+    "resendVerification": "Egiaztatzeko argibideak berriro bidali",
+    "resendingVerification": "Bidaltzen…",
+    "verificationResent": "Kontuak helbide elektronikoa egiaztatu behar badu, argibideak jasoko dituzu.",
+    "privacyNoticeLink": "pribatutasun-oharra",
+    "privacyNoticeAcknowledgement": "Indarrean dagoen pribatutasun-oharra irakurri dudala baieztatzen dut.",
+    "privacyNoticeUnavailable": "Erregistroa ez dago erabilgarri pribatutasun-oharra konfiguratu arte.",
     "hasAccount": "Kontua baduzu?",
     "loginLink": "Hasi saioa hemen"
+  },
+  "verifyEmail": {
+    "title": "Helbide elektronikoa egiaztatzea",
+    "loading": "Esteka egiaztatzen…",
+    "verify": "Helbide elektronikoa egiaztatu",
+    "success": "Helbide elektronikoa egiaztatu da. Orain saioa has dezakezu.",
+    "emailChangedSuccess": "Helbide elektronikoa eguneratu da. Hasi saioa berriro helbide berriarekin.",
+    "error": "Esteka ez da baliozkoa edo iraungi egin da. Eskatu beste bat erregistro-orritik.",
+    "login": "Saioa hasteko orrira joan"
   },
   "profile": {
     "yourIncidents": "Nire gertakariak",
@@ -202,6 +225,16 @@
     "avatarUploadError": "Ezin izan da profileko argazkia eguneratu.",
     "avatarInvalidType": "Aukeratu JPG, PNG edo WEBP formatuko irudi bat.",
     "avatarTooLarge": "Irudiak ezin du 5 MB baino gehiago izan.",
+    "logoutError": "Ezin izan da saioa zerbitzarian itxi. Egiaztatu konexioa eta saiatu berriro.",
+    "deleteAccountTitle": "Kontua eta datuak ezabatu",
+    "deleteAccountDescription": "Zure kontua, gertakariak, argazkiak eta botoak ezabatuko dira. Ekintza hau ezin da desegin.",
+    "deleteAccountPassword": "Uneko pasahitza",
+    "deleteAccountConfirm": "Kontua eta datuak behin betiko ezabatu",
+    "deleteAccountSubmit": "Nire kontua ezabatu",
+    "deletingAccount": "Ezabatzen…",
+    "deleteAccountSuccess": "Kontua behar bezala ezabatu da.",
+    "deleteAccountError": "Ezin izan da ezabatzea osatu. Zure kontuak erabilgarri jarraitzen du; saiatu berriro.",
+    "deleteAccountMediaPending": "Kontua ezabatu da. Argazki batzuk ezabatzeko daude, eta sistema berriro saiatuko da.",
     "verified": "Egiaztatutako erabiltzailea",
     "avatarUrlLabel": "Profileko argazkiaren URLa / avatarra"
   },
@@ -271,6 +304,12 @@
     "accountData": "Kontuko datuak",
     "nameLabel": "Izena",
     "emailLabel": "Helbide elektronikoa",
+    "changeEmail": "Helbide elektronikoa aldatu",
+    "emailChangeDescription": "Uneko helbideak aktibo jarraituko du helbide berrira bidalitako estekaren bidez aldaketa baieztatu arte.",
+    "requestEmailChange": "BAIEZTAPEN-ESTEKA BIDALI",
+    "emailChangeSubmitting": "BIDALTZEN…",
+    "emailChangeRequested": "Helbidea erabil badaiteke, aldaketa baieztatzeko esteka jasoko duzu.",
+    "emailChangeError": "Ezin izan da helbide elektronikoa aldatzeko eskaera bidali.",
     "saveData": "Gorde datuak",
     "saveSuccess": "Aldaketak gorde dira.",
     "saveError": "Ezin izan dira aldaketak gorde.",

@@ -21,11 +21,11 @@
 }
 
 .textInput {
-  @apply w-full border border-line bg-paper px-3 py-3 focus:border-petrol outline-none;
+  @apply w-full border border-line bg-paper px-3 py-3 focus:border-petrol;
 }
 
 .textarea {
-  @apply w-full border border-line bg-paper px-3 py-3 focus:border-petrol outline-none resize-none;
+  @apply w-full border border-line bg-paper px-3 py-3 focus:border-petrol resize-none;
 }
 
 .selectInput {
@@ -49,11 +49,11 @@
 }
 
 .coordInput {
-  @apply border border-line bg-paper px-3 py-2 focus:border-petrol outline-none font-mono text-sm;
+  @apply border border-line bg-paper px-3 py-2 focus:border-petrol font-mono text-sm;
 }
 
 .addressInput {
-  @apply w-full min-w-0 border border-line bg-paper px-3 py-3 focus:border-petrol outline-none;
+  @apply w-full min-w-0 border border-line bg-paper px-3 py-3 focus:border-petrol;
 }
 
 .searchAddressBtn {

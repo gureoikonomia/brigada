@@ -28,3 +28,17 @@ export async function sendPasswordChangedNotification(email) {
     });
     if (error) throw error;
 }
+
+export async function sendVerificationEmail(email, verificationLink, emailChange = false) {
+    if (!resend) throw new Error('RESEND_API_KEY no está configurada');
+
+    const { error } = await resend.emails.send({
+        from: sender,
+        to: email,
+        subject: emailChange ? 'Confirma tu nuevo correo electrónico' : 'Verifica tu correo electrónico',
+        html: emailChange
+            ? `<p>Confirma el cambio de correo de tu cuenta: <a href="${verificationLink}">confirmar nuevo correo</a>.</p><p>El enlace caduca en 24 horas. Si no solicitaste este cambio, ignora el mensaje.</p>`
+            : `<p>Confirma tu correo para activar tu cuenta: <a href="${verificationLink}">verificar correo</a>.</p><p>El enlace caduca en 24 horas.</p>`,
+    });
+    if (error) throw error;
+}

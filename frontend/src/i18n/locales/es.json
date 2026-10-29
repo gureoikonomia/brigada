@@ -28,6 +28,9 @@
     "saving": "GUARDANDO…",
     "cancel": "Cancelar"
   },
+  "auth": {
+    "sessionCheckFailed": "No se pudo comprobar tu sesión por un problema de conexión. Se conserva la sesión guardada; inténtalo de nuevo."
+  },
   "category": {
     "infraestructura": "Infraestructura",
     "seguridad": "Seguridad",
@@ -54,7 +57,8 @@
     "voted": "Apoyada"
   },
   "incidentCard": {
-    "noPhoto": "Sin foto"
+    "noPhoto": "Sin foto",
+    "photoAlt": "Foto de la incidencia: {{title}}"
   },
   "incidentList": {
     "title": "Incidencias del pueblo",
@@ -96,7 +100,8 @@
     "newPhotosSelected": "Fotos nuevas seleccionadas: {{count}}",
     "editImagesLimit": "No puedes tener más de 5 fotos por incidencia.",
     "editImagesInvalid": "Elige fotos JPG, PNG o WEBP de hasta 5 MB cada una.",
-    "viewPhoto": "Ver foto {{n}} de {{total}}"
+    "viewPhoto": "Ver foto {{n}} de {{total}}",
+    "photoAlt": "Foto de la incidencia, imagen {{n}}"
   },
   "createIncident": {
     "title": "Nueva incidencia",
@@ -133,6 +138,8 @@
     "submit": "Entrar",
     "submitting": "Entrando…",
     "error": "No se pudo iniciar sesión",
+    "passwordChanged": "La contraseña se ha actualizado. Inicia sesión de nuevo.",
+    "accountDeleted": "Tu cuenta y sus datos se han eliminado.",
     "noAccount": "¿No tienes cuenta?",
     "registerLink": "Regístrate",
     "forgotPassword": "¿Has olvidado tu contraseña?"
@@ -176,8 +183,24 @@
     "submit": "Crear cuenta",
     "submitting": "Creando cuenta…",
     "error": "No se pudo crear la cuenta",
+    "verificationSent": "Si podemos completar el registro con ese correo, recibirás instrucciones para verificarlo. Revisa también el correo no deseado.",
+    "resendVerification": "Reenviar instrucciones de verificación",
+    "resendingVerification": "Enviando…",
+    "verificationResent": "Si la cuenta necesita verificar el correo, recibirás instrucciones.",
+    "privacyNoticeLink": "aviso de privacidad",
+    "privacyNoticeAcknowledgement": "Confirmo que he leído el aviso de privacidad vigente.",
+    "privacyNoticeUnavailable": "El registro no está disponible hasta que se configure el aviso de privacidad.",
     "hasAccount": "¿Ya tienes cuenta?",
     "loginLink": "Entra aquí"
+  },
+  "verifyEmail": {
+    "title": "Verificación del correo",
+    "loading": "Verificando el enlace…",
+    "verify": "Verificar correo",
+    "success": "Correo verificado. Ya puedes iniciar sesión.",
+    "emailChangedSuccess": "Correo actualizado. Vuelve a iniciar sesión con tu nueva dirección.",
+    "error": "El enlace no es válido o ha caducado. Solicita otro desde el registro.",
+    "login": "Ir a iniciar sesión"
   },
   "profile": {
     "yourIncidents": "Mis incidencias",
@@ -202,6 +225,16 @@
     "avatarUploadError": "No se pudo actualizar la foto de perfil.",
     "avatarInvalidType": "Elige una imagen JPG, PNG o WEBP.",
     "avatarTooLarge": "La imagen no puede pesar más de 5 MB.",
+    "logoutError": "No se pudo cerrar la sesión con el servidor. Comprueba la conexión e inténtalo de nuevo.",
+    "deleteAccountTitle": "Eliminar cuenta y datos",
+    "deleteAccountDescription": "Se borrarán tu cuenta, incidencias, fotos y votos. Esta acción no se puede deshacer.",
+    "deleteAccountPassword": "Contraseña actual",
+    "deleteAccountConfirm": "Eliminar permanentemente la cuenta y sus datos",
+    "deleteAccountSubmit": "Eliminar mi cuenta",
+    "deletingAccount": "Eliminando…",
+    "deleteAccountSuccess": "La cuenta se eliminó correctamente.",
+    "deleteAccountError": "No se pudo completar la eliminación. Tu cuenta sigue disponible; inténtalo de nuevo.",
+    "deleteAccountMediaPending": "La cuenta se eliminó. Algunas fotos están pendientes de borrado y el sistema lo reintentará.",
     "verified": "Usuario Verificado",
     "avatarUrlLabel": "URL de Foto de Perfil / Avatar"
   },
@@ -271,6 +304,12 @@
     "accountData": "Datos de la cuenta",
     "nameLabel": "Nombre",
     "emailLabel": "Email",
+    "changeEmail": "Cambiar correo electrónico",
+    "emailChangeDescription": "El correo actual seguirá activo hasta que confirmes el cambio desde el enlace enviado a la nueva dirección.",
+    "requestEmailChange": "ENVIAR ENLACE DE CONFIRMACIÓN",
+    "emailChangeSubmitting": "ENVIANDO…",
+    "emailChangeRequested": "Si la dirección puede usarse, recibirás un enlace para confirmar el cambio.",
+    "emailChangeError": "No se pudo solicitar el cambio de correo.",
     "saveData": "GUARDAR DATOS",
     "saveSuccess": "Cambios guardados correctamente.",
     "saveError": "No se pudieron guardar los cambios",

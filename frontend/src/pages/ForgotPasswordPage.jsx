@@ -49,7 +49,9 @@ export default function ForgotPasswordPage() {
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div>
-            <label className={styles.label}>{t('forgotPassword.emailLabel')}</label>
+            <label htmlFor="forgot-email" className={styles.label}>
+              {t('forgotPassword.emailLabel')}
+            </label>
             <input
               id="forgot-email"
               type="email"
@@ -62,7 +64,7 @@ export default function ForgotPasswordPage() {
             />
           </div>
 
-          {error && <p className={styles.errorBox}>{error}</p>}
+          {error && <p className={styles.errorBox} role="alert">{error}</p>}
 
           <button
             id="forgot-submit"

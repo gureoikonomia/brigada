@@ -13,6 +13,12 @@
   @apply max-w-2xl mx-auto px-4 py-10 text-base text-ink/80;
 }
 
+.sessionNotice {
+  @apply mx-auto mt-3 max-w-2xl rounded-lg px-4 py-3;
+  background: var(--color-warn-soft);
+  color: var(--color-warn);
+}
+
 @media (max-width: 767px) {
   .mainContent {
     padding-bottom: calc(76px + env(safe-area-inset-bottom));

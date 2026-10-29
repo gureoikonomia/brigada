@@ -201,7 +201,11 @@
 }
 
 .formInput {
-  @apply w-full border border-line bg-white px-3 py-2 text-base focus:border-petrol outline-none;
+  @apply w-full border border-line bg-white px-3 py-2 text-base focus:border-petrol;
+}
+
+.emailChangeDescription {
+  @apply mb-4 text-sm text-ink/70;
 }
 
 .formError {
@@ -218,4 +222,21 @@
 
 .savePasswordBtn {
   @apply bg-action text-action-ink font-semibold px-4 py-2 hover:bg-action-hover disabled:opacity-60 transition-colors w-full;
+}
+
+.dangerSection {
+  border-color: var(--color-warn);
+}
+
+.deleteAccountDescription {
+  @apply mb-4 text-sm text-ink/70;
+}
+
+.deleteAccountButton {
+  @apply min-h-11 w-full px-4 py-2 font-semibold text-white transition-colors disabled:opacity-60;
+  background-color: #8A3929;
+}
+
+.deleteAccountButton:hover:not(:disabled) {
+  filter: brightness(0.9);
 }

@@ -110,6 +110,7 @@ export const listIncidentsQuerySchema = z.object({
     .coerce
     .number()
     .positive('maxDistanceMeters debe ser positivo')
+    .max(50_000, 'maxDistanceMeters no puede superar los 50 km')
     .optional(),
 
   page: z
@@ -117,6 +118,7 @@ export const listIncidentsQuerySchema = z.object({
     .number()
     .int()
     .positive()
+    .max(1_000)
     .optional()
     .default(1),
 
@@ -133,6 +135,11 @@ export const listIncidentsQuerySchema = z.object({
     .enum(['recent', 'popular'])
     .optional()
     .default('recent'),
+});
+
+export const listVotedIncidentsQuerySchema = z.object({
+  page: z.coerce.number().int().positive().max(1_000).default(1),
+  limit: z.coerce.number().int().positive().max(100).default(20),
 });
 
 // GET /api/incidents/:id

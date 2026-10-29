@@ -1,32 +1,36 @@
-# React + Vite
+# Frontend
 
-## Environment variables
+## Variables de entorno
 
-For local development, keep `VITE_API_URL=http://localhost:3000/api` in the
-ignored `frontend/.env` file.
-
-For the Render frontend service, create this environment variable in the
-Render dashboard before building:
+Configura `VITE_API_URL` como la URL pública HTTPS del backend terminada en `/api`. El build de producción rechaza localhost o URLs HTTP.
+Por ejemplo, en el entorno local:
 
 ```env
-VITE_API_URL=https://brigada-8msp.onrender.com/api
+VITE_API_URL=http://localhost:3000/api
 ```
 
-Vite embeds `VITE_*` variables into the browser bundle at build time. They
-must not contain secrets. The backend URL is public; database credentials,
-JWT secrets, and email API keys belong only in the backend Render service.
+En Netlify, añade la URL HTTPS del backend en las variables de entorno de
+producción y vuelve a desplegar. Vite incluye los valores `VITE_*` en el bundle:
+no pongas secretos en ellos.
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+## Despliegue en Netlify
 
-Currently, two official plugins are available:
+- Publica el directorio `dist` generado por `npm run build`.
+- Conserva `public/_redirects` para que las rutas de React Router carguen al
+  abrirse directamente o al recargar la página.
+- Revisa `public/_headers`: la CSP debe permitir el dominio real de la API,
+  Cloudinary y los proveedores de mapas que utilice el sitio.
+- Configura `VITE_API_URL` y el origen del sitio en `CORS_ORIGINS` del backend.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+La sesión usa cookies `HttpOnly` y CSRF. Si frontend y API están en dominios
+distintos, las cookies dependen del soporte de cookies cross-site del navegador.
+Antes de publicar, prueba registro, login, recarga y logout con las protecciones
+de privacidad habituales; si el navegador bloquea las cookies, usa subdominios
+del mismo dominio registrable para el frontend y la API.
 
-## React Compiler
+## Comprobaciones
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```powershell
+npm run lint
+npm run build
+```

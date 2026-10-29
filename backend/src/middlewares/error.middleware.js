@@ -4,7 +4,7 @@
  */
 export function notFound(req, res, next) {
   res.status(404).json({
-    message: `Ruta no encontrada: ${req.method} ${req.originalUrl}`,
+    message: 'Ruta no encontrada',
   });
 }
 
@@ -17,7 +17,11 @@ export function errorHandler(
   res,
   next
 ) {
-  console.error(err);
+  if (process.env.NODE_ENV === 'production') {
+    console.error('Request failed:', err.name || 'Error');
+  } else {
+    console.error(err);
+  }
 
   // Errores de negocio
   if (err.statusCode) {
@@ -28,6 +32,10 @@ export function errorHandler(
 
   // Errores de validación de Mongoose
   if (err.name === 'ValidationError') {
+    if (process.env.NODE_ENV === 'production') {
+      return res.status(400).json({ message: 'Datos no válidos' });
+    }
+
     const messages = Object.values(
       err.errors
     ).map((error) => error.message);
@@ -40,30 +48,23 @@ export function errorHandler(
   // ObjectId inválido
   if (err.name === 'CastError') {
     return res.status(400).json({
-      message: `Valor inválido para ${err.path}: ${err.value}`,
+      message: process.env.NODE_ENV === 'production'
+        ? 'Identificador no válido'
+        : `Valor inválido para ${err.path}: ${err.value}`,
     });
   }
 
   // Índice único
   if (err.code === 11000) {
-    const field = Object.keys(
-      err.keyValue || {}
-    )[0];
-
     return res.status(409).json({
-      message: `Ya existe un registro con ese ${field}`,
+      message: process.env.NODE_ENV === 'production'
+        ? 'No se pudo completar la operación'
+        : `Ya existe un registro con ese ${Object.keys(err.keyValue || {})[0]}`,
     });
   }
 
   // Error genérico
-  const isDev =
-    process.env.NODE_ENV !== 'production';
-
   return res.status(500).json({
     message: 'Error interno del servidor',
-
-    ...(isDev && {
-      stack: err.stack,
-    }),
   });
 }

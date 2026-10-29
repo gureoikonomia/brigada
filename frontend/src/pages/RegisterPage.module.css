@@ -31,11 +31,27 @@
 }
 
 .input {
-  @apply w-full border border-line bg-paper px-3 py-3 focus:border-petrol outline-none;
+  @apply w-full border border-line bg-paper px-3 py-3 focus:border-petrol;
 }
 
 .errorBox {
   @apply text-warn text-sm font-mono border border-warn bg-warn-soft px-3 py-2;
+}
+
+.successBox {
+  @apply my-4 border border-ok bg-ok-soft px-3 py-3 text-sm text-ok;
+}
+
+.privacyAcknowledgement {
+  @apply flex items-start gap-3 text-sm text-ink;
+}
+
+.privacyAcknowledgement input {
+  @apply mt-1 flex-shrink-0;
+}
+
+.privacyAcknowledgement a {
+  @apply font-semibold text-petrol underline underline-offset-2;
 }
 
 .submitBtn {

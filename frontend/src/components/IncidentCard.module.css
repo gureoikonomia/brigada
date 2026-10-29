@@ -6,6 +6,21 @@
   box-shadow: 0 4px 16px rgba(31, 41, 51, 0.06);
 }
 
+.mediaLink {
+  @apply block min-w-0;
+  border-radius: 10px;
+}
+
+.mediaLink:focus-visible,
+.cardMain:focus-visible {
+  outline: 3px solid var(--color-action);
+  outline-offset: 3px;
+}
+
+.cardMain {
+  @apply block min-w-0 text-inherit no-underline;
+}
+
 .cardLink:hover {
   box-shadow: 0 8px 22px rgba(31, 41, 51, 0.1);
   transform: translateY(-1px);

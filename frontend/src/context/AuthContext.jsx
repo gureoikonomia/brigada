@@ -3,56 +3,63 @@ import * as authService from '../services/auth.service';
 
 const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
+function getStoredUser() {
+  try {
     const stored = localStorage.getItem('user');
     return stored ? JSON.parse(stored) : null;
-  });
-  const [loading, setLoading] = useState(true);
+  } catch {
+    localStorage.removeItem('user');
+    return null;
+  }
+}
 
-  // Al cargar la app, si hay token guardado, comprobamos que sigue siendo
-  // válido pidiendo el perfil — así detectamos tokens caducados al vuelo.
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(getStoredUser);
+  const [loading, setLoading] = useState(true);
+  const [sessionCheckFailed, setSessionCheckFailed] = useState(false);
+
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setLoading(false);
-      return;
-    }
+    const handleUnauthorized = () => {
+      setUser(null);
+      localStorage.removeItem('user');
+    };
+    window.addEventListener('brigada:unauthorized', handleUnauthorized);
+
     authService
       .getProfile()
       .then((profile) => {
         setUser(profile);
         localStorage.setItem('user', JSON.stringify(profile));
       })
-      .catch(() => {
-        setUser(null);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+      .catch((error) => {
+        if (error.response?.status !== 401) setSessionCheckFailed(true);
       })
       .finally(() => setLoading(false));
+
+    return () => window.removeEventListener('brigada:unauthorized', handleUnauthorized);
   }, []);
 
   const login = useCallback(async (credentials) => {
-    const { token, user: loggedUser } = await authService.login(credentials);
-    localStorage.setItem('token', token);
+    const { user: loggedUser } = await authService.login(credentials);
     localStorage.setItem('user', JSON.stringify(loggedUser));
     setUser(loggedUser);
     return loggedUser;
   }, []);
 
   const register = useCallback(async (payload) => {
-    const { token, user: newUser } = await authService.register(payload);
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(newUser));
-    setUser(newUser);
-    return newUser;
+    return authService.register(payload);
   }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem('token');
+  const clearLocalSession = useCallback(() => {
     localStorage.removeItem('user');
     setUser(null);
+    setSessionCheckFailed(false);
   }, []);
+
+  const logout = useCallback(async () => {
+    await authService.logout();
+    clearLocalSession();
+  }, [clearLocalSession]);
 
   // Actualiza el usuario en memoria y en localStorage tras editar el perfil,
   // sin necesidad de volver a hacer login ni recargar la página.
@@ -65,7 +72,16 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser }}>
+    <AuthContext.Provider value={{
+      user,
+      loading,
+      sessionCheckFailed,
+      login,
+      register,
+      logout,
+      clearLocalSession,
+      updateUser,
+    }}>
       {children}
     </AuthContext.Provider>
   );

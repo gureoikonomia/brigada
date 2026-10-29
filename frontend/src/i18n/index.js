@@ -5,6 +5,12 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import es from './locales/es.json';
 import eu from './locales/eu.json';
 
+if (typeof document !== 'undefined') {
+  i18n.on('languageChanged', (language) => {
+    document.documentElement.lang = language === 'eu' ? 'eu' : 'es';
+  });
+}
+
 i18n
   .use(LanguageDetector) // detecta idioma guardado en localStorage o el del navegador
   .use(initReactI18next)

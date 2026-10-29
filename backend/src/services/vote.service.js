@@ -19,46 +19,28 @@ async function castVote(
     await mongoose.startSession();
 
   try {
-    session.startTransaction();
+    await session.withTransaction(async () => {
+      const incident = await Incident.findById(incidentId).session(session);
 
-    const incident =
-      await Incident.findById(
-        incidentId
-      ).session(session);
+      if (!incident) {
+        throw new ServiceError('Incidencia no encontrada', 404);
+      }
 
-    if (!incident) {
-      throw new ServiceError(
-        'Incidencia no encontrada',
-        404
+      if (!['pendiente', 'resuelta'].includes(incident.status)) {
+        throw new ServiceError(
+          'No se puede votar una incidencia que no está publicada',
+          403
+        );
+      }
+
+      await Vote.create([{ incident: incidentId, user: userId }], { session });
+      await Incident.updateOne(
+        { _id: incidentId },
+        { $inc: { votesCount: 1 } },
+        { session }
       );
-    }
-
-    await Vote.create(
-      [
-        {
-          incident: incidentId,
-          user: userId,
-        },
-      ],
-      { session }
-    );
-
-    await Incident.updateOne(
-      {
-        _id: incidentId,
-      },
-      {
-        $inc: {
-          votesCount: 1,
-        },
-      },
-      { session }
-    );
-
-    await session.commitTransaction();
+    });
   } catch (err) {
-    await session.abortTransaction();
-
     if (err.code === 11000) {
       throw new ServiceError(
         'Ya has votado esta incidencia',
@@ -91,52 +73,27 @@ async function removeVote(
     await mongoose.startSession();
 
   try {
-    session.startTransaction();
-
-    const deleted =
-      await Vote.findOneAndDelete(
-        {
-          incident: incidentId,
-          user: userId,
-        },
+    await session.withTransaction(async () => {
+      const deleted = await Vote.findOneAndDelete(
+        { incident: incidentId, user: userId },
         { session }
       );
 
-    if (!deleted) {
-      throw new ServiceError(
-        'No habías votado esta incidencia',
-        404
-      );
-    }
+      if (!deleted) {
+        throw new ServiceError('No habías votado esta incidencia', 404);
+      }
 
-    const updated =
-      await Incident.updateOne(
-        {
-          _id: incidentId,
-          votesCount: {
-            $gt: 0,
-          },
-        },
-        {
-          $inc: {
-            votesCount: -1,
-          },
-        },
+      const updated = await Incident.updateOne(
+        { _id: incidentId, votesCount: { $gt: 0 } },
+        { $inc: { votesCount: -1 } },
         { session }
       );
 
-    if (
-      updated.matchedCount === 0
-    ) {
-      throw new ServiceError(
-        'Incidencia no encontrada',
-        404
-      );
-    }
-
-    await session.commitTransaction();
+      if (updated.matchedCount === 0) {
+        throw new ServiceError('Incidencia no encontrada', 404);
+      }
+    });
   } catch (err) {
-    await session.abortTransaction();
     throw err;
   } finally {
     await session.endSession();

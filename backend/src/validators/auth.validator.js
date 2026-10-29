@@ -1,33 +1,84 @@
 import { z } from 'zod';
+import { isPasswordStrong } from '../utils/validation.js';
+
+const strongPassword = z
+  .string()
+  .min(8, 'La contraseña debe tener al menos 8 caracteres')
+  .max(72, 'La contraseña no puede superar 72 caracteres')
+  .refine((password) => Buffer.byteLength(password, 'utf8') <= 72, {
+    message: 'La contraseña no puede superar 72 bytes UTF-8',
+  })
+  .refine(isPasswordStrong, {
+    message: 'La contraseña debe incluir mayúscula, minúscula y número',
+  });
+
+const emailAddress = z.string().trim().toLowerCase().email('Email no válido').max(254);
+const currentPassword = z
+  .string()
+  .min(1, 'La contraseña actual es obligatoria')
+  .max(72)
+  .refine((password) => Buffer.byteLength(password, 'utf8') <= 72, {
+    message: 'La contraseña no puede superar 72 bytes UTF-8',
+  });
 
 export const registerSchema = z.object({
   name: z.string().trim().min(2, 'El nombre debe tener al menos 2 caracteres').max(80),
-  email: z.string().trim().toLowerCase().email('Email no válido'),
-  password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres').max(72),
+  email: emailAddress,
+  password: strongPassword,
+  privacyNoticeAcknowledged: z.boolean().optional(),
+  privacyNoticeVersion: z.string().trim().max(80).optional(),
 });
 
 export const loginSchema = z.object({
-  email: z.string().trim().toLowerCase().email('Email no válido'),
-  password: z.string().min(1, 'La contraseña es obligatoria'),
+  email: emailAddress,
+  password: z.string().min(1, 'La contraseña es obligatoria').max(72)
+    .refine((password) => Buffer.byteLength(password, 'utf8') <= 72, {
+      message: 'La contraseña no puede superar 72 bytes UTF-8',
+    }),
 });
 
-// Todos los campos opcionales: se puede mandar solo el que se quiera cambiar.
-// .refine() exige que llegue al menos uno, para no permitir un PATCH vacío.
 export const updateProfileSchema = z
   .object({
     name: z.string().trim().min(2, 'El nombre debe tener al menos 2 caracteres').max(80).optional(),
-    email: z.string().trim().toLowerCase().email('Email no válido').optional(),
   })
-  .refine((data) => data.name !== undefined || data.email !== undefined, {
-    message: 'Debes indicar al menos un campo a actualizar (name o email)',
+  .refine((data) => data.name !== undefined, {
+    message: 'Debes indicar un nombre para actualizar',
   });
+
+export const requestEmailChangeSchema = z.object({
+  email: emailAddress,
+  currentPassword,
+});
 
 export const changePasswordSchema = z
   .object({
-    currentPassword: z.string().min(1, 'La contraseña actual es obligatoria'),
-    newPassword: z.string().min(8, 'La nueva contraseña debe tener al menos 8 caracteres').max(72),
+    currentPassword,
+    newPassword: strongPassword,
   })
   .refine((data) => data.currentPassword !== data.newPassword, {
     message: 'La nueva contraseña debe ser distinta de la actual',
     path: ['newPassword'],
   });
+
+export const forgotPasswordSchema = z.object({
+  email: emailAddress,
+});
+
+export const resetPasswordSchema = z.object({
+  uid: z.string().regex(/^[0-9a-f]{24}$/i, 'Enlace inválido o expirado'),
+  token: z.string().regex(/^[0-9a-f]{64}$/i, 'Enlace inválido o expirado'),
+  newPassword: strongPassword,
+});
+
+export const verifyEmailSchema = z.object({
+  uid: z.string().regex(/^[0-9a-f]{24}$/i, 'Enlace inválido o expirado'),
+  token: z.string().regex(/^[0-9a-f]{64}$/i, 'Enlace inválido o expirado'),
+});
+
+export const resendVerificationSchema = z.object({
+  email: emailAddress,
+});
+
+export const deleteAccountSchema = z.object({
+  currentPassword,
+});

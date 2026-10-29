@@ -31,15 +31,26 @@ export default function LoginPage() {
     <div className={styles.container}>
       <h1 className={styles.title}>{t('login.title')}</h1>
       <p className={styles.subtitle}>{t('login.subtitle')}</p>
+      {location.state?.passwordChanged && (
+        <p className={styles.infoBox} role="status">{t('login.passwordChanged')}</p>
+      )}
+      {location.state?.accountDeleted && (
+        <p className={styles.infoBox} role="status">{t('login.accountDeleted')}</p>
+      )}
+      {location.state?.mediaCleanupPending && (
+        <p className={styles.infoBox} role="status">{t('profile.deleteAccountMediaPending')}</p>
+      )}
 
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.fieldGroup}>
-          <label className={styles.label}>
+          <label htmlFor="login-email" className={styles.label}>
             {t('login.emailLabel')}
           </label>
           <input
+            id="login-email"
             type="email"
             required
+            autoComplete="email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             className={styles.input}
@@ -48,7 +59,7 @@ export default function LoginPage() {
 
         <div className={styles.fieldGroup}>
           <div className={styles.passwordLabelRow}>
-            <label className={styles.label}>
+            <label htmlFor="login-password" className={styles.label}>
               {t('login.passwordLabel')}
             </label>
             <Link to="/olvide-contrasena" className={styles.forgotLink}>
@@ -56,8 +67,10 @@ export default function LoginPage() {
             </Link>
           </div>
           <input
+            id="login-password"
             type="password"
             required
+            autoComplete="current-password"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
             className={styles.input}
@@ -65,7 +78,7 @@ export default function LoginPage() {
         </div>
 
         {error && (
-          <p className={styles.errorBox}>{error}</p>
+          <p className={styles.errorBox} role="alert">{error}</p>
         )}
 
         <button

@@ -6,6 +6,11 @@ import Vote from '../models/vote.model.js';
 import uploadService from './upload.service.js';
 import voteService from './vote.service.js';
 import appSettingsService from './app-settings.service.js';
+import { votedIncidentVisibilityMatch } from '../utils/security.js';
+import {
+  enqueueMediaDeletion,
+  processPendingMediaDeletions,
+} from './media-deletion.service.js';
 
 import { ServiceError } from '../errors/service.error.js';
 
@@ -33,6 +38,11 @@ async function cleanupUploadedImages(images, originalError, message) {
   try {
     await uploadService.deleteImages(publicIds);
   } catch (cleanupError) {
+    try {
+      await enqueueMediaDeletion(publicIds);
+    } catch (queueError) {
+      throw new AggregateError([originalError, cleanupError, queueError], message);
+    }
     throw new AggregateError([originalError, cleanupError], message);
   }
 }
@@ -414,41 +424,19 @@ async function deleteIncident(
     await mongoose.startSession();
 
   try {
-    session.startTransaction();
-
-    await Vote.deleteMany(
-      {
-        incident: incidentId,
-      },
-      { session }
-    );
-
-    await Incident.deleteOne(
-      {
-        _id: incidentId,
-      },
-      { session }
-    );
-
-    await session.commitTransaction();
-  } catch (err) {
-    await session.abortTransaction();
-    throw err;
+    await session.withTransaction(async () => {
+      await Vote.deleteMany({ incident: incidentId }, { session });
+      await Incident.deleteOne({ _id: incidentId }, { session });
+      await enqueueMediaDeletion(
+        (incident.images || []).map((image) => image.publicId),
+        session
+      );
+    });
   } finally {
     await session.endSession();
   }
 
-  const publicIds = (
-    incident.images || []
-  )
-    .map((image) => image.publicId)
-    .filter(Boolean);
-
-  if (publicIds.length) {
-    await uploadService.deleteImages(
-      publicIds
-    );
-  }
+  await processPendingMediaDeletions();
 
   return {
     deleted: true,
@@ -460,43 +448,42 @@ async function deleteIncident(
  */
 async function listVotedIncidents({ userId, user, page = 1, limit = 20 }) {
   await appSettingsService.requireVotingEnabled();
-  const skip = (page - 1) * limit;
-
-  const [votes, total] = await Promise.all([
-    Vote.find({ user: userId })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .select('incident')
-      .lean(),
-    Vote.countDocuments({ user: userId }),
-  ]);
-
-  const incidentIds = votes.map((v) => v.incident);
-  if (!incidentIds.length) {
-    return {
-      items: [],
-      pagination: {
-        page: Number(page),
-        limit: Number(limit),
-        total: 0,
-        totalPages: 0,
+  const userObjectId = new mongoose.Types.ObjectId(userId);
+  const visibilityMatch = votedIncidentVisibilityMatch(userObjectId, user?.role);
+  const visibilityStages = visibilityMatch ? [{ $match: visibilityMatch }] : [];
+  const [result] = await Vote.aggregate([
+    { $match: { user: userObjectId } },
+    {
+      $lookup: {
+        from: Incident.collection.name,
+        localField: 'incident',
+        foreignField: '_id',
+        as: 'incident',
       },
-    };
-  }
-
-  const items = await Incident.find({ _id: { $in: incidentIds } })
-    .populate('createdBy', 'name avatarUrl')
-    .lean();
-
-  const itemsMap = new Map(items.map((i) => [i._id.toString(), i]));
-  const orderedItems = incidentIds
-    .map((id) => itemsMap.get(id.toString()))
-    .filter(Boolean)
-    .map((incident) => presentIncident({
-      ...incident,
-      hasVoted: true,
-    }, user));
+    },
+    { $unwind: '$incident' },
+    ...visibilityStages,
+    { $sort: { createdAt: -1, _id: -1 } },
+    {
+      $facet: {
+        metadata: [{ $count: 'total' }],
+        items: [
+          { $skip: (page - 1) * limit },
+          { $limit: limit },
+          { $replaceRoot: { newRoot: '$incident' } },
+        ],
+      },
+    },
+  ]);
+  const total = result?.metadata[0]?.total || 0;
+  const items = await Incident.populate(result?.items || [], {
+    path: 'createdBy',
+    select: 'name avatarUrl',
+  });
+  const orderedItems = items.map((incident) => presentIncident({
+    ...incident,
+    hasVoted: true,
+  }, user));
 
   return {
     items: orderedItems,

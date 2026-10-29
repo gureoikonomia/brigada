@@ -3,11 +3,19 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import { getCorsOrigins } from './config/env.js';
 
 import {
   notFound,
   errorHandler,
 } from './middlewares/error.middleware.js';
+import { csrfProtection } from './middlewares/csrf.middleware.js';
+import {
+  loginLimiter,
+  registerLimiter,
+} from './middlewares/rate-limiters.js';
+import mongoose from 'mongoose';
+import { createRateLimitStore } from './middlewares/mongo-rate-limit.store.js';
 
 import authRoutes from './routes/auth.route.js';
 import incidentRoutes from './routes/incident.route.js';
@@ -16,6 +24,12 @@ import authResetRoutes from './routes/authReset.route.js';
 import appSettingsRoutes from './routes/app-settings.route.js';
 
 const app = express();
+const allowedOrigins = getCorsOrigins();
+
+const trustProxyHops = Number(process.env.TRUST_PROXY_HOPS || 0);
+if (Number.isInteger(trustProxyHops) && trustProxyHops > 0) {
+  app.set('trust proxy', trustProxyHops);
+}
 
 // 1. Seguridad con Helmet
 app.use(
@@ -26,6 +40,8 @@ app.use(
 
 // 2. Rate Limiting (Seguridad anti-bruteforce y anti-DoS)
 const globalLimiter = rateLimit({
+  store: createRateLimitStore('global'),
+  skip: (req) => req.path === '/api/health',
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 300, // máximo 300 peticiones por ventana
   standardHeaders: true,
@@ -34,11 +50,12 @@ const globalLimiter = rateLimit({
 });
 
 const authLimiter = rateLimit({
+  store: createRateLimitStore('auth'),
   windowMs: 15 * 60 * 1000,
-  max: 30, // máximo 30 intentos de login/registro por IP en 15 mins
+  limit: 5,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { message: 'Demasiados intentos de autenticación, intente de nuevo en 15 minutos' },
+  message: { message: 'Demasiadas solicitudes. Inténtalo más tarde.' },
 });
 
 app.use(globalLimiter);
@@ -47,37 +64,38 @@ app.use(globalLimiter);
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Permite peticiones sin origen, desde Netlify y desde tu entorno local
-      if (
-        !origin || 
-        origin.startsWith('https://appbrigada.netlify.app') || 
-        origin.startsWith('http://localhost:') ||
-        origin.startsWith('http://127.0.0.1:')
-      ) {
-        callback(null, true);
-      } else {
-        callback(new Error('No permitido por CORS'));
-      }
+      if (!origin || allowedOrigins.has(origin)) return callback(null, true);
+      return callback(new Error('No permitido por CORS'));
     },
     credentials: true,
   })
 );
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '32kb' }));
+app.use(express.urlencoded({ extended: true, limit: '32kb' }));
 app.use(cookieParser());
+app.use(csrfProtection(allowedOrigins));
 
-// Endpoint de salud
+// Liveness and readiness endpoint
 app.get('/api/health', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'API is running with security headers & rate limits active',
+  const databaseReady = mongoose.connection.readyState === 1;
+  return res.status(databaseReady ? 200 : 503).json({
+    success: databaseReady,
+    database: databaseReady ? 'connected' : 'unavailable',
+  });
+});
+
+app.get('/api/legal/privacy-notice', (req, res) => {
+  return res.json({
+    url: process.env.PRIVACY_NOTICE_URL || null,
+    version: process.env.PRIVACY_NOTICE_VERSION || null,
   });
 });
 
 // 4. Rutas de la API
-app.use('/api/auth/login', authLimiter);
-app.use('/api/auth/register', authLimiter);
+app.use('/api/auth/login', loginLimiter);
+app.use('/api/auth/register', registerLimiter);
+app.use('/api/auth/resend-verification', authLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/incidents', incidentRoutes);
 app.use('/api/users', userRoutes);

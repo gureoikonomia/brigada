@@ -1,4 +1,5 @@
 import multer from 'multer';
+import { fileTypeFromBuffer } from 'file-type';
 
 const MAX_FILE_SIZE_MB = 5;
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -9,13 +10,10 @@ const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const storage = multer.memoryStorage();
 
 function fileFilter(req, file, cb) {
-  // Aceptamos las imágenes estándar y también octet-stream si vienen de herramientas como Postman
   const isAllowedMime = ALLOWED_MIME_TYPES.includes(file.mimetype);
-  const isOctetStream = file.mimetype === 'application/octet-stream';
 
-  if (!isAllowedMime && !isOctetStream) {
-    // Lanzas un Error normal, no un MulterError
-    return cb(new Error(`Formato no permitido (${file.mimetype}). Solo se aceptan JPEG, PNG o WEBP`));
+  if (!isAllowedMime) {
+    return cb(new Error('Formato no permitido. Solo se aceptan JPEG, PNG o WEBP'));
   }
   
   return cb(null, true);
@@ -27,6 +25,9 @@ const upload = multer({
   limits: {
     fileSize: MAX_FILE_SIZE_MB * 1024 * 1024,
     files: 5, // máximo 5 imágenes por incidencia
+    fields: 8,
+    fieldSize: 8 * 1024,
+    parts: 13,
   },
 });
 
@@ -43,6 +44,8 @@ const uploadAvatarImage = multer({
   limits: {
     fileSize: MAX_FILE_SIZE_MB * 1024 * 1024,
     files: 1,
+    fields: 0,
+    parts: 1,
   },
 }).single('avatar');
 
@@ -89,7 +92,25 @@ export function handleAvatarUploadErrors(req, res, next) {
   });
 }
 
+export async function validateImageContent(req, res, next) {
+  try {
+    const files = req.files || (req.file ? [req.file] : []);
+    for (const file of files) {
+      const detectedType = await fileTypeFromBuffer(file.buffer);
+      if (!detectedType || !ALLOWED_MIME_TYPES.includes(detectedType.mime)) {
+        return res.status(400).json({
+          message: 'El contenido del archivo no es una imagen JPEG, PNG o WEBP válida',
+        });
+      }
+    }
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+}
+
 export default {
   handleUploadErrors,
   handleAvatarUploadErrors,
+  validateImageContent,
 };

@@ -166,8 +166,7 @@ async function remove(req, res, next) {
  */
 async function listVoted(req, res, next) {
   try {
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 20;
+    const { page, limit } = req.validated.query;
 
     const result = await incidentService.listVotedIncidents({
       userId: req.user.id,

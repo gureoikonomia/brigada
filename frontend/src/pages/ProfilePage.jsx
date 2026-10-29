@@ -4,7 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import useAppSettings from '../hooks/useAppSettings';
 import { listIncidents, listVotedIncidents } from '../services/incident.service';
-import { updateProfile, uploadProfileAvatar, changePassword } from '../services/auth.service';
+import {
+  updateProfile,
+  requestEmailChange,
+  uploadProfileAvatar,
+  changePassword,
+  deleteAccount,
+} from '../services/auth.service';
 import IncidentCard from '../components/IncidentCard';
 import IncidentCardSkeleton from '../components/IncidentCardSkeleton';
 import AdminStatsWidget from '../components/AdminStatsWidget';
@@ -23,7 +29,7 @@ function initials(name = '') {
 }
 
 export default function ProfilePage() {
-  const { user, logout, updateUser } = useAuth();
+  const { user, logout, clearLocalSession, updateUser } = useAuth();
   const { votingEnabled } = useAppSettings();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -50,18 +56,25 @@ export default function ProfilePage() {
   const [votedLoaded, setVotedLoaded] = useState(false);
 
   // Tab 5: Formulario de ajustes de perfil y contraseña
-  const [profileForm, setProfileForm] = useState({ name: user?.name || '', email: user?.email || '' });
+  const [profileForm, setProfileForm] = useState({ name: user?.name || '' });
   const [profileError, setProfileError] = useState(null);
   const [profileSuccess, setProfileSuccess] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
+  const [emailChangeForm, setEmailChangeForm] = useState({ email: '', currentPassword: '' });
+  const [emailChangeError, setEmailChangeError] = useState(null);
+  const [emailChangeSuccess, setEmailChangeSuccess] = useState(false);
+  const [requestingEmailChange, setRequestingEmailChange] = useState(false);
   const [avatarError, setAvatarError] = useState(null);
   const [avatarSuccess, setAvatarSuccess] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [passwordError, setPasswordError] = useState(null);
-  const [passwordSuccess, setPasswordSuccess] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
+  const [logoutError, setLogoutError] = useState(null);
+  const [deleteAccountPassword, setDeleteAccountPassword] = useState('');
+  const [deleteAccountError, setDeleteAccountError] = useState(null);
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   // Cargar mis incidencias
   useEffect(() => {
@@ -108,9 +121,14 @@ export default function ProfilePage() {
 
   const visibleTab = !votingEnabled && activeTab === 'voted' ? 'incidents' : activeTab;
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
+  const handleLogout = async () => {
+    setLogoutError(null);
+    try {
+      await logout();
+      navigate('/');
+    } catch {
+      setLogoutError(t('profile.logoutError'));
+    }
   };
 
   const handleProfileSubmit = async (e) => {
@@ -119,13 +137,30 @@ export default function ProfilePage() {
     setProfileSuccess(false);
     setSavingProfile(true);
     try {
-      const updated = await updateProfile({ name: profileForm.name, email: profileForm.email });
-      updateUser({ name: updated.name, email: updated.email });
+      const updated = await updateProfile({ name: profileForm.name });
+      updateUser({ name: updated.name });
       setProfileSuccess(true);
     } catch (err) {
       setProfileError(err.response?.data?.message || t('editProfile.saveError'));
     } finally {
       setSavingProfile(false);
+    }
+  };
+
+  const handleEmailChangeSubmit = async (event) => {
+    event.preventDefault();
+    setEmailChangeError(null);
+    setEmailChangeSuccess(false);
+    setRequestingEmailChange(true);
+
+    try {
+      await requestEmailChange(emailChangeForm);
+      setEmailChangeForm({ email: '', currentPassword: '' });
+      setEmailChangeSuccess(true);
+    } catch (error) {
+      setEmailChangeError(error.response?.data?.message || t('editProfile.emailChangeError'));
+    } finally {
+      setRequestingEmailChange(false);
     }
   };
 
@@ -161,7 +196,6 @@ export default function ProfilePage() {
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     setPasswordError(null);
-    setPasswordSuccess(false);
 
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
       setPasswordError(t('editProfile.passwordMismatch'));
@@ -174,12 +208,38 @@ export default function ProfilePage() {
         currentPassword: passwordForm.currentPassword,
         newPassword: passwordForm.newPassword,
       });
-      setPasswordSuccess(true);
-      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      clearLocalSession();
+      navigate('/login', {
+        replace: true,
+        state: { passwordChanged: true },
+      });
     } catch (err) {
       setPasswordError(err.response?.data?.message || t('editProfile.passwordError'));
     } finally {
       setSavingPassword(false);
+    }
+  };
+
+  const handleDeleteAccount = async (event) => {
+    event.preventDefault();
+    setDeleteAccountError(null);
+    if (!window.confirm(t('profile.deleteAccountDescription'))) return;
+
+    setDeletingAccount(true);
+    try {
+      const result = await deleteAccount(deleteAccountPassword);
+      clearLocalSession();
+      navigate('/login', {
+        replace: true,
+        state: {
+          accountDeleted: true,
+          mediaCleanupPending: result.mediaCleanupPending,
+        },
+      });
+    } catch (err) {
+      setDeleteAccountError(err.response?.data?.message || t('profile.deleteAccountError'));
+    } finally {
+      setDeletingAccount(false);
     }
   };
 
@@ -218,6 +278,7 @@ export default function ProfilePage() {
             </button>
           </div>
         </div>
+        {logoutError && <p className={styles.formError} role="alert">{logoutError}</p>}
         {(avatarError || avatarSuccess) && (
           <p
             className={avatarError ? styles.avatarError : styles.avatarSuccess}
@@ -356,23 +417,6 @@ export default function ProfilePage() {
                 />
               </div>
 
-              <div>
-                <label htmlFor="profile-email" className={styles.fieldLabel}>
-                  {t('editProfile.emailLabel')}
-                </label>
-                <input
-                  id="profile-email"
-                  type="email"
-                  required
-                  value={profileForm.email}
-                  onChange={(e) => {
-                    setProfileForm({ ...profileForm, email: e.target.value });
-                    setProfileSuccess(false);
-                  }}
-                  className={styles.formInput}
-                />
-              </div>
-
               {profileError && (
                 <p className={styles.formError}>{profileError}</p>
               )}
@@ -392,6 +436,60 @@ export default function ProfilePage() {
             </form>
           </section>
 
+          <section className={styles.sectionCard}>
+            <h3 className={styles.subSectionTitle}>{t('editProfile.changeEmail')}</h3>
+            <p className={styles.emailChangeDescription}>{t('editProfile.emailChangeDescription')}</p>
+            <form onSubmit={handleEmailChangeSubmit} className={styles.formSpace}>
+              <div>
+                <label htmlFor="new-profile-email" className={styles.fieldLabel}>
+                  {t('editProfile.emailLabel')}
+                </label>
+                <input
+                  id="new-profile-email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={emailChangeForm.email}
+                  onChange={(event) => {
+                    setEmailChangeForm({ ...emailChangeForm, email: event.target.value });
+                    setEmailChangeSuccess(false);
+                  }}
+                  className={styles.formInput}
+                />
+              </div>
+              <div>
+                <label htmlFor="email-change-password" className={styles.fieldLabel}>
+                  {t('editProfile.currentPasswordLabel')}
+                </label>
+                <input
+                  id="email-change-password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  value={emailChangeForm.currentPassword}
+                  onChange={(event) => {
+                    setEmailChangeForm({ ...emailChangeForm, currentPassword: event.target.value });
+                    setEmailChangeSuccess(false);
+                  }}
+                  className={styles.formInput}
+                />
+              </div>
+              {emailChangeError && <p className={styles.formError} role="alert">{emailChangeError}</p>}
+              {emailChangeSuccess && (
+                <p className={styles.formSuccess} role="status">{t('editProfile.emailChangeRequested')}</p>
+              )}
+              <button
+                type="submit"
+                disabled={requestingEmailChange}
+                className={styles.saveProfileBtn}
+              >
+                {requestingEmailChange
+                  ? t('editProfile.emailChangeSubmitting')
+                  : t('editProfile.requestEmailChange')}
+              </button>
+            </form>
+          </section>
+
           {/* Cambio de Contraseña */}
           <section className={styles.sectionCard}>
             <h3 className={styles.subSectionTitle}>{t('editProfile.changePassword')}</h3>
@@ -407,7 +505,6 @@ export default function ProfilePage() {
                   value={passwordForm.currentPassword}
                   onChange={(e) => {
                     setPasswordForm({ ...passwordForm, currentPassword: e.target.value });
-                    setPasswordSuccess(false);
                   }}
                   className={styles.formInput}
                 />
@@ -425,7 +522,6 @@ export default function ProfilePage() {
                   value={passwordForm.newPassword}
                   onChange={(e) => {
                     setPasswordForm({ ...passwordForm, newPassword: e.target.value });
-                    setPasswordSuccess(false);
                   }}
                   className={styles.formInput}
                 />
@@ -443,7 +539,6 @@ export default function ProfilePage() {
                   value={passwordForm.confirmPassword}
                   onChange={(e) => {
                     setPasswordForm({ ...passwordForm, confirmPassword: e.target.value });
-                    setPasswordSuccess(false);
                   }}
                   className={styles.formInput}
                 />
@@ -452,18 +547,45 @@ export default function ProfilePage() {
               {passwordError && (
                 <p className={styles.formError}>{passwordError}</p>
               )}
-              {passwordSuccess && (
-                <p className={styles.formSuccess}>
-                  {t('editProfile.passwordSuccess')}
-                </p>
-              )}
-
               <button
                 type="submit"
                 disabled={savingPassword}
                 className={styles.savePasswordBtn}
               >
                 {savingPassword ? t('editProfile.changingPassword') : t('editProfile.changePasswordSubmit')}
+              </button>
+            </form>
+          </section>
+
+          <section className={`${styles.sectionCard} ${styles.dangerSection}`}>
+            <h3 className={styles.subSectionTitle}>{t('profile.deleteAccountTitle')}</h3>
+            <p className={styles.deleteAccountDescription}>
+              {t('profile.deleteAccountDescription')}
+            </p>
+            <form onSubmit={handleDeleteAccount} className={styles.formSpace}>
+              <label htmlFor="delete-account-password" className={styles.fieldLabel}>
+                {t('profile.deleteAccountPassword')}
+              </label>
+              <input
+                id="delete-account-password"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={deleteAccountPassword}
+                onChange={(event) => setDeleteAccountPassword(event.target.value)}
+                className={styles.formInput}
+              />
+              {deleteAccountError && (
+                <p className={styles.formError} role="alert">{deleteAccountError}</p>
+              )}
+              <button
+                type="submit"
+                disabled={deletingAccount}
+                className={styles.deleteAccountButton}
+              >
+                {deletingAccount
+                  ? t('profile.deletingAccount')
+                  : t('profile.deleteAccountSubmit')}
               </button>
             </form>
           </section>

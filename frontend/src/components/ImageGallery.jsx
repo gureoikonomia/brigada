@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getCloudinaryImageUrl } from '../services/media';
 import styles from './ImageGallery.module.css';
 
 export default function ImageGallery({ images }) {
@@ -12,7 +13,12 @@ export default function ImageGallery({ images }) {
 
   return (
     <div>
-      <img src={active.url} alt="" className={styles.activeImage} />
+      <img
+        src={getCloudinaryImageUrl(active.url, 1200)}
+        alt={t('incidentDetail.photoAlt', { n: activeIndex + 1 })}
+        decoding="async"
+        className={styles.activeImage}
+      />
 
       {images.length > 1 && (
         <div className={styles.thumbnailsTrack}>
@@ -26,7 +32,13 @@ export default function ImageGallery({ images }) {
                 i === activeIndex ? styles.thumbActive : styles.thumbInactive
               }`}
             >
-              <img src={img.url} alt="" className={styles.thumbImage} />
+              <img
+                src={getCloudinaryImageUrl(img.url, 160)}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                className={styles.thumbImage}
+              />
             </button>
           ))}
         </div>

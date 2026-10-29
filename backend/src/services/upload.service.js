@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
 import streamifier from 'streamifier';
+import { enqueueMediaDeletion } from './media-deletion.service.js';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -21,7 +22,13 @@ function uploadBuffer(buffer, folder) {
         folder,
         resource_type: 'image',
         // limitamos el tamaño máximo de salida para no guardar imágenes gigantes
-        transformation: [{ width: 1600, height: 1600, crop: 'limit', quality: 'auto' }],
+        transformation: [{
+          width: 1600,
+          height: 1600,
+          crop: 'limit',
+          quality: 'auto',
+          flags: 'strip_profile',
+        }],
       },
       (error, result) => {
         if (error) return reject(error);
@@ -55,6 +62,14 @@ async function uploadIncidentImages(files = []) {
     try {
       await deleteImages(uploadedImages.map((image) => image.publicId));
     } catch (cleanupError) {
+      try {
+        await enqueueMediaDeletion(uploadedImages.map((image) => image.publicId));
+      } catch (queueError) {
+        throw new AggregateError(
+          [...uploadErrors, cleanupError, queueError],
+          'Falló la subida y no se pudieron programar todos los reintentos de limpieza'
+        );
+      }
       throw new AggregateError(
         [...uploadErrors, cleanupError],
         'No se pudieron subir ni limpiar todas las imágenes'
@@ -78,7 +93,7 @@ async function uploadAvatar(file) {
  */
 async function deleteImage(publicId) {
   if (!publicId) return;
-  await cloudinary.uploader.destroy(publicId);
+  await cloudinary.uploader.destroy(publicId, { invalidate: true });
 }
 
 /**

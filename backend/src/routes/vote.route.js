@@ -3,6 +3,7 @@ import express from 'express';
 import voteController from '../controllers/vote.controller.js';
 
 import { protect } from '../middlewares/auth.middleware.js';
+import { voteLimiter } from '../middlewares/rate-limiters.js';
 
 import { validate } from '../middlewares/validate.middleware.js';
 
@@ -20,6 +21,7 @@ const router = express.Router();
 router.post(
   '/:incidentId/vote',
   protect,
+  voteLimiter,
   validate(incidentIdParamSchema, 'params'),
   voteController.vote
 );
@@ -28,6 +30,7 @@ router.post(
 router.delete(
   '/:incidentId/vote',
   protect,
+  voteLimiter,
   validate(incidentIdParamSchema, 'params'),
   voteController.unvote
 );
