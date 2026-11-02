@@ -12,6 +12,10 @@ const appSettingsSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    adminInvariantVersion: {
+      type: Number,
+      default: 0,
+    },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

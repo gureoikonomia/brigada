@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import User from '../models/user.model.js';
 import Incident from '../models/incident.model.js';
 import Vote from '../models/vote.model.js';
+import AppSettings from '../models/app-settings.model.js';
 import PasswordResetToken from '../models/passwordResetToken.model.js';
 import EmailVerificationToken from '../models/emailVerificationToken.model.js';
 import PendingMediaDeletion from '../models/pendingMediaDeletion.model.js';
@@ -12,6 +13,47 @@ import {
   enqueueMediaDeletion,
   processPendingMediaDeletions,
 } from './media-deletion.service.js';
+
+async function ensureAdminInvariantDocument() {
+  try {
+    await AppSettings.updateOne(
+      { key: 'global' },
+      { $setOnInsert: { key: 'global' } },
+      { upsert: true }
+    );
+  } catch (error) {
+    if (error.code !== 11000) throw error;
+    const existing = await AppSettings.exists({ key: 'global' });
+    if (!existing) throw error;
+  }
+}
+
+async function acquireAdminInvariantLock(session) {
+  const result = await AppSettings.updateOne(
+    { key: 'global' },
+    { $inc: { adminInvariantVersion: 1 } },
+    { session }
+  );
+  if (result.matchedCount !== 1) {
+    throw new ServiceError('No se pudo comprobar el administrador activo', 500);
+  }
+}
+
+async function ensureAnotherActiveAdminExists(session) {
+  const activeAdminCount = await User.countDocuments({
+    role: 'admin',
+    $or: [
+      { isActive: true },
+      { isActive: { $exists: false } },
+    ],
+  }).session(session);
+  if (activeAdminCount <= 1) {
+    throw new ServiceError(
+      'No se puede eliminar, desactivar o degradar al último administrador activo',
+      409
+    );
+  }
+}
 
 /**
  * Obtiene métricas y estadísticas del usuario autenticado.
@@ -149,11 +191,35 @@ async function updateUserRole(adminUserId, targetUserId, newRole) {
     throw new ServiceError('No puedes degradar tu propio rol de Administrador', 400);
   }
 
-  const updated = await User.findByIdAndUpdate(
-    targetUserId,
-    { role: newRole },
-    { returnDocument: 'after', runValidators: true }
-  ).select('-password');
+  let updated;
+
+  if (newRole === 'admin') {
+    updated = await User.findByIdAndUpdate(
+      targetUserId,
+      { role: newRole },
+      { returnDocument: 'after', runValidators: true }
+    ).select('-password');
+  } else {
+    await ensureAdminInvariantDocument();
+    const session = await mongoose.startSession();
+    try {
+      await session.withTransaction(async () => {
+        await acquireAdminInvariantLock(session);
+        const target = await User.findById(targetUserId).session(session);
+        if (!target) throw new ServiceError('Usuario no encontrado', 404);
+        if (target.role === 'admin' && target.isActive) {
+          await ensureAnotherActiveAdminExists(session);
+        }
+        updated = await User.findByIdAndUpdate(
+          targetUserId,
+          { role: newRole },
+          { returnDocument: 'after', runValidators: true, session }
+        ).select('-password');
+      });
+    } finally {
+      await session.endSession();
+    }
+  }
 
   if (!updated) {
     throw new ServiceError('Usuario no encontrado', 404);
@@ -170,11 +236,35 @@ async function updateUserStatus(adminUserId, targetUserId, isActive) {
     throw new ServiceError('No puedes desactivar tu propia cuenta de Administrador', 400);
   }
 
-  const updated = await User.findByIdAndUpdate(
-    targetUserId,
-    { $set: { isActive }, $inc: { tokenVersion: 1 } },
-    { returnDocument: 'after', runValidators: true }
-  ).select('-password');
+  let updated;
+
+  if (isActive) {
+    updated = await User.findByIdAndUpdate(
+      targetUserId,
+      { $set: { isActive }, $inc: { tokenVersion: 1 } },
+      { returnDocument: 'after', runValidators: true }
+    ).select('-password');
+  } else {
+    await ensureAdminInvariantDocument();
+    const session = await mongoose.startSession();
+    try {
+      await session.withTransaction(async () => {
+        await acquireAdminInvariantLock(session);
+        const target = await User.findById(targetUserId).session(session);
+        if (!target) throw new ServiceError('Usuario no encontrado', 404);
+        if (target.role === 'admin' && target.isActive) {
+          await ensureAnotherActiveAdminExists(session);
+        }
+        updated = await User.findByIdAndUpdate(
+          targetUserId,
+          { $set: { isActive }, $inc: { tokenVersion: 1 } },
+          { returnDocument: 'after', runValidators: true, session }
+        ).select('-password');
+      });
+    } finally {
+      await session.endSession();
+    }
+  }
 
   if (!updated) {
     throw new ServiceError('Usuario no encontrado', 404);
@@ -195,7 +285,17 @@ async function deleteAccount(userId, currentPassword) {
   let publicIds = [];
 
   try {
+    await ensureAdminInvariantDocument();
     await session.withTransaction(async () => {
+      await acquireAdminInvariantLock(session);
+      const currentUser = await User.findById(userId).session(session);
+      if (!currentUser) {
+        throw new ServiceError('Usuario no encontrado', 404);
+      }
+      if (currentUser.role === 'admin' && currentUser.isActive) {
+        await ensureAnotherActiveAdminExists(session);
+      }
+
       const activeUser = await User.findOneAndUpdate(
         { _id: userId, isActive: true },
         { $set: { isActive: false }, $inc: { tokenVersion: 1 } },
