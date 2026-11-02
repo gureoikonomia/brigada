@@ -10,7 +10,7 @@ function formatDate(iso, locale) {
   return new Date(iso).toLocaleDateString(locale, { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
-export default function IncidentCard({ incident }) {
+export default function IncidentCard({ incident, onVoteChange }) {
   const { t, i18n } = useTranslation();
   const { votingEnabled } = useAppSettings();
   const thumbnail = incident.images?.[0]?.url;
@@ -68,6 +68,7 @@ export default function IncidentCard({ incident }) {
                 incidentId={incident._id}
                 initialVoted={incident.hasVoted}
                 initialCount={incident.votesCount}
+                onVoteChange={onVoteChange}
               />
             )}
           </div>

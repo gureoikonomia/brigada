@@ -121,6 +121,14 @@ export default function ProfilePage() {
 
   const visibleTab = !votingEnabled && activeTab === 'voted' ? 'incidents' : activeTab;
 
+  const handleVotedIncidentChange = (incidentId, hasVoted) => {
+    if (!hasVoted) {
+      setVotedIncidents((previous) =>
+        previous.filter((incident) => incident._id !== incidentId)
+      );
+    }
+  };
+
   const handleLogout = async () => {
     setLogoutError(null);
     try {
@@ -373,7 +381,11 @@ export default function ProfilePage() {
             <div className={styles.listPanel}>
               <div className={styles.itemsSpace}>
                 {votedIncidents.map((incident) => (
-                  <IncidentCard key={incident._id} incident={incident} />
+                  <IncidentCard
+                    key={incident._id}
+                    incident={incident}
+                    onVoteChange={handleVotedIncidentChange}
+                  />
                 ))}
               </div>
             </div>
