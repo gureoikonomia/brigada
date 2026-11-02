@@ -103,7 +103,7 @@ async function deleteImages(publicIds = []) {
   await Promise.all(publicIds.map((id) => deleteImage(id)));
 }
 
-export default {
+export const uploadService = {
   uploadIncidentImages,
   uploadAvatar,
   deleteImage,

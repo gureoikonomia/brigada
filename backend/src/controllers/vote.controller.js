@@ -1,4 +1,4 @@
-import voteService from '../services/vote.service.js';
+import { voteService } from '../services/vote.service.js';
 
 /**
  * POST /api/incidents/:incidentId/vote

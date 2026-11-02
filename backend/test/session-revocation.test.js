@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import test, { after } from 'node:test';
 
 import { logout } from '../src/controllers/auth.controller.js';
-import authService from '../src/services/auth.service.js';
+import { authService } from '../src/services/auth.service.js';
 import { protect } from '../src/middlewares/auth.middleware.js';
 import PasswordResetToken from '../src/models/passwordResetToken.model.js';
 import Session from '../src/models/session.model.js';

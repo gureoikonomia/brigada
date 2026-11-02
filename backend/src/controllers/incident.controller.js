@@ -1,4 +1,4 @@
-import incidentService from "../services/incident.service.js";
+import { incidentService } from "../services/incident.service.js";
 
 /**
  * POST /api/incidents

@@ -1,5 +1,5 @@
 import PendingMediaDeletion from '../models/pendingMediaDeletion.model.js';
-import uploadService from './upload.service.js';
+import { uploadService } from './upload.service.js';
 import { randomUUID } from 'node:crypto';
 
 let processing = false;

@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 import Vote from '../models/vote.model.js';
 import Incident from '../models/incident.model.js';
-import appSettingsService from './app-settings.service.js';
+import { appSettingsService } from './app-settings.service.js';
 
 import { ServiceError } from '../errors/service.error.js';
 
@@ -149,7 +149,7 @@ async function getVotedIncidentIds(
   );
 }
 
-export default {
+export const voteService = {
   castVote,
   removeVote,
   hasVoted,

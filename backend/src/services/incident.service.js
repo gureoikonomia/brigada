@@ -3,9 +3,9 @@ import mongoose from 'mongoose';
 import Incident from '../models/incident.model.js';
 import Vote from '../models/vote.model.js';
 
-import uploadService from './upload.service.js';
-import voteService from './vote.service.js';
-import appSettingsService from './app-settings.service.js';
+import { uploadService } from './upload.service.js';
+import { voteService } from './vote.service.js';
+import { appSettingsService } from './app-settings.service.js';
 import { votedIncidentVisibilityMatch } from '../utils/security.js';
 import {
   enqueueMediaDeletion,
@@ -496,7 +496,7 @@ async function listVotedIncidents({ userId, user, page = 1, limit = 20 }) {
   };
 }
 
-export default {
+export const incidentService = {
   createIncident,
   listIncidents,
   getIncidentById,

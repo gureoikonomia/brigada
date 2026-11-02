@@ -1,4 +1,4 @@
-import userService from '../services/user.service.js';
+import { userService } from '../services/user.service.js';
 
 /**
  * GET /api/users/me/stats

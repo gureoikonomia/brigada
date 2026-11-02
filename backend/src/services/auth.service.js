@@ -7,7 +7,7 @@ import EmailVerificationToken from '../models/emailVerificationToken.model.js';
 import PasswordResetToken from '../models/passwordResetToken.model.js';
 import { ServiceError } from '../errors/service.error.js';
 import { createSessionToken } from './session.service.js';
-import uploadService from './upload.service.js';
+import { uploadService } from './upload.service.js';
 import { sendVerificationEmail } from '../utils/email.js';
 import {
   enqueueMediaDeletion,
@@ -345,7 +345,7 @@ async function changePassword(userId, { currentPassword, newPassword }) {
 }
 
 
-export default {
+export const authService = {
   register,
   resendVerification,
   verifyEmail,

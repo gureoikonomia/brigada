@@ -7,7 +7,7 @@ import PasswordResetToken from '../models/passwordResetToken.model.js';
 import EmailVerificationToken from '../models/emailVerificationToken.model.js';
 import PendingMediaDeletion from '../models/pendingMediaDeletion.model.js';
 import { ServiceError } from '../errors/service.error.js';
-import appSettingsService from './app-settings.service.js';
+import { appSettingsService } from './app-settings.service.js';
 import {
   enqueueMediaDeletion,
   processPendingMediaDeletions,
@@ -265,7 +265,7 @@ async function deleteAccount(userId, currentPassword) {
   return { deleted: true, mediaCleanupPending };
 }
 
-export default {
+export const userService = {
   getUserStats,
   getAdminStats,
   listUsers,

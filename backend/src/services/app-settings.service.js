@@ -36,7 +36,7 @@ async function requireVotingEnabled() {
   }
 }
 
-export default {
+export const appSettingsService = {
   getSettings,
   updateVotingEnabled,
   requireVotingEnabled,

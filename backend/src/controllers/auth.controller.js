@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
-import authService from '../services/auth.service.js';
+import { authService } from '../services/auth.service.js';
 import { revokeSessionToken } from '../services/session.service.js';
-import userService from '../services/user.service.js';
+import { userService } from '../services/user.service.js';
 import {
   CSRF_COOKIE_NAME,
   SESSION_COOKIE_NAME,
