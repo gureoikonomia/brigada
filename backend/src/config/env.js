@@ -23,9 +23,9 @@ export function getCorsOrigins() {
     .map((origin) => origin.trim())
     .filter(Boolean);
 
-  if (process.env.NODE_ENV === 'production') {
-    configuredOrigins.push(PRODUCTION_FRONTEND_ORIGIN);
-  } else {
+  configuredOrigins.push(PRODUCTION_FRONTEND_ORIGIN);
+
+  if (process.env.NODE_ENV !== 'production') {
     configuredOrigins.push('http://localhost:5173', 'http://127.0.0.1:5173');
   }
 
