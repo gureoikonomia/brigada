@@ -1,17 +1,13 @@
 {
   "nav": {
     "brand": "BRIGADA",
-    "incidents": "INCIDENCIAS",
     "newIncident": "Nueva incidencia",
     "newIncidentFull": "Nueva incidencia",
     "moderation": "Moderación",
     "login": "Entrar",
-    "register": "Crear cuenta",
     "logout": "Cerrar sesión",
     "darkMode": "Activar modo noche",
     "lightMode": "Activar modo claro",
-    "openMenu": "Abrir menú",
-    "closeMenu": "Cerrar menú",
     "mobileNavigation": "Navegación principal",
     "mobileHome": "Inicio",
     "mobileCreate": "Reportar",
@@ -23,8 +19,6 @@
     "loading": "Cargando…",
     "loadingSession": "Cargando sesión…",
     "noPermission": "No tienes permiso para ver esta página.",
-    "back": "← Volver",
-    "save": "GUARDAR",
     "saving": "GUARDANDO…",
     "cancel": "Cancelar"
   },
@@ -66,9 +60,7 @@
     "sortPopular": "Populares",
     "categoryFilter": "Categorías",
     "statusFilter": "Estados",
-    "moreFilters": "Más filtros",
     "sortFilter": "Ordenar",
-    "selectedCount": "{{count}} seleccionados",
     "loadError": "No se pudieron cargar las incidencias.",
     "empty": "No hay incidencias que coincidan con estos filtros.",
     "prev": "← Anterior",
@@ -80,7 +72,6 @@
     "loadError": "No se pudo cargar la incidencia.",
     "notFound": "Incidencia no encontrada o sin publicar.",
     "pendingModerationNotice": "Esta incidencia está pendiente de revisión por parte del equipo de moderación antes de ser visible públicamente.",
-    "pendingModerationBanner": "PENDIENTE DE MODERACIÓN — Visible solo para ti, moderadores y administradores.",
     "inReviewBanner": "EN REVISIÓN — Esta incidencia está siendo moderada antes de publicarse.",
     "reportedBy": "reportado por",
     "deleteIncident": "Borrar incidencia",
@@ -198,15 +189,11 @@
   },
   "profile": {
     "yourIncidents": "Mis incidencias",
-    "edit": "Editar Perfil",
     "loadError": "No se pudieron cargar tus incidencias.",
     "empty": "Todavía no has reportado ninguna incidencia.",
     "votedEmpty": "Aún no has apoyado ninguna incidencia con tu voto.",
     "tabMyIncidents": "Mis incidencias",
     "tabVotedIncidents": "Incidencias que apoyo",
-    "tabStats": "Estadísticas y reputación",
-    "tabUsersAdmin": "Gestión de Usuarios",
-    "tabModeration": "Moderación En Revisión",
     "adminPanel": "Administración",
     "tabSettings": "Cuenta y seguridad",
     "sectionSelectorLabel": "¿Qué quieres ver?",
@@ -223,31 +210,12 @@
     "deleteAccountTitle": "Eliminar cuenta y datos",
     "deleteAccountDescription": "Se borrarán tu cuenta, incidencias, fotos y votos. Esta acción no se puede deshacer.",
     "deleteAccountPassword": "Contraseña actual",
-    "deleteAccountConfirm": "Eliminar permanentemente la cuenta y sus datos",
     "deleteAccountSubmit": "Eliminar mi cuenta",
     "deletingAccount": "Eliminando…",
-    "deleteAccountSuccess": "La cuenta se eliminó correctamente.",
     "deleteAccountError": "No se pudo completar la eliminación. Tu cuenta sigue disponible; inténtalo de nuevo.",
-    "deleteAccountMediaPending": "La cuenta se eliminó. Algunas fotos están pendientes de borrado y el sistema lo reintentará.",
-    "verified": "Usuario Verificado",
-    "avatarUrlLabel": "URL de Foto de Perfil / Avatar"
-  },
-  "stats": {
-    "title": "MÉTRICAS DE APORTACIÓN",
-    "incidentsCount": "Incidencias Reportadas",
-    "resolvedCount": "Incidencias Resueltas",
-    "votesCount": "Votos Emitidos",
-    "resolutionRate": "Tasa de Efectividad",
-    "memberSince": "Miembro desde",
-    "reputationRank": "Rango Comunitario",
-    "rankNovice": "Ciudadano Novato",
-    "rankActive": "Colaborador Activo",
-    "rankHonor": "Brigadista de Honor",
-    "rankLegend": "Brigadista Leyenda"
+    "deleteAccountMediaPending": "La cuenta se eliminó. Algunas fotos están pendientes de borrado y el sistema lo reintentará."
   },
   "admin": {
-    "title": "CONSOLA DE ADMINISTRACIÓN DE COMUNIDAD",
-    "subtitle": "Métricas globales del sistema y gestión integral de usuarios.",
     "overview": "Resumen de la comunidad",
     "statsError": "No se pudieron cargar las estadísticas.",
     "resolvedCount": "{{count}} incidencias resueltas",
@@ -268,19 +236,12 @@
     "actionsColumn": "Acciones",
     "you": "Tú",
     "usersTotal": "Total Usuarios",
-    "usersActive": "Usuarios Activos",
-    "usersInactive": "Cuentas Inactivas",
     "incidentsTotal": "Total Incidencias",
     "totalVotes": "Votos Totales",
     "manageUsers": "GESTIÓN DE USUARIOS",
     "searchPlaceholder": "Buscar por nombre o email...",
-    "roleUser": "Vecino/a",
-    "roleModerator": "Moderador/a",
-    "roleAdmin": "Administrador/a",
     "statusActive": "Activo",
     "statusInactive": "Inactivo",
-    "actionRole": "Cambiar Rol",
-    "actionStatus": "Estado",
     "activate": "Activar",
     "deactivate": "Desactivar",
     "confirmRoleChange": "¿Cambiar rol de {{name}} a {{role}}?",
@@ -293,8 +254,6 @@
     "votingSettingError": "No se pudo guardar la configuración de votación."
   },
   "editProfile": {
-    "backToProfile": "← Volver a tu perfil",
-    "title": "EDITAR PERFIL",
     "accountData": "Datos de la cuenta",
     "nameLabel": "Nombre",
     "emailLabel": "Email",
@@ -310,12 +269,10 @@
     "changePassword": "Cambiar contraseña",
     "currentPasswordLabel": "Contraseña actual",
     "newPasswordLabel": "Nueva contraseña",
-    "newPasswordHint": "(mín. 8 caracteres)",
     "confirmPasswordLabel": "Repite la nueva contraseña",
     "passwordMismatch": "Las dos contraseñas nuevas no coinciden",
     "changePasswordSubmit": "CAMBIAR CONTRASEÑA",
     "changingPassword": "CAMBIANDO…",
-    "passwordSuccess": "Contraseña actualizada correctamente.",
     "passwordError": "No se pudo cambiar la contraseña"
   },
   "moderation": {
@@ -343,8 +300,6 @@
     "backLink": "← Volver al listado de incidencias"
   },
   "language": {
-    "label": "Idioma",
-    "es": "Castellano",
-    "eu": "Euskara"
+    "label": "Idioma"
   }
 }
