@@ -14,6 +14,8 @@ import {
 
 import { ServiceError } from '../errors/service.error.js';
 
+const EARTH_RADIUS_METERS = 6378100;
+
 export function presentIncident(incident, user) {
   const result = { ...incident };
   const isPrivileged = ['admin', 'moderator'].includes(user?.role);
@@ -160,6 +162,7 @@ async function listIncidents({
   }
 
   const findQuery = { ...baseQuery };
+  const countQuery = { ...baseQuery };
 
   // Búsqueda geográfica.
   if (
@@ -167,17 +170,27 @@ async function listIncidents({
     near.lng != null &&
     near.lat != null
   ) {
+    const coordinates = [
+      Number(near.lng),
+      Number(near.lat),
+    ];
+    const maxDistanceMeters = Number(near.maxDistanceMeters) || 5000;
+
     findQuery.location = {
       $near: {
         $geometry: {
           type: 'Point',
-          coordinates: [
-            Number(near.lng),
-            Number(near.lat),
-          ],
+          coordinates,
         },
-        $maxDistance:
-          Number(near.maxDistanceMeters) || 5000,
+        $maxDistance: maxDistanceMeters,
+      },
+    };
+    countQuery.location = {
+      $geoWithin: {
+        $centerSphere: [
+          coordinates,
+          maxDistanceMeters / EARTH_RADIUS_METERS,
+        ],
       },
     };
   }
@@ -214,7 +227,7 @@ async function listIncidents({
       .limit(limit)
       .lean(),
 
-    Incident.countDocuments(baseQuery),
+    Incident.countDocuments(countQuery),
   ]);
 
   let votedIds = new Set();
