@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import test, { after } from 'node:test';
 
-import authController from '../src/controllers/auth.controller.js';
+import { logout } from '../src/controllers/auth.controller.js';
 import authService from '../src/services/auth.service.js';
 import { protect } from '../src/middlewares/auth.middleware.js';
 import PasswordResetToken from '../src/models/passwordResetToken.model.js';
@@ -136,7 +136,7 @@ async function callLogout(token) {
   };
   let error;
 
-  await authController.logout(
+  await logout(
     { cookies: { [SESSION_COOKIE_NAME]: token } },
     res,
     (nextError) => {
