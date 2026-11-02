@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { verifyEmail } from '../services/auth.service';
-import styles from './ResetPasswordPage.module.css';
+import styles from './VerifyEmailPage.module.css';
 
 export default function VerifyEmailPage() {
   const { t } = useTranslation();
