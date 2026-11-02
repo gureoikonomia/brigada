@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { listUsers, updateUserRole, updateUserStatus } from '../services/user.service';
 import { useAuth } from '../context/AuthContext';
@@ -24,31 +24,45 @@ export default function UserManagementTable() {
   const [error, setError] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const [updatingId, setUpdatingId] = useState(null);
+  const fetchRequestId = useRef(0);
 
   const fetchUsers = (page = 1) => {
-    setLoading(true);
-    setError(null);
+    const requestId = ++fetchRequestId.current;
     listUsers({ page, role: roleFilter || undefined, search: search || undefined, limit: 15 })
       .then((data) => {
+        if (requestId !== fetchRequestId.current) return;
         setUsers(data.items);
         setPagination(data.pagination);
       })
       .catch((err) => {
+        if (requestId !== fetchRequestId.current) return;
         setError(err?.response?.data?.message || t('admin.updateError'));
       })
       .finally(() => {
-        setLoading(false);
+        if (requestId === fetchRequestId.current) setLoading(false);
       });
   };
 
   useEffect(() => {
     fetchUsers(1);
+    return () => {
+      fetchRequestId.current += 1;
+    };
+    // Search is submitted explicitly; only role changes trigger this effect.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roleFilter]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
     fetchUsers(1);
+  };
+
+  const handlePageChange = (page) => {
+    setLoading(true);
+    setError(null);
+    fetchUsers(page);
   };
 
   const handleRoleChange = async (userId, targetName, newRole) => {
@@ -121,7 +135,11 @@ export default function UserManagementTable() {
 
           <select
             value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
+            onChange={(e) => {
+              setLoading(true);
+              setError(null);
+              setRoleFilter(e.target.value);
+            }}
             className={styles.roleSelectFilter}
             aria-label={t('admin.filterByRole')}
           >
@@ -250,7 +268,7 @@ export default function UserManagementTable() {
         <div className={styles.paginationRow}>
           <button
             disabled={pagination.page <= 1}
-            onClick={() => fetchUsers(pagination.page - 1)}
+            onClick={() => handlePageChange(pagination.page - 1)}
             className={styles.pageBtn}
           >
             {t('incidentList.prev')}
@@ -260,7 +278,7 @@ export default function UserManagementTable() {
           </span>
           <button
             disabled={pagination.page >= pagination.totalPages}
-            onClick={() => fetchUsers(pagination.page + 1)}
+            onClick={() => handlePageChange(pagination.page + 1)}
             className={styles.pageBtn}
           >
             {t('incidentList.next')}
