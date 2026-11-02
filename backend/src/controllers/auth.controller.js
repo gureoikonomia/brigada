@@ -208,7 +208,7 @@ async function logout(req, res, next) {
   return res.status(204).end();
 }
 
-export default {
+export {
   csrf,
   register,
   resendVerification,

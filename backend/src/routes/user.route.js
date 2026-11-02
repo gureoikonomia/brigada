@@ -1,5 +1,5 @@
 import express from 'express';
-import userController from '../controllers/user.controller.js';
+import * as userController from '../controllers/user.controller.js';
 import { protect, restrictTo } from '../middlewares/auth.middleware.js';
 import { validate } from '../middlewares/validate.middleware.js';
 import { mongoIdParamSchema } from '../validators/incident.validator.js';

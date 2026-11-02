@@ -42,7 +42,11 @@ async function listUsers(req, res, next) {
 async function updateRole(req, res, next) {
   try {
     const { role } = req.validated.body;
-    const updated = await userService.updateUserRole(req.user.id, req.params.id, role);
+    const updated = await userService.updateUserRole(
+      req.user.id,
+      req.validated.params.id,
+      role
+    );
     return res.status(200).json(updated);
   } catch (err) {
     return next(err);
@@ -55,14 +59,18 @@ async function updateRole(req, res, next) {
 async function updateStatus(req, res, next) {
   try {
     const { isActive } = req.validated.body;
-    const updated = await userService.updateUserStatus(req.user.id, req.params.id, isActive);
+    const updated = await userService.updateUserStatus(
+      req.user.id,
+      req.validated.params.id,
+      isActive
+    );
     return res.status(200).json(updated);
   } catch (err) {
     return next(err);
   }
 }
 
-export default {
+export {
   getStats,
   getAdminStats,
   listUsers,

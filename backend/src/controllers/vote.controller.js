@@ -54,7 +54,7 @@ async function getVoteStatus(req, res, next) {
   }
 }
 
-export default {
+export {
   vote,
   unvote,
   getVoteStatus,

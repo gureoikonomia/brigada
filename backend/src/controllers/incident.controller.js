@@ -181,7 +181,7 @@ async function listVoted(req, res, next) {
   }
 }
 
-export default {
+export {
   create,
   list,
   getById,

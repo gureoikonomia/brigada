@@ -1,6 +1,6 @@
 import express from 'express';
 
-import incidentController from '../controllers/incident.controller.js';
+import * as incidentController from '../controllers/incident.controller.js';
 import voteRoutes from './vote.route.js';
 
 import {

@@ -19,4 +19,4 @@ async function updateVoting(req, res, next) {
   }
 }
 
-export default { getSettings, updateVoting };
+export { getSettings, updateVoting };

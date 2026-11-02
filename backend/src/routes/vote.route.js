@@ -1,6 +1,6 @@
 import express from 'express';
 
-import voteController from '../controllers/vote.controller.js';
+import * as voteController from '../controllers/vote.controller.js';
 
 import { protect } from '../middlewares/auth.middleware.js';
 import { voteLimiter } from '../middlewares/rate-limiters.js';
