@@ -19,11 +19,8 @@ function NavLinks({ user, t }) {
     </Link>
   ) : (
     <>
-      <Link to="/login" className={styles.navLink}>
+      <Link to="/login" className={styles.primaryButton}>
         {t('nav.login')}
-      </Link>
-      <Link to="/registro" className={styles.primaryButton}>
-        {t('nav.register')}
       </Link>
     </>
   );
