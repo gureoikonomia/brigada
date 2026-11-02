@@ -26,6 +26,7 @@ export default function IncidentDetailPage() {
   const navigate = useNavigate();
 
   const [incident, setIncident] = useState(null);
+  const [loadedIncidentId, setLoadedIncidentId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deleting, setDeleting] = useState(false);
@@ -41,11 +42,22 @@ export default function IncidentDetailPage() {
     let cancelled = false;
     getIncident(id)
       .then((data) => {
-        if (!cancelled) setIncident(data);
+        if (!cancelled) {
+          setIncident(data);
+          setError(null);
+          setEditing(false);
+          setEditDraft(null);
+          setEditImages([]);
+          setEditError(null);
+          setActionError(null);
+          setLoadedIncidentId(id);
+        }
       })
       .catch((err) => {
         if (!cancelled) {
+          setIncident(null);
           setError(err.response?.data?.message || t('incidentDetail.loadError'));
+          setLoadedIncidentId(id);
         }
       })
       .finally(() => {
@@ -54,8 +66,7 @@ export default function IncidentDetailPage() {
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, votingEnabled]);
+  }, [id, t, votingEnabled]);
 
   const handleDelete = async () => {
     if (!window.confirm(t('incidentDetail.confirmDelete'))) return;
@@ -142,7 +153,7 @@ export default function IncidentDetailPage() {
     setEditImages(selectedImages);
   };
 
-  if (loading) return <IncidentDetailSkeleton />;
+  if (loading || loadedIncidentId !== id) return <IncidentDetailSkeleton />;
   if (error || !incident) {
     return (
       <div className={styles.errorWrapper}>
@@ -182,7 +193,7 @@ export default function IncidentDetailPage() {
       )}
 
       <div className={styles.cardContainer}>
-        <ImageGallery images={incident.images} />
+        <ImageGallery key={incident._id} images={incident.images} />
 
         <div className={styles.cardBody}>
           <div className={styles.badgeRow}>
