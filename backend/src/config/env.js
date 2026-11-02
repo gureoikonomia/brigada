@@ -1,5 +1,7 @@
 import { getEmailConfiguration } from './email.js';
 
+const PRODUCTION_FRONTEND_ORIGIN = 'https://appbrigada.netlify.app';
+
 function parseHttpsOrigin(value, name) {
   let url;
   try {
@@ -21,7 +23,9 @@ export function getCorsOrigins() {
     .map((origin) => origin.trim())
     .filter(Boolean);
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV === 'production') {
+    configuredOrigins.push(PRODUCTION_FRONTEND_ORIGIN);
+  } else {
     configuredOrigins.push('http://localhost:5173', 'http://127.0.0.1:5173');
   }
 
