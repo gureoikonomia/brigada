@@ -23,10 +23,18 @@ test('geographic pagination counts incidents within the requested radius', async
   patchMethod(t, Incident, 'find', (query) => {
     findQuery = query;
     return {
-      populate() { return this; },
-      skip() { return this; },
-      limit() { return this; },
-      async lean() { return []; },
+      populate() {
+        return this;
+      },
+      skip() {
+        return this;
+      },
+      limit() {
+        return this;
+      },
+      async lean() {
+        return [];
+      },
     };
   });
   patchMethod(t, Incident, 'countDocuments', async (query) => {

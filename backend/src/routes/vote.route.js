@@ -7,9 +7,7 @@ import { voteLimiter } from '../middlewares/rate-limiters.js';
 
 import { validate } from '../middlewares/validate.middleware.js';
 
-import {
-  incidentIdParamSchema,
-} from '../validators/incident.validator.js';
+import { incidentIdParamSchema } from '../validators/incident.validator.js';
 
 const router = express.Router();
 
@@ -23,7 +21,7 @@ router.post(
   protect,
   voteLimiter,
   validate(incidentIdParamSchema, 'params'),
-  voteController.vote
+  voteController.vote,
 );
 
 // Retirar voto
@@ -32,7 +30,7 @@ router.delete(
   protect,
   voteLimiter,
   validate(incidentIdParamSchema, 'params'),
-  voteController.unvote
+  voteController.unvote,
 );
 
 // Consultar si el usuario ha votado
@@ -40,7 +38,7 @@ router.get(
   '/:incidentId/vote',
   protect,
   validate(incidentIdParamSchema, 'params'),
-  voteController.getVoteStatus
+  voteController.getVoteStatus,
 );
 
 export default router;

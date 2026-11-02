@@ -24,7 +24,7 @@ test('password reset link uses the frontend route without duplicate slashes', ()
   const link = createPasswordResetLink(
     'https://appbrigada.netlify.app/',
     'dummy-reset-token',
-    '507f1f77bcf86cd799439011'
+    '507f1f77bcf86cd799439011',
   );
   const url = new URL(link);
 
@@ -48,11 +48,10 @@ function signTestToken({
   tokenVersion = 0,
   expiresIn = '1h',
 } = {}) {
-  return jwt.sign(
-    { id, role: 'user', tokenVersion },
-    process.env.JWT_SECRET,
-    { jwtid: sessionId, expiresIn }
-  );
+  return jwt.sign({ id, role: 'user', tokenVersion }, process.env.JWT_SECRET, {
+    jwtid: sessionId,
+    expiresIn,
+  });
 }
 
 function createSessionStore(t) {
@@ -64,10 +63,10 @@ function createSessionStore(t) {
   patchMethod(t, Session, 'exists', async (query) => {
     const record = records.get(query.sessionId);
     if (
-      !record
-      || record.userId.toString() !== query.userId
-      || record.tokenVersion !== query.tokenVersion
-      || record.expiresAt <= query.expiresAt.$gt
+      !record ||
+      record.userId.toString() !== query.userId ||
+      record.tokenVersion !== query.tokenVersion ||
+      record.expiresAt <= query.expiresAt.$gt
     ) {
       return null;
     }
@@ -76,9 +75,9 @@ function createSessionStore(t) {
   patchMethod(t, Session, 'deleteOne', async (query) => {
     const record = records.get(query.sessionId);
     if (
-      record
-      && record.userId.toString() === query.userId
-      && record.tokenVersion === query.tokenVersion
+      record &&
+      record.userId.toString() === query.userId &&
+      record.tokenVersion === query.tokenVersion
     ) {
       records.delete(query.sessionId);
       return { deletedCount: 1 };
@@ -136,13 +135,9 @@ async function callLogout(token) {
   };
   let error;
 
-  await logout(
-    { cookies: { [SESSION_COOKIE_NAME]: token } },
-    res,
-    (nextError) => {
-      error = nextError;
-    }
-  );
+  await logout({ cookies: { [SESSION_COOKIE_NAME]: token } }, res, (nextError) => {
+    error = nextError;
+  });
 
   return { ...response, error };
 }
@@ -177,9 +172,7 @@ test('login permits unverified accounts and creates a persisted session token', 
   assert.equal(session.tokenVersion, 4);
   assert.equal(session.expiresAt.getTime(), decoded.exp * 1000);
 
-  const ttlIndex = Session.schema.indexes().find(
-    ([keys]) => keys.expiresAt === 1
-  );
+  const ttlIndex = Session.schema.indexes().find(([keys]) => keys.expiresAt === 1);
   assert.equal(ttlIndex?.[1].expireAfterSeconds, 0);
 });
 
@@ -329,7 +322,7 @@ test('password reset increments tokenVersion and rejects sessions issued before 
     res,
     (nextError) => {
       error = nextError;
-    }
+    },
   );
 
   assert.equal(error, undefined);
@@ -363,7 +356,10 @@ test('revoked, expired, invalid, and sessionless JWTs are rejected', async (t) =
   assert.equal(expiredLogout.statusCode, 204);
 
   assert.equal((await callProtect('not-a-jwt')).statusCode, 401);
-  assert.equal((await callProtect(signTestToken({ sessionId: 'missing-session' }))).statusCode, 401);
+  assert.equal(
+    (await callProtect(signTestToken({ sessionId: 'missing-session' }))).statusCode,
+    401,
+  );
 });
 
 test('logout clears cookies but does not claim success if MongoDB revocation fails', async (t) => {

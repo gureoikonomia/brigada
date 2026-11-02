@@ -9,10 +9,7 @@ import { ServiceError } from '../errors/service.error.js';
 import { createSessionToken } from './session.service.js';
 import { uploadService } from './upload.service.js';
 import { sendVerificationEmail } from '../utils/email.js';
-import {
-  enqueueMediaDeletion,
-  processPendingMediaDeletions,
-} from './media-deletion.service.js';
+import { enqueueMediaDeletion, processPendingMediaDeletions } from './media-deletion.service.js';
 
 const SALT_ROUNDS = 10;
 const dummyPasswordHash = bcrypt.hash('not-a-real-account-password', SALT_ROUNDS);
@@ -26,18 +23,11 @@ async function normalizeAccountLookupDuration(startedAt) {
 /**
  * Registra un nuevo usuario.
  */
-async function register({
-  name,
-  email,
-  password,
-}) {
+async function register({ name, email, password }) {
   const startedAt = Date.now();
 
   const normalizedEmail = email.toLowerCase();
-  const hashedPassword = await bcrypt.hash(
-    password,
-    SALT_ROUNDS
-  );
+  const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
   const existing = await User.findOne({ email: normalizedEmail }).select('_id').lean();
   if (!existing) {
@@ -52,7 +42,6 @@ async function register({
     } catch (error) {
       if (error.code !== 11000) throw error;
     }
-
   }
 
   await normalizeAccountLookupDuration(startedAt);
@@ -101,23 +90,27 @@ async function verifyEmail({ uid, token }) {
 
   try {
     await session.withTransaction(async () => {
-      const record = await EmailVerificationToken.findOneAndDelete({
-        userId: uid,
-        tokenHash: hashVerificationToken(token),
-        expiresAt: { $gt: new Date() },
-      }, { session });
+      const record = await EmailVerificationToken.findOneAndDelete(
+        {
+          userId: uid,
+          tokenHash: hashVerificationToken(token),
+          expiresAt: { $gt: new Date() },
+        },
+        { session },
+      );
 
       if (!record) throw new ServiceError('Enlace inválido o expirado', 400);
       if (record.purpose === 'email-change' && !record.email) {
         throw new ServiceError('Enlace inválido o expirado', 400);
       }
 
-      const update = record.purpose === 'email-change'
-        ? {
-            $set: { email: record.email, emailVerified: true },
-            $inc: { tokenVersion: 1 },
-          }
-        : { $set: { emailVerified: true } };
+      const update =
+        record.purpose === 'email-change'
+          ? {
+              $set: { email: record.email, emailVerified: true },
+              $inc: { tokenVersion: 1 },
+            }
+          : { $set: { emailVerified: true } };
 
       const user = await User.findByIdAndUpdate(uid, update, {
         returnDocument: 'after',
@@ -156,10 +149,7 @@ async function login({ email, password }) {
   const passwordMatches = await bcrypt.compare(password, passwordHash);
 
   if (!user || !user.isActive || !passwordMatches) {
-    throw new ServiceError(
-      'Credenciales incorrectas',
-      401
-    );
+    throw new ServiceError('Credenciales incorrectas', 401);
   }
 
   const token = await createSessionToken(user);
@@ -183,10 +173,7 @@ async function getProfile(userId) {
   const user = await User.findById(userId).lean();
 
   if (!user) {
-    throw new ServiceError(
-      'Usuario no encontrado',
-      404
-    );
+    throw new ServiceError('Usuario no encontrado', 404);
   }
 
   return user;
@@ -271,12 +258,12 @@ async function updateAvatar(userId, file) {
       } catch (queueError) {
         throw new AggregateError(
           [err, cleanupError, queueError],
-          'No se pudo guardar el perfil ni programar la limpieza de la foto nueva'
+          'No se pudo guardar el perfil ni programar la limpieza de la foto nueva',
         );
       }
       throw new AggregateError(
         [err, cleanupError],
-        'No se pudo guardar el perfil ni limpiar la foto nueva'
+        'No se pudo guardar el perfil ni limpiar la foto nueva',
       );
     }
     throw err;
@@ -291,7 +278,7 @@ async function updateAvatar(userId, file) {
       } catch (cleanupError) {
         throw new AggregateError(
           [queueError, cleanupError],
-          'El perfil se actualizó, pero no se pudo programar ni completar la limpieza de la foto anterior'
+          'El perfil se actualizó, pero no se pudo programar ni completar la limpieza de la foto anterior',
         );
       }
     }
@@ -330,7 +317,7 @@ async function changePassword(userId, { currentPassword, newPassword }) {
       const updated = await User.findOneAndUpdate(
         { _id: userId, password: user.password },
         { $set: { password: newHash }, $inc: { tokenVersion: 1 } },
-        { returnDocument: 'after', session }
+        { returnDocument: 'after', session },
       );
       if (!updated) {
         throw new ServiceError('La contraseña cambió mientras se procesaba la solicitud', 409);
@@ -344,7 +331,6 @@ async function changePassword(userId, { currentPassword, newPassword }) {
   return { updated: true };
 }
 
-
 export const authService = {
   register,
   resendVerification,
@@ -354,5 +340,5 @@ export const authService = {
   updateProfile,
   requestEmailChange,
   updateAvatar,
-  changePassword
+  changePassword,
 };

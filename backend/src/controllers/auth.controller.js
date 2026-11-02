@@ -2,11 +2,7 @@ import { randomBytes } from 'node:crypto';
 import { authService } from '../services/auth.service.js';
 import { revokeSessionToken } from '../services/session.service.js';
 import { userService } from '../services/user.service.js';
-import {
-  CSRF_COOKIE_NAME,
-  SESSION_COOKIE_NAME,
-  cookieOptions,
-} from '../utils/security.js';
+import { CSRF_COOKIE_NAME, SESSION_COOKIE_NAME, cookieOptions } from '../utils/security.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -33,11 +29,7 @@ function csrf(req, res) {
  */
 async function register(req, res, next) {
   try {
-    const {
-      name,
-      email,
-      password,
-    } = req.validated.body;
+    const { name, email, password } = req.validated.body;
 
     const result = await authService.register({
       name,
@@ -55,9 +47,7 @@ async function register(req, res, next) {
 
 async function resendVerification(req, res, next) {
   try {
-    const result = await authService.resendVerification(
-      req.validated.body.email
-    );
+    const result = await authService.resendVerification(req.validated.body.email);
     return res.status(202).json(result);
   } catch (err) {
     return next(err);
@@ -78,10 +68,7 @@ async function verifyEmail(req, res, next) {
 
 async function deleteAccount(req, res, next) {
   try {
-    const result = await userService.deleteAccount(
-      req.user.id,
-      req.validated.body.currentPassword
-    );
+    const result = await userService.deleteAccount(req.user.id, req.validated.body.currentPassword);
     clearSessionCookies(res);
     return res.status(200).json(result);
   } catch (err) {
@@ -97,10 +84,7 @@ async function deleteAccount(req, res, next) {
  */
 async function login(req, res, next) {
   try {
-    const {
-      email,
-      password,
-    } = req.validated.body;
+    const { email, password } = req.validated.body;
 
     const result = await authService.login({
       email,
@@ -120,9 +104,7 @@ async function login(req, res, next) {
  */
 async function me(req, res, next) {
   try {
-    const profile = await authService.getProfile(
-      req.user.id
-    );
+    const profile = await authService.getProfile(req.user.id);
 
     return res.status(200).json(profile);
   } catch (err) {

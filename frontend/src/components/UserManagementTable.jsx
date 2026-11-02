@@ -66,7 +66,11 @@ export default function UserManagementTable() {
   };
 
   const handleRoleChange = async (userId, targetName, newRole) => {
-    if (!window.confirm(t('admin.confirmRoleChange', { name: targetName, role: t(`role.${newRole}`) }))) {
+    if (
+      !window.confirm(
+        t('admin.confirmRoleChange', { name: targetName, role: t(`role.${newRole}`) }),
+      )
+    ) {
       return;
     }
 
@@ -77,7 +81,10 @@ export default function UserManagementTable() {
       setUsers((prev) => prev.map((u) => (u._id === userId ? { ...u, role: updated.role } : u)));
       setFeedback({ type: 'success', message: t('admin.updateSuccess') });
     } catch (err) {
-      setFeedback({ type: 'error', message: err?.response?.data?.message || t('admin.updateError') });
+      setFeedback({
+        type: 'error',
+        message: err?.response?.data?.message || t('admin.updateError'),
+      });
     } finally {
       setUpdatingId(null);
     }
@@ -94,10 +101,15 @@ export default function UserManagementTable() {
     setFeedback(null);
     try {
       const updated = await updateUserStatus(userId, nextStatus);
-      setUsers((prev) => prev.map((u) => (u._id === userId ? { ...u, isActive: updated.isActive } : u)));
+      setUsers((prev) =>
+        prev.map((u) => (u._id === userId ? { ...u, isActive: updated.isActive } : u)),
+      );
       setFeedback({ type: 'success', message: t('admin.updateSuccess') });
     } catch (err) {
-      setFeedback({ type: 'error', message: err?.response?.data?.message || t('admin.updateError') });
+      setFeedback({
+        type: 'error',
+        message: err?.response?.data?.message || t('admin.updateError'),
+      });
     } finally {
       setUpdatingId(null);
     }
@@ -152,18 +164,16 @@ export default function UserManagementTable() {
       </div>
 
       {feedback && (
-        <div className={feedback.type === 'success' ? styles.feedbackSuccess : styles.feedbackError}>
+        <div
+          className={feedback.type === 'success' ? styles.feedbackSuccess : styles.feedbackError}
+        >
           {feedback.message}
         </div>
       )}
 
-      {error && (
-        <p className={styles.errorMessage}>{error}</p>
-      )}
+      {error && <p className={styles.errorMessage}>{error}</p>}
 
-      {loading && (
-        <p className={styles.loadingText}>{t('common.loading')}</p>
-      )}
+      {loading && <p className={styles.loadingText}>{t('common.loading')}</p>}
 
       {!loading && users.length === 0 && (
         <div className={styles.emptyState}>
@@ -194,23 +204,13 @@ export default function UserManagementTable() {
                     <td className={styles.tdCell}>
                       <div className={styles.userFlex}>
                         {u.avatarUrl ? (
-                          <img
-                            src={u.avatarUrl}
-                            alt=""
-                            className={styles.avatarImage}
-                          />
+                          <img src={u.avatarUrl} alt="" className={styles.avatarImage} />
                         ) : (
-                          <div className={styles.avatarInitials}>
-                            {initials(u.name)}
-                          </div>
+                          <div className={styles.avatarInitials}>{initials(u.name)}</div>
                         )}
                         <div>
                           <span className={styles.userName}>{u.name}</span>
-                          {isSelf && (
-                            <span className={styles.selfLabel}>
-                              {t('admin.you')}
-                            </span>
-                          )}
+                          {isSelf && <span className={styles.selfLabel}>{t('admin.you')}</span>}
                         </div>
                       </div>
                     </td>

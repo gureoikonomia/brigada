@@ -36,17 +36,25 @@ export default function VerifyEmailPage() {
       <div className={styles.card}>
         <h1 className={styles.title}>{t('verifyEmail.title')}</h1>
         {!token || !uid ? (
-          <p className={styles.errorBox} role="alert">{t('verifyEmail.error')}</p>
+          <p className={styles.errorBox} role="alert">
+            {t('verifyEmail.error')}
+          </p>
         ) : verified ? (
           <>
             <p className={styles.successText} role="status">
               {t(emailChanged ? 'verifyEmail.emailChangedSuccess' : 'verifyEmail.success')}
             </p>
-            <Link to="/login" className={styles.actionLink}>{t('verifyEmail.login')}</Link>
+            <Link to="/login" className={styles.actionLink}>
+              {t('verifyEmail.login')}
+            </Link>
           </>
         ) : (
           <>
-            {error && <p className={styles.errorBox} role="alert">{error}</p>}
+            {error && (
+              <p className={styles.errorBox} role="alert">
+                {error}
+              </p>
+            )}
             <button
               type="button"
               onClick={handleVerify}

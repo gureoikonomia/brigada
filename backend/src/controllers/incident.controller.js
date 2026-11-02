@@ -1,4 +1,4 @@
-import { incidentService } from "../services/incident.service.js";
+import { incidentService } from '../services/incident.service.js';
 
 /**
  * POST /api/incidents
@@ -7,14 +7,7 @@ import { incidentService } from "../services/incident.service.js";
  */
 async function create(req, res, next) {
   try {
-    const {
-      title,
-      description,
-      category,
-      lat,
-      lng,
-      address,
-    } = req.validated.body;
+    const { title, description, category, lat, lng, address } = req.validated.body;
 
     const incident = await incidentService.createIncident({
       title,
@@ -43,25 +36,14 @@ async function create(req, res, next) {
  */
 async function list(req, res, next) {
   try {
-    const {
-      status,
-      category,
-      createdBy,
-      lat,
-      lng,
-      maxDistanceMeters,
-      page,
-      limit,
-      sortBy,
-    } = req.validated.query;
+    const { status, category, createdBy, lat, lng, maxDistanceMeters, page, limit, sortBy } =
+      req.validated.query;
 
     const result = await incidentService.listIncidents({
       status,
       category,
       createdBy,
-      near: lat != null && lng != null
-        ? { lat, lng, maxDistanceMeters }
-        : null,
+      near: lat != null && lng != null ? { lat, lng, maxDistanceMeters } : null,
       page,
       limit,
       sortBy,
@@ -79,10 +61,7 @@ async function list(req, res, next) {
  */
 async function getById(req, res, next) {
   try {
-    const incident = await incidentService.getIncidentById(
-      req.validated.params.id,
-      req.user
-    );
+    const incident = await incidentService.getIncidentById(req.validated.params.id, req.user);
 
     return res.status(200).json(incident);
   } catch (err) {
@@ -104,11 +83,7 @@ async function updateStatus(req, res, next) {
   try {
     const { status } = req.validated.body;
 
-    const incident = await incidentService.updateStatus(
-      req.validated.params.id,
-      status,
-      req.user
-    );
+    const incident = await incidentService.updateStatus(req.validated.params.id, status, req.user);
 
     return res.status(200).json(incident);
   } catch (err) {
@@ -132,7 +107,7 @@ async function update(req, res, next) {
       req.validated.params.id,
       req.validated.body,
       req.files || [],
-      req.user
+      req.user,
     );
     return res.status(200).json(incident);
   } catch (err) {
@@ -148,10 +123,7 @@ async function update(req, res, next) {
  */
 async function remove(req, res, next) {
   try {
-    const result = await incidentService.deleteIncident(
-      req.validated.params.id,
-      req.user
-    );
+    const result = await incidentService.deleteIncident(req.validated.params.id, req.user);
     return res.status(200).json(result);
   } catch (err) {
     if (err.statusCode) {
@@ -181,12 +153,4 @@ async function listVoted(req, res, next) {
   }
 }
 
-export {
-  create,
-  list,
-  getById,
-  updateStatus,
-  update,
-  remove,
-  listVoted,
-};
+export { create, list, getById, updateStatus, update, remove, listVoted };

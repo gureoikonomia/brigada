@@ -13,7 +13,7 @@ router.patch(
   protect,
   restrictTo('admin'),
   validate(updateVotingSettingSchema),
-  appSettingsController.updateVoting
+  appSettingsController.updateVoting,
 );
 
 export default router;

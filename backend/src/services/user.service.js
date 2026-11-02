@@ -9,17 +9,14 @@ import EmailVerificationToken from '../models/emailVerificationToken.model.js';
 import PendingMediaDeletion from '../models/pendingMediaDeletion.model.js';
 import { ServiceError } from '../errors/service.error.js';
 import { appSettingsService } from './app-settings.service.js';
-import {
-  enqueueMediaDeletion,
-  processPendingMediaDeletions,
-} from './media-deletion.service.js';
+import { enqueueMediaDeletion, processPendingMediaDeletions } from './media-deletion.service.js';
 
 async function ensureAdminInvariantDocument() {
   try {
     await AppSettings.updateOne(
       { key: 'global' },
       { $setOnInsert: { key: 'global' } },
-      { upsert: true }
+      { upsert: true },
     );
   } catch (error) {
     if (error.code !== 11000) throw error;
@@ -32,7 +29,7 @@ async function acquireAdminInvariantLock(session) {
   const result = await AppSettings.updateOne(
     { key: 'global' },
     { $inc: { adminInvariantVersion: 1 } },
-    { session }
+    { session },
   );
   if (result.matchedCount !== 1) {
     throw new ServiceError('No se pudo comprobar el administrador activo', 500);
@@ -42,15 +39,12 @@ async function acquireAdminInvariantLock(session) {
 async function ensureAnotherActiveAdminExists(session) {
   const activeAdminCount = await User.countDocuments({
     role: 'admin',
-    $or: [
-      { isActive: true },
-      { isActive: { $exists: false } },
-    ],
+    $or: [{ isActive: true }, { isActive: { $exists: false } }],
   }).session(session);
   if (activeAdminCount <= 1) {
     throw new ServiceError(
       'No se puede eliminar, desactivar o degradar al último administrador activo',
-      409
+      409,
     );
   }
 }
@@ -71,9 +65,8 @@ async function getUserStats(userId) {
   ]);
   const votesCount = votingEnabled ? await Vote.countDocuments({ user: userId }) : 0;
 
-  const resolutionRate = incidentsCount > 0 
-    ? Math.round((resolvedCount / incidentsCount) * 100) 
-    : 0;
+  const resolutionRate =
+    incidentsCount > 0 ? Math.round((resolvedCount / incidentsCount) * 100) : 0;
 
   const activityTotal = incidentsCount + votesCount;
   let rank = 'novice';
@@ -163,12 +156,7 @@ async function listUsers({ page = 1, limit = 20, role, search }) {
   const skip = (page - 1) * limit;
 
   const [items, total] = await Promise.all([
-    User.find(query)
-      .select('-password')
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean(),
+    User.find(query).select('-password').sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
     User.countDocuments(query),
   ]);
 
@@ -197,7 +185,7 @@ async function updateUserRole(adminUserId, targetUserId, newRole) {
     updated = await User.findByIdAndUpdate(
       targetUserId,
       { role: newRole },
-      { returnDocument: 'after', runValidators: true }
+      { returnDocument: 'after', runValidators: true },
     ).select('-password');
   } else {
     await ensureAdminInvariantDocument();
@@ -213,7 +201,7 @@ async function updateUserRole(adminUserId, targetUserId, newRole) {
         updated = await User.findByIdAndUpdate(
           targetUserId,
           { role: newRole },
-          { returnDocument: 'after', runValidators: true, session }
+          { returnDocument: 'after', runValidators: true, session },
         ).select('-password');
       });
     } finally {
@@ -242,7 +230,7 @@ async function updateUserStatus(adminUserId, targetUserId, isActive) {
     updated = await User.findByIdAndUpdate(
       targetUserId,
       { $set: { isActive }, $inc: { tokenVersion: 1 } },
-      { returnDocument: 'after', runValidators: true }
+      { returnDocument: 'after', runValidators: true },
     ).select('-password');
   } else {
     await ensureAdminInvariantDocument();
@@ -258,7 +246,7 @@ async function updateUserStatus(adminUserId, targetUserId, isActive) {
         updated = await User.findByIdAndUpdate(
           targetUserId,
           { $set: { isActive }, $inc: { tokenVersion: 1 } },
-          { returnDocument: 'after', runValidators: true, session }
+          { returnDocument: 'after', runValidators: true, session },
         ).select('-password');
       });
     } finally {
@@ -299,7 +287,7 @@ async function deleteAccount(userId, currentPassword) {
       const activeUser = await User.findOneAndUpdate(
         { _id: userId, isActive: true },
         { $set: { isActive: false }, $inc: { tokenVersion: 1 } },
-        { returnDocument: 'after', session }
+        { returnDocument: 'after', session },
       ).select('+avatarPublicId');
 
       if (!activeUser) {
@@ -315,9 +303,7 @@ async function deleteAccount(userId, currentPassword) {
 
       publicIds = [
         activeUser.avatarPublicId,
-        ...ownedIncidents.flatMap((incident) =>
-          incident.images.map((image) => image.publicId)
-        ),
+        ...ownedIncidents.flatMap((incident) => incident.images.map((image) => image.publicId)),
       ].filter(Boolean);
 
       const votesByIncident = await Vote.aggregate([
@@ -331,7 +317,7 @@ async function deleteAccount(userId, currentPassword) {
         const update = await Incident.updateOne(
           { _id: voteGroup._id, votesCount: { $gte: voteGroup.count } },
           { $inc: { votesCount: -voteGroup.count } },
-          { session }
+          { session },
         );
         if (update.matchedCount !== 1) {
           throw new ServiceError('No se pudo reconciliar el contador de votos', 409);

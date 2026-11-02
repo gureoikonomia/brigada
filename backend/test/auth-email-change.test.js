@@ -108,9 +108,8 @@ test('confirming an email-change token updates email and invalidates prior sessi
   assert.ok(capturedUpdate.options.session);
   assert.equal(transactionCount, 1);
   assert.equal(sessionEnded, true);
-  await assert.rejects(
-    authService.verifyEmail({ uid: 'user-id', token: 'a'.repeat(64) }),
-    { statusCode: 400 }
-  );
+  await assert.rejects(authService.verifyEmail({ uid: 'user-id', token: 'a'.repeat(64) }), {
+    statusCode: 400,
+  });
   assert.equal(transactionCount, 2);
 });

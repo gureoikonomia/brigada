@@ -7,10 +7,7 @@ import { uploadService } from './upload.service.js';
 import { voteService } from './vote.service.js';
 import { appSettingsService } from './app-settings.service.js';
 import { votedIncidentVisibilityMatch } from '../utils/security.js';
-import {
-  enqueueMediaDeletion,
-  processPendingMediaDeletions,
-} from './media-deletion.service.js';
+import { enqueueMediaDeletion, processPendingMediaDeletions } from './media-deletion.service.js';
 
 import { ServiceError } from '../errors/service.error.js';
 
@@ -22,11 +19,7 @@ export function presentIncident(incident, user) {
 
   if (!isPrivileged) {
     const creatorId = result.createdBy?._id || result.createdBy;
-    result.isOwner = Boolean(
-      user?.id &&
-      creatorId &&
-      user.id === creatorId.toString()
-    );
+    result.isOwner = Boolean(user?.id && creatorId && user.id === creatorId.toString());
     delete result.createdBy;
   }
 
@@ -52,44 +45,22 @@ async function cleanupUploadedImages(images, originalError, message) {
 /**
  * Crea una incidencia.
  */
-async function createIncident({
-  title,
-  description,
-  category,
-  locationInput,
-  files,
-  user,
-}) {
+async function createIncident({ title, description, category, locationInput, files, user }) {
   if (!locationInput) {
-    throw new ServiceError(
-      'La ubicación es obligatoria',
-      400
-    );
+    throw new ServiceError('La ubicación es obligatoria', 400);
   }
 
   let coordinates;
 
   if (Array.isArray(locationInput.coordinates)) {
     coordinates = locationInput.coordinates;
-  } else if (
-    locationInput.lat != null &&
-    locationInput.lng != null
-  ) {
-    coordinates = [
-      Number(locationInput.lng),
-      Number(locationInput.lat),
-    ];
+  } else if (locationInput.lat != null && locationInput.lng != null) {
+    coordinates = [Number(locationInput.lng), Number(locationInput.lat)];
   } else {
-    throw new ServiceError(
-      'Formato de ubicación inválido',
-      400
-    );
+    throw new ServiceError('Formato de ubicación inválido', 400);
   }
 
-  const images =
-    files && files.length
-      ? await uploadService.uploadIncidentImages(files)
-      : [];
+  const images = files && files.length ? await uploadService.uploadIncidentImages(files) : [];
 
   let incident;
   try {
@@ -109,7 +80,7 @@ async function createIncident({
     await cleanupUploadedImages(
       images,
       error,
-      'No se pudo guardar la incidencia ni limpiar las imágenes subidas'
+      'No se pudo guardar la incidencia ni limpiar las imágenes subidas',
     );
     throw error;
   }
@@ -145,7 +116,9 @@ async function listIncidents({
     }
   } else {
     // Para usuarios públicos o estándar, solo se muestran los estados pendientes y resueltas
-    const publicStatuses = selectedStatuses.filter((value) => ['pendiente', 'resuelta'].includes(value));
+    const publicStatuses = selectedStatuses.filter((value) =>
+      ['pendiente', 'resuelta'].includes(value),
+    );
     if (publicStatuses.length) {
       baseQuery.status = { $in: publicStatuses };
     } else {
@@ -165,15 +138,8 @@ async function listIncidents({
   const countQuery = { ...baseQuery };
 
   // Búsqueda geográfica.
-  if (
-    near &&
-    near.lng != null &&
-    near.lat != null
-  ) {
-    const coordinates = [
-      Number(near.lng),
-      Number(near.lat),
-    ];
+  if (near && near.lng != null && near.lat != null) {
+    const coordinates = [Number(near.lng), Number(near.lat)];
     const maxDistanceMeters = Number(near.maxDistanceMeters) || 5000;
 
     findQuery.location = {
@@ -187,10 +153,7 @@ async function listIncidents({
     };
     countQuery.location = {
       $geoWithin: {
-        $centerSphere: [
-          coordinates,
-          maxDistanceMeters / EARTH_RADIUS_METERS,
-        ],
+        $centerSphere: [coordinates, maxDistanceMeters / EARTH_RADIUS_METERS],
       },
     };
   }
@@ -218,14 +181,7 @@ async function listIncidents({
   const skip = (page - 1) * limit;
 
   const [items, total] = await Promise.all([
-    findOperation
-      .populate(
-        'createdBy',
-        'name avatarUrl'
-      )
-      .skip(skip)
-      .limit(limit)
-      .lean(),
+    findOperation.populate('createdBy', 'name avatarUrl').skip(skip).limit(limit).lean(),
 
     Incident.countDocuments(countQuery),
   ]);
@@ -234,22 +190,24 @@ async function listIncidents({
   const userId = user?.id;
 
   if (votingEnabled && userId && items.length) {
-    votedIds =
-      await voteService.getVotedIncidentIds(
-        userId,
-        items.map((item) => item._id)
-      );
+    votedIds = await voteService.getVotedIncidentIds(
+      userId,
+      items.map((item) => item._id),
+    );
   }
 
   const enriched = items.map((incident) => {
     const { votesCount, ...incidentData } = incident;
-    return presentIncident({
-      ...incidentData,
-      ...(votingEnabled && {
-        votesCount,
-        hasVoted: votedIds.has(incident._id.toString()),
-      }),
-    }, user);
+    return presentIncident(
+      {
+        ...incidentData,
+        ...(votingEnabled && {
+          votesCount,
+          hasVoted: votedIds.has(incident._id.toString()),
+        }),
+      },
+      user,
+    );
   });
 
   return {
@@ -259,9 +217,7 @@ async function listIncidents({
       page: Number(page),
       limit: Number(limit),
       total,
-      totalPages: Math.ceil(
-        total / limit
-      ),
+      totalPages: Math.ceil(total / limit),
     },
   };
 }
@@ -269,25 +225,14 @@ async function listIncidents({
 /**
  * Obtiene una incidencia concreta.
  */
-async function getIncidentById(
-  incidentId,
-  user
-) {
+async function getIncidentById(incidentId, user) {
   const { votingEnabled } = await appSettingsService.getSettings();
-  const incident = await Incident.findById(
-    incidentId
-  )
-    .populate(
-      'createdBy',
-      'name avatarUrl'
-    )
+  const incident = await Incident.findById(incidentId)
+    .populate('createdBy', 'name avatarUrl')
     .lean();
 
   if (!incident) {
-    throw new ServiceError(
-      'Incidencia no encontrada',
-      404
-    );
+    throw new ServiceError('Incidencia no encontrada', 404);
   }
 
   const isPrivileged = user && ['admin', 'moderator'].includes(user.role);
@@ -296,42 +241,30 @@ async function getIncidentById(
 
   // Si la incidencia está en estado 'en_revision' o 'rechazada', solo el autor o un admin/moderador pueden verla.
   if (['en_revision', 'rechazada'].includes(incident.status) && !isOwner && !isPrivileged) {
-    throw new ServiceError(
-      'Esta incidencia está en revisión o no está publicada',
-      403
-    );
+    throw new ServiceError('Esta incidencia está en revisión o no está publicada', 403);
   }
 
   const userId = user?.id;
-  const hasVoted = votingEnabled && userId
-    ? await voteService.hasVoted(
-        userId,
-        incidentId
-      )
-    : false;
+  const hasVoted = votingEnabled && userId ? await voteService.hasVoted(userId, incidentId) : false;
 
   const { votesCount, ...incidentData } = incident;
-  return presentIncident({
-    ...incidentData,
-    ...(votingEnabled && { votesCount, hasVoted }),
-  }, user);
+  return presentIncident(
+    {
+      ...incidentData,
+      ...(votingEnabled && { votesCount, hasVoted }),
+    },
+    user,
+  );
 }
 
 /**
  * Cambia el estado de una incidencia.
  */
-async function updateStatus(
-  incidentId,
-  status,
-  requestingUser
-) {
+async function updateStatus(incidentId, status, requestingUser) {
   const existing = await Incident.findById(incidentId);
 
   if (!existing) {
-    throw new ServiceError(
-      'Incidencia no encontrada',
-      404
-    );
+    throw new ServiceError('Incidencia no encontrada', 404);
   }
 
   const isModerator = requestingUser?.role === 'moderator';
@@ -340,7 +273,7 @@ async function updateStatus(
     if (existing.status !== 'en_revision' || !['pendiente', 'rechazada'].includes(status)) {
       throw new ServiceError(
         'Los moderadores solo pueden decidir si una incidencia en revisión queda pendiente o se rechaza',
-        403
+        403,
       );
     }
   }
@@ -374,9 +307,7 @@ async function updateIncident(incidentId, updates, files = [], requestingUser) {
   if (updates.category !== undefined) incident.category = updates.category;
   if (updates.address !== undefined) incident.location.address = updates.address || null;
 
-  const newImages = files.length
-    ? await uploadService.uploadIncidentImages(files)
-    : [];
+  const newImages = files.length ? await uploadService.uploadIncidentImages(files) : [];
 
   try {
     incident.images.push(...newImages);
@@ -385,7 +316,7 @@ async function updateIncident(incidentId, updates, files = [], requestingUser) {
     await cleanupUploadedImages(
       newImages,
       error,
-      'No se pudo guardar la incidencia ni limpiar las imágenes nuevas'
+      'No se pudo guardar la incidencia ni limpiar las imágenes nuevas',
     );
     throw error;
   }
@@ -399,42 +330,26 @@ async function updateIncident(incidentId, updates, files = [], requestingUser) {
 /**
  * Elimina una incidencia.
  */
-async function deleteIncident(
-  incidentId,
-  requestingUser
-) {
+async function deleteIncident(incidentId, requestingUser) {
   if (requestingUser.role === 'moderator') {
-    throw new ServiceError(
-      'Los moderadores no pueden borrar incidencias',
-      403
-    );
+    throw new ServiceError('Los moderadores no pueden borrar incidencias', 403);
   }
 
-  const incident =
-    await Incident.findById(incidentId);
+  const incident = await Incident.findById(incidentId);
 
   if (!incident) {
-    throw new ServiceError(
-      'Incidencia no encontrada',
-      404
-    );
+    throw new ServiceError('Incidencia no encontrada', 404);
   }
 
-  const isOwner =
-    incident.createdBy.toString() ===
-    requestingUser.id;
+  const isOwner = incident.createdBy.toString() === requestingUser.id;
 
   const isPrivileged = requestingUser.role === 'admin';
 
   if (!isOwner && !isPrivileged) {
-    throw new ServiceError(
-      'No tienes permiso para borrar esta incidencia',
-      403
-    );
+    throw new ServiceError('No tienes permiso para borrar esta incidencia', 403);
   }
 
-  const session =
-    await mongoose.startSession();
+  const session = await mongoose.startSession();
 
   try {
     await session.withTransaction(async () => {
@@ -442,7 +357,7 @@ async function deleteIncident(
       await Incident.deleteOne({ _id: incidentId }, { session });
       await enqueueMediaDeletion(
         (incident.images || []).map((image) => image.publicId),
-        session
+        session,
       );
     });
   } finally {
@@ -493,10 +408,15 @@ async function listVotedIncidents({ userId, user, page = 1, limit = 20 }) {
     path: 'createdBy',
     select: 'name avatarUrl',
   });
-  const orderedItems = items.map((incident) => presentIncident({
-    ...incident,
-    hasVoted: true,
-  }, user));
+  const orderedItems = items.map((incident) =>
+    presentIncident(
+      {
+        ...incident,
+        hasVoted: true,
+      },
+      user,
+    ),
+  );
 
   return {
     items: orderedItems,

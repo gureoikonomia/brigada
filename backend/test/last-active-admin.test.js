@@ -30,13 +30,9 @@ async function prepareLastAdmin(t) {
     isActive: true,
     password: await bcrypt.hash('ValidPassword123', 4),
   };
-  const userQuery = {
-    select() { return this; },
-    session() { return this; },
-    then(resolve, reject) {
-      return Promise.resolve(admin).then(resolve, reject);
-    },
-  };
+  const userQuery = Promise.resolve(admin);
+  userQuery.select = () => userQuery;
+  userQuery.session = () => userQuery;
 
   patchMethod(t, mongoose, 'startSession', async () => session);
   patchMethod(t, AppSettings, 'updateOne', async (_filter, _update, options) => {
@@ -61,7 +57,7 @@ test('cannot demote the last active administrator', async (t) => {
 
   await assert.rejects(
     userService.updateUserRole('another-admin', 'last-admin', 'moderator'),
-    (error) => error instanceof ServiceError && error.statusCode === 409
+    (error) => error instanceof ServiceError && error.statusCode === 409,
   );
   assert.deepEqual(events, ['lock', 'count']);
 });
@@ -71,7 +67,7 @@ test('cannot deactivate the last active administrator', async (t) => {
 
   await assert.rejects(
     userService.updateUserStatus('another-admin', 'last-admin', false),
-    (error) => error instanceof ServiceError && error.statusCode === 409
+    (error) => error instanceof ServiceError && error.statusCode === 409,
   );
   assert.deepEqual(events, ['lock', 'count']);
 });
@@ -81,7 +77,7 @@ test('cannot delete the last active administrator account', async (t) => {
 
   await assert.rejects(
     userService.deleteAccount('last-admin', 'ValidPassword123'),
-    (error) => error instanceof ServiceError && error.statusCode === 409
+    (error) => error instanceof ServiceError && error.statusCode === 409,
   );
   assert.deepEqual(events, ['lock', 'count']);
 });

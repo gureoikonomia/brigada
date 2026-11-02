@@ -175,7 +175,7 @@
 
 .deleteAccountButton {
   @apply min-h-11 w-full px-4 py-2 font-semibold text-white transition-colors disabled:opacity-60;
-  background-color: #8A3929;
+  background-color: #8a3929;
 }
 
 .deleteAccountButton:hover:not(:disabled) {

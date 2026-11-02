@@ -7,7 +7,11 @@ import { getCloudinaryImageUrl } from '../services/media';
 import styles from './IncidentCard.module.css';
 
 function formatDate(iso, locale) {
-  return new Date(iso).toLocaleDateString(locale, { day: '2-digit', month: 'short', year: 'numeric' });
+  return new Date(iso).toLocaleDateString(locale, {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
 }
 
 export default function IncidentCard({ incident, onVoteChange }) {
@@ -32,17 +36,12 @@ export default function IncidentCard({ incident, onVoteChange }) {
               className={styles.thumbnailImage}
             />
           ) : (
-            <span className={styles.noPhotoBox}>
-              {t('incidentCard.noPhoto')}
-            </span>
+            <span className={styles.noPhotoBox}>{t('incidentCard.noPhoto')}</span>
           )}
         </Link>
 
         <div className={styles.cardContent}>
-          <Link
-            to={`/incidencias/${incident._id}`}
-            className={`group ${styles.cardMain}`}
-          >
+          <Link to={`/incidencias/${incident._id}`} className={`group ${styles.cardMain}`}>
             <div className={styles.mainContent}>
               <div className={styles.titleRow}>
                 <h3 className={styles.cardTitle}>{incident.title}</h3>

@@ -141,10 +141,11 @@ export default function IncidentDetailPage() {
       return;
     }
 
-    const validImages = selectedImages.every((file) => (
-      ['image/jpeg', 'image/png', 'image/webp'].includes(file.type) &&
-      file.size <= 5 * 1024 * 1024
-    ));
+    const validImages = selectedImages.every(
+      (file) =>
+        ['image/jpeg', 'image/png', 'image/webp'].includes(file.type) &&
+        file.size <= 5 * 1024 * 1024,
+    );
     if (!validImages) {
       setEditError(t('incidentDetail.editImagesInvalid'));
       return;
@@ -162,7 +163,9 @@ export default function IncidentDetailPage() {
         </Link>
         <div className={styles.errorNotice}>
           <p className={styles.errorNoticeTitle}>⚠️ {t('incidentDetail.notFound')}</p>
-          <p className={styles.errorNoticeText}>{error || t('incidentDetail.pendingModerationNotice')}</p>
+          <p className={styles.errorNoticeText}>
+            {error || t('incidentDetail.pendingModerationNotice')}
+          </p>
         </div>
       </div>
     );
@@ -229,7 +232,9 @@ export default function IncidentDetailPage() {
                   maxLength={3000}
                   rows={5}
                   value={editDraft.description}
-                  onChange={(event) => setEditDraft({ ...editDraft, description: event.target.value })}
+                  onChange={(event) =>
+                    setEditDraft({ ...editDraft, description: event.target.value })
+                  }
                   className={styles.editTextarea}
                 />
               </div>
@@ -245,7 +250,9 @@ export default function IncidentDetailPage() {
                   className={styles.statusSelect}
                 >
                   {CATEGORY_OPTIONS.map((category) => (
-                    <option key={category} value={category}>{t(`category.${category}`)}</option>
+                    <option key={category} value={category}>
+                      {t(`category.${category}`)}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -290,7 +297,11 @@ export default function IncidentDetailPage() {
                 )}
               </div>
 
-              {editError && <p className={styles.errorBox} role="alert">{editError}</p>}
+              {editError && (
+                <p className={styles.errorBox} role="alert">
+                  {editError}
+                </p>
+              )}
               <div className={styles.editActions}>
                 <button type="submit" disabled={savingEdit} className={styles.saveEditBtn}>
                   {savingEdit ? t('common.saving') : t('incidentDetail.saveEdit')}
@@ -318,16 +329,25 @@ export default function IncidentDetailPage() {
                 <span className={styles.categoryTag} data-category={incident.category}>
                   {t(`category.${incident.category}`, { defaultValue: incident.category })}
                 </span>
-                {incident.location?.address ? ` · ${incident.location.address}` : ''} · {new Date(incident.createdAt).toLocaleDateString(i18n.resolvedLanguage)}{canModerate ? ' · ' : ''}
+                {incident.location?.address ? ` · ${incident.location.address}` : ''} ·{' '}
+                {new Date(incident.createdAt).toLocaleDateString(i18n.resolvedLanguage)}
+                {canModerate ? ' · ' : ''}
                 {canModerate && (
-                  <>{t('incidentDetail.reportedBy')} {incident.createdBy?.name || t('moderation.unknownUser')}</>
+                  <>
+                    {t('incidentDetail.reportedBy')}{' '}
+                    {incident.createdBy?.name || t('moderation.unknownUser')}
+                  </>
                 )}
               </p>
 
               <p className={styles.description}>{incident.description}</p>
             </>
           )}
-          {actionError && <p className={styles.errorBox} role="alert">{actionError}</p>}
+          {actionError && (
+            <p className={styles.errorBox} role="alert">
+              {actionError}
+            </p>
+          )}
 
           {(votingEnabled || canDelete || canAdminister) && !editing && (
             <div className={styles.actionsRow}>
@@ -341,11 +361,7 @@ export default function IncidentDetailPage() {
               )}
 
               {canDelete && (
-                <button
-                  onClick={handleDelete}
-                  disabled={deleting}
-                  className={styles.deleteBtn}
-                >
+                <button onClick={handleDelete} disabled={deleting} className={styles.deleteBtn}>
                   {deleting ? t('incidentDetail.deleting') : t('incidentDetail.deleteIncident')}
                 </button>
               )}
@@ -371,7 +387,9 @@ export default function IncidentDetailPage() {
                 className={styles.statusSelect}
               >
                 {availableStatuses.map((s) => (
-                  <option key={s} value={s}>{t(`status.${s}`)}</option>
+                  <option key={s} value={s}>
+                    {t(`status.${s}`)}
+                  </option>
                 ))}
               </select>
               {statusSaving && <span className={styles.statusSaving}>{t('common.saving')}</span>}
