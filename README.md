@@ -31,8 +31,9 @@ No publiques hasta completar esta lista. El código no puede configurar ni verif
 
 - Crea bases de datos de producción separadas de `test` y desarrollo. En MongoDB, usa un usuario de base de datos con permisos mínimos, restringe el acceso de red, exige TLS y configura copias de seguridad automáticas. Prueba que puedes restaurar una copia.
 - Configura un Cloudinary de producción con credenciales propias. Las fotos de incidencias se sirven mediante URL; no subas imágenes con datos personales o sensibles y define límites/alertas de uso y facturación.
-- Configura Resend con un dominio de envío verificado (SPF/DKIM y, si procede, DMARC). Prueba recuperación de contraseña y notificaciones desde una cuenta real.
-- Usa HTTPS para el frontend y la API. En el hosting del backend define `NODE_ENV=production`, `PORT` según la plataforma, `MONGODB_URI`, `JWT_SECRET`, `JWT_EXPIRES_IN` (máximo 24 h; por defecto 1 h), `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `RESEND_API_KEY`, `RESEND_FROM`, `FRONTEND_URL`, `CORS_ORIGINS`, `TRUST_PROXY_HOPS`, `PRIVACY_NOTICE_URL` y `PRIVACY_NOTICE_VERSION`.
+- Configura Gmail con verificación en dos pasos y una contraseña de aplicación para el envío SMTP. Para producción con volumen, prefiere un proveedor de correo transaccional con dominio verificado.
+- **No publiques esta versión:** el flujo actual de registro no muestra ni exige aceptación del aviso de privacidad. Restablece el aviso definitivo y el consentimiento explícito antes de aceptar registros públicos.
+- Usa HTTPS para el frontend y la API. En el hosting del backend define `NODE_ENV=production`, `PORT` según la plataforma, `MONGODB_URI`, `JWT_SECRET`, `JWT_EXPIRES_IN` (máximo 24 h; por defecto 1 h), `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `FRONTEND_URL`, `CORS_ORIGINS` y `TRUST_PROXY_HOPS`. `GMAIL_APP_PASSWORD` debe ser una contraseña de aplicación, nunca la contraseña normal.
 - Genera `JWT_SECRET` con un generador criptográfico, por ejemplo `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`. No reutilices claves ni incluyas secretos en Git, capturas, logs o variables `VITE_*`. Si alguna clave real estuvo publicada, revócala y genera otra.
 - `FRONTEND_URL` debe ser el origen HTTPS del sitio, sin ruta ni barra final. `CORS_ORIGINS` debe contener ese mismo origen y cualquier otro frontend legítimo, separados por comas; no uses comodines. En el hosting del frontend configura `VITE_API_URL` con el origen HTTPS de la API seguido de `/api`.
 - La autenticación usa cookies `HttpOnly` y requiere cookies cross-site en la configuración actual (Netlify y Render tienen dominios distintos). Verifica login, recarga y logout en Safari, Firefox y navegadores móviles con sus protecciones de privacidad activadas. Si bloquean las cookies, publica frontend y API bajo subdominios del mismo dominio registrable antes de abrir el acceso; no vuelvas a guardar JWT en `localStorage` como alternativa.
@@ -73,7 +74,7 @@ npm run build
 ### Después de publicar
 
 - Comprueba `/api/health`, el frontend y los flujos críticos desde fuera de tu red. Revisa los registros de despliegue y confirma que no contienen tokens, contraseñas ni datos personales innecesarios.
-- Activa monitorización/alertas de disponibilidad, errores, consumo de Cloudinary/Resend, almacenamiento de MongoDB y gasto. Establece un procedimiento para incidentes de seguridad, restauración y rollback.
+- Activa monitorización/alertas de disponibilidad, errores, consumo de Cloudinary, correo, almacenamiento de MongoDB y gasto. Establece un procedimiento para incidentes de seguridad, restauración y rollback.
 - Mantén Node.js y dependencias actualizados, revisa avisos de seguridad periódicamente y repite las pruebas tras cambios de permisos, autenticación, uploads o despliegue.
 
 ### Cambios de sesión incluidos

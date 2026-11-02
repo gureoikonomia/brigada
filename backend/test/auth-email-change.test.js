@@ -103,7 +103,7 @@ test('confirming an email-change token updates email and invalidates prior sessi
     $set: { email: 'new@example.com', emailVerified: true },
     $inc: { tokenVersion: 1 },
   });
-  assert.equal(capturedUpdate.options.new, true);
+  assert.equal(capturedUpdate.options.returnDocument, 'after');
   assert.equal(capturedUpdate.options.runValidators, true);
   assert.ok(capturedUpdate.options.session);
   assert.equal(transactionCount, 1);

@@ -37,16 +37,12 @@ async function register(req, res, next) {
       name,
       email,
       password,
-      privacyNoticeAcknowledged,
-      privacyNoticeVersion,
     } = req.validated.body;
 
     const result = await authService.register({
       name,
       email,
       password,
-      privacyNoticeAcknowledged,
-      privacyNoticeVersion,
     });
 
     if (result.token) setSessionCookie(res, result.token);

@@ -30,19 +30,8 @@ async function register({
   name,
   email,
   password,
-  privacyNoticeAcknowledged,
-  privacyNoticeVersion,
 }) {
   const startedAt = Date.now();
-  if (
-    process.env.NODE_ENV === 'production' &&
-    (
-      privacyNoticeAcknowledged !== true ||
-      privacyNoticeVersion !== process.env.PRIVACY_NOTICE_VERSION
-    )
-  ) {
-    throw new ServiceError('Debes leer y aceptar el aviso de privacidad vigente', 400);
-  }
 
   const normalizedEmail = email.toLowerCase();
   const hashedPassword = await bcrypt.hash(
@@ -58,27 +47,16 @@ async function register({
         name,
         email: normalizedEmail,
         password: hashedPassword,
-        emailVerified: false,
-        ...(privacyNoticeAcknowledged && {
-          privacyNoticeAcknowledgedAt: new Date(),
-          privacyNoticeVersion,
-        }),
+        emailVerified: true,
       });
     } catch (error) {
       if (error.code !== 11000) throw error;
     }
 
-    if (user) {
-      try {
-        await issueVerificationEmail(user);
-      } catch (error) {
-        console.error('No se pudo preparar el correo de verificación:', error.message);
-      }
-    }
   }
 
   await normalizeAccountLookupDuration(startedAt);
-  return { verificationRequired: true };
+  return { registrationComplete: true };
 }
 
 function hashVerificationToken(token) {
@@ -142,7 +120,7 @@ async function verifyEmail({ uid, token }) {
         : { $set: { emailVerified: true } };
 
       const user = await User.findByIdAndUpdate(uid, update, {
-        new: true,
+        returnDocument: 'after',
         runValidators: true,
         session,
       });
@@ -177,7 +155,7 @@ async function login({ email, password }) {
   const passwordHash = user ? user.password : await dummyPasswordHash;
   const passwordMatches = await bcrypt.compare(password, passwordHash);
 
-  if (!user || !user.isActive || user.emailVerified === false || !passwordMatches) {
+  if (!user || !user.isActive || !passwordMatches) {
     throw new ServiceError(
       'Credenciales incorrectas',
       401
@@ -222,7 +200,7 @@ async function updateProfile(userId, { name }) {
   if (name !== undefined) updates.name = name;
 
   const user = await User.findByIdAndUpdate(userId, updates, {
-    new: true,
+    returnDocument: 'after',
     runValidators: true,
   }).lean();
 
@@ -352,7 +330,7 @@ async function changePassword(userId, { currentPassword, newPassword }) {
       const updated = await User.findOneAndUpdate(
         { _id: userId, password: user.password },
         { $set: { password: newHash }, $inc: { tokenVersion: 1 } },
-        { new: true, session }
+        { returnDocument: 'after', session }
       );
       if (!updated) {
         throw new ServiceError('La contraseña cambió mientras se procesaba la solicitud', 409);

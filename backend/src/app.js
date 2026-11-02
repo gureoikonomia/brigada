@@ -58,8 +58,6 @@ const authLimiter = rateLimit({
   message: { message: 'Demasiadas solicitudes. Inténtalo más tarde.' },
 });
 
-app.use(globalLimiter);
-
 // 3. CORS
 app.use(
   cors({
@@ -70,6 +68,8 @@ app.use(
     credentials: true,
   })
 );
+
+app.use(globalLimiter);
 
 app.use(express.json({ limit: '32kb' }));
 app.use(express.urlencoded({ extended: true, limit: '32kb' }));
@@ -82,13 +82,6 @@ app.get('/api/health', (req, res) => {
   return res.status(databaseReady ? 200 : 503).json({
     success: databaseReady,
     database: databaseReady ? 'connected' : 'unavailable',
-  });
-});
-
-app.get('/api/legal/privacy-notice', (req, res) => {
-  return res.json({
-    url: process.env.PRIVACY_NOTICE_URL || null,
-    version: process.env.PRIVACY_NOTICE_VERSION || null,
   });
 });
 

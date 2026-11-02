@@ -97,6 +97,20 @@ test('CSRF protection rejects unsafe requests without a trusted origin and match
     assert.equal(continued, true);
 
     continued = false;
+    req.path = '/api/auth/forgot-password';
+    middleware(req, res, () => {
+      continued = true;
+    });
+    assert.equal(continued, true);
+
+    continued = false;
+    req.path = '/api/auth/reset-password';
+    middleware(req, res, () => {
+      continued = true;
+    });
+    assert.equal(continued, true);
+
+    continued = false;
     req.path = '/api/auth/logout';
     middleware(req, res, () => {
       continued = true;

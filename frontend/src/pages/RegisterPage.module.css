@@ -42,18 +42,6 @@
   @apply my-4 border border-ok bg-ok-soft px-3 py-3 text-sm text-ok;
 }
 
-.privacyAcknowledgement {
-  @apply flex items-start gap-3 text-sm text-ink;
-}
-
-.privacyAcknowledgement input {
-  @apply mt-1 flex-shrink-0;
-}
-
-.privacyAcknowledgement a {
-  @apply font-semibold text-petrol underline underline-offset-2;
-}
-
 .submitBtn {
   @apply w-full bg-action hover:bg-action-hover text-action-ink font-bold py-3 disabled:opacity-60 transition-colors;
 }

@@ -1,3 +1,5 @@
+import { getEmailConfiguration } from './email.js';
+
 function parseHttpsOrigin(value, name) {
   let url;
   try {
@@ -59,12 +61,8 @@ export function validateEnvironment() {
     'CLOUDINARY_CLOUD_NAME',
     'CLOUDINARY_API_KEY',
     'CLOUDINARY_API_SECRET',
-    'RESEND_API_KEY',
-    'RESEND_FROM',
     'FRONTEND_URL',
     'CORS_ORIGINS',
-    'PRIVACY_NOTICE_URL',
-    'PRIVACY_NOTICE_VERSION',
     'TRUST_PROXY_HOPS',
   ];
   const missingVariables = requiredVariables.filter(
@@ -73,6 +71,12 @@ export function validateEnvironment() {
 
   if (missingVariables.length) {
     throw new Error(`Faltan variables de producción: ${missingVariables.join(', ')}`);
+  }
+
+  try {
+    getEmailConfiguration();
+  } catch (error) {
+    throw new Error(`Configuración de correo inválida: ${error.message}`);
   }
 
   if (process.env.JWT_SECRET.length < 32 || /cambia-|change-me|your-secret/i.test(process.env.JWT_SECRET)) {
@@ -87,19 +91,6 @@ export function validateEnvironment() {
   }
 
   const frontendOrigin = parseHttpsOrigin(process.env.FRONTEND_URL, 'FRONTEND_URL');
-  let privacyNoticeUrl;
-  try {
-    privacyNoticeUrl = new URL(process.env.PRIVACY_NOTICE_URL);
-  } catch {
-    throw new Error('PRIVACY_NOTICE_URL debe ser una URL HTTPS válida');
-  }
-  if (
-    privacyNoticeUrl.protocol !== 'https:' ||
-    !process.env.PRIVACY_NOTICE_VERSION.trim()
-  ) {
-    throw new Error('PRIVACY_NOTICE_URL y PRIVACY_NOTICE_VERSION deben estar configuradas correctamente');
-  }
-
   const allowedOrigins = process.env.CORS_ORIGINS.split(',')
     .map((origin) => origin.trim())
     .filter(Boolean)

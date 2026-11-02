@@ -34,7 +34,7 @@ export async function processPendingMediaDeletions() {
             leaseUntil: new Date(now.getTime() + 15 * 60 * 1000),
           },
         },
-        { sort: { createdAt: 1 }, new: true }
+        { sort: { createdAt: 1 }, returnDocument: 'after' }
       ).lean();
 
       if (!job) break;

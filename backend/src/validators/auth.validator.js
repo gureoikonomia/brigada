@@ -25,8 +25,6 @@ export const registerSchema = z.object({
   name: z.string().trim().min(2, 'El nombre debe tener al menos 2 caracteres').max(80),
   email: emailAddress,
   password: strongPassword,
-  privacyNoticeAcknowledged: z.boolean().optional(),
-  privacyNoticeVersion: z.string().trim().max(80).optional(),
 });
 
 export const loginSchema = z.object({

@@ -1,44 +1,45 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
+import { getEmailConfiguration } from '../config/email.js';
 
-const resend = process.env.RESEND_API_KEY
-    ? new Resend(process.env.RESEND_API_KEY)
-    : null;
-const sender = process.env.RESEND_FROM || 'noreply@tuapp.com';
+async function sendEmail(to, subject, html) {
+    const configuration = getEmailConfiguration();
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: configuration.user,
+            pass: configuration.password,
+        },
+    });
+    return transporter.sendMail({
+        from: configuration.user,
+        to,
+        subject,
+        html,
+    });
+}
 
 export async function sendResetEmail(email, resetLink) {
-    if (!resend) throw new Error('RESEND_API_KEY no está configurada');
-
-    const { error } = await resend.emails.send({
-        from: sender,
-        to: email,
-        subject: 'Recupera tu contraseña',
-        html: `<p>Haz clic <a href="${resetLink}">aquí</a> para restablecer tu contraseña. El enlace expira en 30 minutos.</p>`,
-    });
-    if (error) throw error;
+    return sendEmail(
+        email,
+        'Recupera tu contraseña',
+        `<p>Haz clic <a href="${resetLink}">aquí</a> para restablecer tu contraseña. El enlace expira en 30 minutos.</p>`
+    );
 }
 
 export async function sendPasswordChangedNotification(email) {
-    if (!resend) throw new Error('RESEND_API_KEY no está configurada');
-
-    const { error } = await resend.emails.send({
-        from: sender,
-        to: email,
-        subject: 'Tu contraseña ha sido cambiada',
-        html: `<p>Tu contraseña se cambió correctamente. Si no fuiste tú, contacta con soporte de inmediato.</p>`,
-    });
-    if (error) throw error;
+    await sendEmail(
+        email,
+        'Tu contraseña ha sido cambiada',
+        '<p>Tu contraseña se cambió correctamente. Si no fuiste tú, contacta con soporte de inmediato.</p>'
+    );
 }
 
 export async function sendVerificationEmail(email, verificationLink, emailChange = false) {
-    if (!resend) throw new Error('RESEND_API_KEY no está configurada');
-
-    const { error } = await resend.emails.send({
-        from: sender,
-        to: email,
-        subject: emailChange ? 'Confirma tu nuevo correo electrónico' : 'Verifica tu correo electrónico',
-        html: emailChange
+    await sendEmail(
+        email,
+        emailChange ? 'Confirma tu nuevo correo electrónico' : 'Verifica tu correo electrónico',
+        emailChange
             ? `<p>Confirma el cambio de correo de tu cuenta: <a href="${verificationLink}">confirmar nuevo correo</a>.</p><p>El enlace caduca en 24 horas. Si no solicitaste este cambio, ignora el mensaje.</p>`
-            : `<p>Confirma tu correo para activar tu cuenta: <a href="${verificationLink}">verificar correo</a>.</p><p>El enlace caduca en 24 horas.</p>`,
-    });
-    if (error) throw error;
+            : `<p>Confirma tu correo para activar tu cuenta: <a href="${verificationLink}">verificar correo</a>.</p><p>El enlace caduca en 24 horas.</p>`
+    );
 }

@@ -16,7 +16,12 @@ async function updateVotingEnabled(votingEnabled, adminId) {
       $set: { votingEnabled, updatedBy: adminId },
       $setOnInsert: { key: 'global' },
     },
-    { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }
+    {
+      returnDocument: 'after',
+      upsert: true,
+      runValidators: true,
+      setDefaultsOnInsert: true,
+    }
   )
     .select('votingEnabled')
     .lean();

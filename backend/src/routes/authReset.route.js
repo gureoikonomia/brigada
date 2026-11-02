@@ -30,29 +30,76 @@ const resetRateLimiter = rateLimit({
   message: { message: 'Demasiados intentos, prueba más tarde' },
 });
 
+function sanitizeMailDiagnostic(value) {
+  if (typeof value !== 'string') return undefined;
+  return value
+    .replace(/https?:\/\/[^\s"'<>]+/gi, '[redacted-url]')
+    .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '[redacted-email]')
+    .replace(/\b[a-f0-9]{32,}\b/gi, '[redacted-token]')
+    .replace(/\b(password|pass|token|secret|key)\s*[:=]\s*\S+/gi, '$1=[redacted]')
+    .replace(/[\r\n\x00-\x1f\x7f]+/g, ' ')
+    .slice(0, 300);
+}
+
+function logPasswordResetFailure(stage, error) {
+  console.error('Password reset processing failed', {
+    stage,
+    name: error?.name,
+    code: error?.code,
+    command: error?.command,
+    responseCode: error?.responseCode,
+    message: sanitizeMailDiagnostic(error?.message),
+    response: sanitizeMailDiagnostic(error?.response),
+  });
+}
+
+export function createPasswordResetLink(frontendUrl, token, userId) {
+  const resetUrl = new URL('/recuperar-contrasena', frontendUrl);
+  resetUrl.searchParams.set('token', token);
+  resetUrl.searchParams.set('uid', userId.toString());
+  return resetUrl.toString();
+}
+
 /**
  * POST /api/auth/forgot-password
  * Recibe un email y, si existe, envía un enlace de recuperación.
  * Siempre responde igual para no revelar si el email existe (anti-enumeration).
  */
 async function issuePasswordReset(email) {
-  const user = await User.findOne({ email: email.toLowerCase().trim() });
-  if (!user) return;
+  let stage = 'account_lookup';
+  try {
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (!user) {
+      console.info('Password reset request completed without a matching account');
+      return;
+    }
 
-  const rawToken = crypto.randomBytes(32).toString('hex');
-  const tokenHash = await bcrypt.hash(rawToken, 10);
-  const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const tokenHash = await bcrypt.hash(rawToken, 10);
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
 
-  await PasswordResetToken.deleteMany({ userId: user._id });
-  await PasswordResetToken.create({
-    userId: user._id,
-    tokenHash,
-    expiresAt,
-  });
+    stage = 'token_storage';
+    await PasswordResetToken.deleteMany({ userId: user._id });
+    await PasswordResetToken.create({
+      userId: user._id,
+      tokenHash,
+      expiresAt,
+    });
 
-  const frontendUrl = process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173';
-  const resetLink = `${frontendUrl}/recuperar-contrasena?token=${rawToken}&uid=${user._id}`;
-  await sendResetEmail(user.email, resetLink);
+    const frontendUrl = process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173';
+    const resetLink = createPasswordResetLink(frontendUrl, rawToken, user._id);
+
+    stage = 'smtp_submission';
+    const info = await sendResetEmail(user.email, resetLink);
+    console.info('Password reset SMTP submission completed', {
+      acceptedCount: Array.isArray(info.accepted) ? info.accepted.length : 0,
+      rejectedCount: Array.isArray(info.rejected) ? info.rejected.length : 0,
+      responseCode: Number(/^\s*(\d{3})/.exec(info.response)?.[1]) || null,
+      response: sanitizeMailDiagnostic(info.response),
+    });
+  } catch (error) {
+    logPasswordResetFailure(stage, error);
+  }
 }
 
 router.post(
@@ -61,9 +108,7 @@ router.post(
   validate(forgotPasswordSchema),
   (req, res) => {
     const { email } = req.validated.body;
-    void issuePasswordReset(email).catch((error) => {
-      console.error('No se pudo procesar una solicitud de recuperación de contraseña:', error.message);
-    });
+    void issuePasswordReset(email);
     return res.json({
       message: 'Si el email existe en nuestro sistema, recibirás un enlace de recuperación.',
     });
@@ -104,7 +149,7 @@ export async function resetPassword(req, res, next) {
         const claimedToken = await PasswordResetToken.findOneAndUpdate(
           { _id: record._id, usedAt: null, expiresAt: { $gt: new Date() } },
           { usedAt: new Date() },
-          { new: true, session }
+          { returnDocument: 'after', session }
         );
 
         if (!claimedToken) return;
@@ -112,7 +157,7 @@ export async function resetPassword(req, res, next) {
         user = await User.findByIdAndUpdate(
           uid,
           { $set: { password: newHash }, $inc: { tokenVersion: 1 } },
-          { new: true, session }
+          { returnDocument: 'after', session }
         );
 
         if (!user) {

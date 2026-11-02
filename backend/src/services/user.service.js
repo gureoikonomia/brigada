@@ -152,7 +152,7 @@ async function updateUserRole(adminUserId, targetUserId, newRole) {
   const updated = await User.findByIdAndUpdate(
     targetUserId,
     { role: newRole },
-    { new: true, runValidators: true }
+    { returnDocument: 'after', runValidators: true }
   ).select('-password');
 
   if (!updated) {
@@ -173,7 +173,7 @@ async function updateUserStatus(adminUserId, targetUserId, isActive) {
   const updated = await User.findByIdAndUpdate(
     targetUserId,
     { $set: { isActive }, $inc: { tokenVersion: 1 } },
-    { new: true, runValidators: true }
+    { returnDocument: 'after', runValidators: true }
   ).select('-password');
 
   if (!updated) {
@@ -199,7 +199,7 @@ async function deleteAccount(userId, currentPassword) {
       const activeUser = await User.findOneAndUpdate(
         { _id: userId, isActive: true },
         { $set: { isActive: false }, $inc: { tokenVersion: 1 } },
-        { new: true, session }
+        { returnDocument: 'after', session }
       ).select('+avatarPublicId');
 
       if (!activeUser) {

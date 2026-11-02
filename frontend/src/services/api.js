@@ -38,6 +38,14 @@ const api = axios.create({
 let csrfToken;
 let csrfRequest;
 let csrfRefreshRequest;
+const csrfExemptPostPaths = new Set([
+  '/auth/register',
+  '/auth/login',
+  '/auth/resend-verification',
+  '/auth/verify-email',
+  '/auth/forgot-password',
+  '/auth/reset-password',
+]);
 
 async function getCsrfToken() {
   if (csrfToken) return csrfToken;
@@ -71,7 +79,14 @@ function refreshCsrfToken() {
 
 api.interceptors.request.use(async (config) => {
   const method = config.method?.toUpperCase();
-  if (method && !['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+  const requestPath = config.url
+    ?.split('?')[0]
+    .replace(/^\/api(?=\/)/, '');
+  if (
+    method
+    && !['GET', 'HEAD', 'OPTIONS'].includes(method)
+    && !(method === 'POST' && csrfExemptPostPaths.has(requestPath))
+  ) {
     config.headers['X-CSRF-Token'] = await getCsrfToken();
   }
   return config;

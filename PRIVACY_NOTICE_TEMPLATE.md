@@ -24,7 +24,7 @@ Describe por separado el registro/cuenta, autenticación, gestión de incidencia
 
 ## Destinatarios y transferencias
 
-- Proveedores y funciones (MongoDB Atlas, Cloudinary, Resend, alojamiento y geocodificación/mapas): `[PENDIENTE]`
+- Proveedores y funciones (MongoDB Atlas, Cloudinary, Gmail SMTP, alojamiento y geocodificación/mapas): `[PENDIENTE]`
 - Ubicación de datos, transferencias fuera del EEE y garantías aplicables: `[PENDIENTE]`
 - Enlaces a información de privacidad de terceros: `[PENDIENTE]`
 

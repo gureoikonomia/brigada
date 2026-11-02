@@ -29,11 +29,6 @@ export async function deleteAccount(currentPassword) {
   return data;
 }
 
-export async function getPrivacyNotice() {
-  const { data } = await api.get('/legal/privacy-notice');
-  return data;
-}
-
 export async function getProfile() {
   const { data } = await api.get('/auth/me');
   return data;

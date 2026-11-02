@@ -9,7 +9,7 @@ import { protect } from '../src/middlewares/auth.middleware.js';
 import PasswordResetToken from '../src/models/passwordResetToken.model.js';
 import Session from '../src/models/session.model.js';
 import User from '../src/models/user.model.js';
-import { resetPassword } from '../src/routes/authReset.route.js';
+import { createPasswordResetLink, resetPassword } from '../src/routes/authReset.route.js';
 import { createSessionToken } from '../src/services/session.service.js';
 import { SESSION_COOKIE_NAME } from '../src/utils/security.js';
 
@@ -18,6 +18,20 @@ process.env.JWT_SECRET = 'session-revocation-test-secret-that-is-long-enough';
 after(() => {
   if (originalJwtSecret === undefined) delete process.env.JWT_SECRET;
   else process.env.JWT_SECRET = originalJwtSecret;
+});
+
+test('password reset link uses the frontend route without duplicate slashes', () => {
+  const link = createPasswordResetLink(
+    'https://appbrigada.netlify.app/',
+    'dummy-reset-token',
+    '507f1f77bcf86cd799439011'
+  );
+  const url = new URL(link);
+
+  assert.equal(url.origin, 'https://appbrigada.netlify.app');
+  assert.equal(url.pathname, '/recuperar-contrasena');
+  assert.equal(url.searchParams.get('token'), 'dummy-reset-token');
+  assert.equal(url.searchParams.get('uid'), '507f1f77bcf86cd799439011');
 });
 
 function patchMethod(t, target, key, replacement) {
@@ -133,7 +147,7 @@ async function callLogout(token) {
   return { ...response, error };
 }
 
-test('login creates a persisted session token with a unique ID and matching expiry', async (t) => {
+test('login permits unverified accounts and creates a persisted session token', async (t) => {
   const sessions = createSessionStore(t);
   const user = {
     _id: '507f1f77bcf86cd799439011',
@@ -141,7 +155,7 @@ test('login creates a persisted session token with a unique ID and matching expi
     tokenVersion: 4,
     name: 'Test User',
     email: 'user@example.com',
-    emailVerified: true,
+    emailVerified: false,
     isActive: true,
     password: await bcrypt.hash('ValidPassword123', 4),
   };
