@@ -62,9 +62,9 @@ export default function LoginPage() {
             <label htmlFor="login-password" className={styles.label}>
               {t('login.passwordLabel')}
             </label>
-            <Link to="/olvide-contrasena" className={styles.forgotLink}>
+            {/* <Link to="/olvide-contrasena" className={styles.forgotLink}>
               {t('login.forgotPassword')}
-            </Link>
+            </Link> */}
           </div>
           <input
             id="login-password"

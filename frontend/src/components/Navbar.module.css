@@ -24,6 +24,7 @@
 
 .primaryButton {
   @apply min-h-11 inline-flex items-center justify-center px-4 py-2 border border-action bg-action text-action-ink hover:bg-action-hover transition-colors font-semibold;
+  border-radius: 10px;
 }
 
 .userLink {
