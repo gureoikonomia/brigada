@@ -19,6 +19,8 @@ proxy hacia la API para que las cookies de sesión sean first-party.
   abrirse directamente o al recargar la página.
 - Revisa `public/_headers`: la CSP debe permitir Cloudinary y los proveedores
   de mapas que utilice el sitio. La API se solicita en el mismo dominio.
+- La CSP permite por hash el script inline de la insignia pública de Netlify;
+  conserva esa excepción específica y no la sustituyas por `'unsafe-inline'`.
 - Conserva la regla `/api/*` de `public/_redirects` y configura el origen del
   sitio en `CORS_ORIGINS` del backend.
 
