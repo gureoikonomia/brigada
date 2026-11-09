@@ -32,7 +32,9 @@ export default function ModerationPage() {
 
     listIncidents({ status: activeTab, sortBy: 'recent', limit: 50 })
       .then((data) => {
-        if (!cancelled) setItems(data.items);
+        if (!cancelled) {
+          setItems(data.items.filter((incident) => incident.status === activeTab));
+        }
       })
       .catch(() => {
         if (!cancelled) setError(t('moderation.loadError'));

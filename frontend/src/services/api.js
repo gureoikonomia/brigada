@@ -1,33 +1,8 @@
 import axios from 'axios';
 
-const apiBaseUrl = import.meta.env.VITE_API_URL || (
-  import.meta.env.DEV ? 'http://localhost:3000/api' : undefined
-);
-
-if (!apiBaseUrl) {
-  throw new Error('VITE_API_URL debe configurarse para la compilación de producción');
-}
-
-if (import.meta.env.PROD) {
-  let productionApiUrl;
-  try {
-    productionApiUrl = new URL(apiBaseUrl);
-  } catch {
-    throw new Error('VITE_API_URL debe ser una URL HTTPS válida en producción');
-  }
-
-  const isLocalHost = ['localhost', '127.0.0.1', '[::1]'].includes(productionApiUrl.hostname);
-  const apiPath = productionApiUrl.pathname.replace(/\/$/, '');
-  if (
-    productionApiUrl.protocol !== 'https:'
-    || isLocalHost
-    || apiPath !== '/api'
-    || productionApiUrl.search
-    || productionApiUrl.hash
-  ) {
-    throw new Error('VITE_API_URL debe ser una URL pública HTTPS terminada en /api y sin query ni hash');
-  }
-}
+const apiBaseUrl = import.meta.env.DEV
+  ? import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+  : '/api';
 
 const api = axios.create({
   baseURL: apiBaseUrl,
