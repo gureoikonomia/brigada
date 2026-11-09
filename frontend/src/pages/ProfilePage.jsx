@@ -68,7 +68,11 @@ export default function ProfilePage() {
   const [avatarSuccess, setAvatarSuccess] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
-  const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
   const [passwordError, setPasswordError] = useState(null);
   const [savingPassword, setSavingPassword] = useState(false);
   const [logoutError, setLogoutError] = useState(null);
@@ -120,6 +124,12 @@ export default function ProfilePage() {
   if (!user) return null;
 
   const visibleTab = !votingEnabled && activeTab === 'voted' ? 'incidents' : activeTab;
+
+  const handleVotedIncidentChange = (incidentId, hasVoted) => {
+    if (!hasVoted) {
+      setVotedIncidents((previous) => previous.filter((incident) => incident._id !== incidentId));
+    }
+  };
 
   const handleLogout = async () => {
     setLogoutError(null);
@@ -251,9 +261,7 @@ export default function ProfilePage() {
           {user.avatarUrl ? (
             <img src={user.avatarUrl} alt="" className={styles.avatarImage} />
           ) : (
-            <div className={styles.avatarPlaceholder}>
-              {initials(user.name) || '?'}
-            </div>
+            <div className={styles.avatarPlaceholder}>{initials(user.name) || '?'}</div>
           )}
 
           <div className={styles.userInfo}>
@@ -278,7 +286,11 @@ export default function ProfilePage() {
             </button>
           </div>
         </div>
-        {logoutError && <p className={styles.formError} role="alert">{logoutError}</p>}
+        {logoutError && (
+          <p className={styles.formError} role="alert">
+            {logoutError}
+          </p>
+        )}
         {(avatarError || avatarSuccess) && (
           <p
             className={avatarError ? styles.avatarError : styles.avatarSuccess}
@@ -301,16 +313,12 @@ export default function ProfilePage() {
         >
           <optgroup label={t('profile.sectionGroupActivity')}>
             <option value="incidents">📍 {t('profile.tabMyIncidents')}</option>
-            {votingEnabled && (
-              <option value="voted">❤️ {t('profile.tabVotedIncidents')}</option>
-            )}
+            {votingEnabled && <option value="voted">❤️ {t('profile.tabVotedIncidents')}</option>}
           </optgroup>
           {['admin', 'moderator'].includes(user.role) && (
             <optgroup label={t('profile.sectionGroupManagement')}>
               <option value="moderation">🔎 {t('nav.moderation')}</option>
-              {user.role === 'admin' && (
-                <option value="admin">⚙️ {t('profile.adminPanel')}</option>
-              )}
+              {user.role === 'admin' && <option value="admin">⚙️ {t('profile.adminPanel')}</option>}
             </optgroup>
           )}
           <optgroup label={t('profile.sectionGroupAccount')}>
@@ -331,9 +339,7 @@ export default function ProfilePage() {
               <IncidentCardSkeleton />
             </div>
           )}
-          {errorMy && (
-            <p className={styles.errorBox}>{errorMy}</p>
-          )}
+          {errorMy && <p className={styles.errorBox}>{errorMy}</p>}
           {!loadingMy && !errorMy && myIncidents.length === 0 && (
             <div className={styles.emptyState}>
               <p className={styles.emptyText}>{t('profile.empty')}</p>
@@ -361,9 +367,7 @@ export default function ProfilePage() {
               <IncidentCardSkeleton />
             </div>
           )}
-          {errorVoted && (
-            <p className={styles.errorBox}>{errorVoted}</p>
-          )}
+          {errorVoted && <p className={styles.errorBox}>{errorVoted}</p>}
           {!loadingVoted && !errorVoted && votedIncidents.length === 0 && (
             <div className={styles.emptyState}>
               <p className={styles.emptyText}>{t('profile.votedEmpty')}</p>
@@ -373,7 +377,11 @@ export default function ProfilePage() {
             <div className={styles.listPanel}>
               <div className={styles.itemsSpace}>
                 {votedIncidents.map((incident) => (
-                  <IncidentCard key={incident._id} incident={incident} />
+                  <IncidentCard
+                    key={incident._id}
+                    incident={incident}
+                    onVoteChange={handleVotedIncidentChange}
+                  />
                 ))}
               </div>
             </div>
@@ -417,20 +425,12 @@ export default function ProfilePage() {
                 />
               </div>
 
-              {profileError && (
-                <p className={styles.formError}>{profileError}</p>
-              )}
+              {profileError && <p className={styles.formError}>{profileError}</p>}
               {profileSuccess && (
-                <p className={styles.formSuccess}>
-                  {t('editProfile.saveSuccess')}
-                </p>
+                <p className={styles.formSuccess}>{t('editProfile.saveSuccess')}</p>
               )}
 
-              <button
-                type="submit"
-                disabled={savingProfile}
-                className={styles.saveProfileBtn}
-              >
+              <button type="submit" disabled={savingProfile} className={styles.saveProfileBtn}>
                 {savingProfile ? t('common.saving') : t('editProfile.saveData')}
               </button>
             </form>
@@ -438,7 +438,9 @@ export default function ProfilePage() {
 
           <section className={styles.sectionCard}>
             <h3 className={styles.subSectionTitle}>{t('editProfile.changeEmail')}</h3>
-            <p className={styles.emailChangeDescription}>{t('editProfile.emailChangeDescription')}</p>
+            <p className={styles.emailChangeDescription}>
+              {t('editProfile.emailChangeDescription')}
+            </p>
             <form onSubmit={handleEmailChangeSubmit} className={styles.formSpace}>
               <div>
                 <label htmlFor="new-profile-email" className={styles.fieldLabel}>
@@ -474,9 +476,15 @@ export default function ProfilePage() {
                   className={styles.formInput}
                 />
               </div>
-              {emailChangeError && <p className={styles.formError} role="alert">{emailChangeError}</p>}
+              {emailChangeError && (
+                <p className={styles.formError} role="alert">
+                  {emailChangeError}
+                </p>
+              )}
               {emailChangeSuccess && (
-                <p className={styles.formSuccess} role="status">{t('editProfile.emailChangeRequested')}</p>
+                <p className={styles.formSuccess} role="status">
+                  {t('editProfile.emailChangeRequested')}
+                </p>
               )}
               <button
                 type="submit"
@@ -544,15 +552,11 @@ export default function ProfilePage() {
                 />
               </div>
 
-              {passwordError && (
-                <p className={styles.formError}>{passwordError}</p>
-              )}
-              <button
-                type="submit"
-                disabled={savingPassword}
-                className={styles.savePasswordBtn}
-              >
-                {savingPassword ? t('editProfile.changingPassword') : t('editProfile.changePasswordSubmit')}
+              {passwordError && <p className={styles.formError}>{passwordError}</p>}
+              <button type="submit" disabled={savingPassword} className={styles.savePasswordBtn}>
+                {savingPassword
+                  ? t('editProfile.changingPassword')
+                  : t('editProfile.changePasswordSubmit')}
               </button>
             </form>
           </section>
@@ -576,16 +580,16 @@ export default function ProfilePage() {
                 className={styles.formInput}
               />
               {deleteAccountError && (
-                <p className={styles.formError} role="alert">{deleteAccountError}</p>
+                <p className={styles.formError} role="alert">
+                  {deleteAccountError}
+                </p>
               )}
               <button
                 type="submit"
                 disabled={deletingAccount}
                 className={styles.deleteAccountButton}
               >
-                {deletingAccount
-                  ? t('profile.deletingAccount')
-                  : t('profile.deleteAccountSubmit')}
+                {deletingAccount ? t('profile.deletingAccount') : t('profile.deleteAccountSubmit')}
               </button>
             </form>
           </section>

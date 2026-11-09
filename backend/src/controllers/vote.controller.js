@@ -1,4 +1,4 @@
-import voteService from '../services/vote.service.js';
+import { voteService } from '../services/vote.service.js';
 
 /**
  * POST /api/incidents/:incidentId/vote
@@ -7,10 +7,7 @@ async function vote(req, res, next) {
   try {
     const { incidentId } = req.validated.params;
 
-    const result = await voteService.castVote(
-      req.user.id,
-      incidentId
-    );
+    const result = await voteService.castVote(req.user.id, incidentId);
 
     return res.status(201).json(result);
   } catch (err) {
@@ -25,10 +22,7 @@ async function unvote(req, res, next) {
   try {
     const { incidentId } = req.validated.params;
 
-    const result = await voteService.removeVote(
-      req.user.id,
-      incidentId
-    );
+    const result = await voteService.removeVote(req.user.id, incidentId);
 
     return res.status(200).json(result);
   } catch (err) {
@@ -43,10 +37,7 @@ async function getVoteStatus(req, res, next) {
   try {
     const { incidentId } = req.validated.params;
 
-    const voted = await voteService.hasVoted(
-      req.user.id,
-      incidentId
-    );
+    const voted = await voteService.hasVoted(req.user.id, incidentId);
 
     return res.status(200).json({ voted });
   } catch (err) {
@@ -54,8 +45,4 @@ async function getVoteStatus(req, res, next) {
   }
 }
 
-export default {
-  vote,
-  unvote,
-  getVoteStatus,
-};
+export { vote, unvote, getVoteStatus };

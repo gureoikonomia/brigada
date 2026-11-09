@@ -5,7 +5,13 @@ import { voteIncident, unvoteIncident } from '../services/incident.service';
 import { useNavigate } from 'react-router-dom';
 import styles from './VoteButton.module.css';
 
-export default function VoteButton({ incidentId, initialVoted, initialCount, size = 'md' }) {
+export default function VoteButton({
+  incidentId,
+  initialVoted,
+  initialCount,
+  onVoteChange,
+  size = 'md',
+}) {
   const { user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -35,6 +41,7 @@ export default function VoteButton({ incidentId, initialVoted, initialCount, siz
       } else {
         await voteIncident(incidentId);
       }
+      onVoteChange?.(incidentId, !prevVoted);
     } catch {
       setVoted(prevVoted);
       setCount(prevCount);

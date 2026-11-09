@@ -22,18 +22,20 @@ function uploadBuffer(buffer, folder) {
         folder,
         resource_type: 'image',
         // limitamos el tamaño máximo de salida para no guardar imágenes gigantes
-        transformation: [{
-          width: 1600,
-          height: 1600,
-          crop: 'limit',
-          quality: 'auto',
-          flags: 'strip_profile',
-        }],
+        transformation: [
+          {
+            width: 1600,
+            height: 1600,
+            crop: 'limit',
+            quality: 'auto',
+            flags: 'strip_profile',
+          },
+        ],
       },
       (error, result) => {
         if (error) return reject(error);
         return resolve({ url: result.secure_url, publicId: result.public_id });
-      }
+      },
     );
 
     streamifier.createReadStream(buffer).pipe(uploadStream);
@@ -48,9 +50,7 @@ function uploadBuffer(buffer, folder) {
 async function uploadIncidentImages(files = []) {
   if (!files.length) return [];
 
-  const results = await Promise.allSettled(
-    files.map((file) => uploadBuffer(file.buffer, FOLDER))
-  );
+  const results = await Promise.allSettled(files.map((file) => uploadBuffer(file.buffer, FOLDER)));
   const uploadedImages = results
     .filter((result) => result.status === 'fulfilled')
     .map((result) => result.value);
@@ -67,12 +67,12 @@ async function uploadIncidentImages(files = []) {
       } catch (queueError) {
         throw new AggregateError(
           [...uploadErrors, cleanupError, queueError],
-          'Falló la subida y no se pudieron programar todos los reintentos de limpieza'
+          'Falló la subida y no se pudieron programar todos los reintentos de limpieza',
         );
       }
       throw new AggregateError(
         [...uploadErrors, cleanupError],
-        'No se pudieron subir ni limpiar todas las imágenes'
+        'No se pudieron subir ni limpiar todas las imágenes',
       );
     }
 
@@ -103,7 +103,7 @@ async function deleteImages(publicIds = []) {
   await Promise.all(publicIds.map((id) => deleteImage(id)));
 }
 
-export default {
+export const uploadService = {
   uploadIncidentImages,
   uploadAvatar,
   deleteImage,

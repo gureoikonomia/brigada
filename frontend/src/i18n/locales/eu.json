@@ -1,17 +1,13 @@
 {
   "nav": {
     "brand": "BRIGADA",
-    "incidents": "GERTAKARIAK",
     "newIncident": "Gertakari berria",
     "newIncidentFull": "Gertakari berria",
     "moderation": "Moderazioa",
     "login": "Saioa hasi",
-    "register": "Kontua sortu",
     "logout": "Saioa itxi",
     "darkMode": "Gai iluna aktibatu",
     "lightMode": "Gai argia aktibatu",
-    "openMenu": "Menua ireki",
-    "closeMenu": "Menua itxi",
     "mobileNavigation": "Nabigazio nagusia",
     "mobileHome": "Hasiera",
     "mobileCreate": "Gertakaria jakinarazi",
@@ -23,8 +19,6 @@
     "loading": "Kargatzen…",
     "loadingSession": "Saioa egiaztatzen…",
     "noPermission": "Ez duzu orri hau ikusteko baimenik.",
-    "back": "← Itzuli",
-    "save": "GORDE",
     "saving": "GORDETZEN…",
     "cancel": "Utzi"
   },
@@ -66,9 +60,7 @@
     "sortPopular": "Babes gehien dutenak",
     "categoryFilter": "Kategoriak",
     "statusFilter": "Egoera",
-    "moreFilters": "Iragazki gehiago",
     "sortFilter": "Ordenatu",
-    "selectedCount": "{{count}} hautatuta",
     "loadError": "Ezin izan dira gertakariak kargatu.",
     "empty": "Ez dago iragazkiekin bat datorren gertakaririk.",
     "prev": "← Aurrekoa",
@@ -80,7 +72,6 @@
     "loadError": "Ezin izan da gertakaria kargatu.",
     "notFound": "Ez da gertakaria aurkitu, edo ez dago argitaratuta.",
     "pendingModerationNotice": "Moderatzaileek gertakari hau berrikusi behar dute, jendaurrean ikusgai egon aurretik.",
-    "pendingModerationBanner": "MODERATZAILEEK BERRIKUSI BEHAR DUTE — Zuk, moderatzaileek eta administratzaileek bakarrik ikus dezakezue.",
     "inReviewBanner": "BERRIKUSTEN — Gertakari hau argitaratu aurretik berrikusten ari dira.",
     "reportedBy": "Jakinarazlea:",
     "deleteIncident": "Gertakaria ezabatu",
@@ -198,15 +189,11 @@
   },
   "profile": {
     "yourIncidents": "Nire gertakariak",
-    "edit": "Editatu profila",
     "loadError": "Ezin izan dira zure gertakariak kargatu.",
     "empty": "Ez duzu gertakaririk jakinarazi oraindik.",
     "votedEmpty": "Ez duzu gertakaririk babestu oraindik.",
     "tabMyIncidents": "Nire gertakariak",
     "tabVotedIncidents": "Babesten ditudan gertakariak",
-    "tabStats": "Estatistikak eta ospea",
-    "tabUsersAdmin": "Erabiltzaileen kudeaketa",
-    "tabModeration": "Berrikusteko dauden gertakariak",
     "adminPanel": "Administrazioa",
     "tabSettings": "Kontua eta segurtasuna",
     "sectionSelectorLabel": "Zer ikusi nahi duzu?",
@@ -223,31 +210,12 @@
     "deleteAccountTitle": "Kontua eta datuak ezabatu",
     "deleteAccountDescription": "Zure kontua, gertakariak, argazkiak eta botoak ezabatuko dira. Ekintza hau ezin da desegin.",
     "deleteAccountPassword": "Uneko pasahitza",
-    "deleteAccountConfirm": "Kontua eta datuak behin betiko ezabatu",
     "deleteAccountSubmit": "Nire kontua ezabatu",
     "deletingAccount": "Ezabatzen…",
-    "deleteAccountSuccess": "Kontua behar bezala ezabatu da.",
     "deleteAccountError": "Ezin izan da ezabatzea osatu. Zure kontuak erabilgarri jarraitzen du; saiatu berriro.",
-    "deleteAccountMediaPending": "Kontua ezabatu da. Argazki batzuk ezabatzeko daude, eta sistema berriro saiatuko da.",
-    "verified": "Egiaztatutako erabiltzailea",
-    "avatarUrlLabel": "Profileko argazkiaren URLa / avatarra"
-  },
-  "stats": {
-    "title": "EKARPENEN ESTATISTIKAK",
-    "incidentsCount": "Jakinarazitako gertakariak",
-    "resolvedCount": "Konpondutako gertakariak",
-    "votesCount": "Emandako babes-botoak",
-    "resolutionRate": "Konponketa-tasa",
-    "memberSince": "Noiztik den kide:",
-    "reputationRank": "Komunitateko maila",
-    "rankNovice": "Auzo-kide berria",
-    "rankActive": "Laguntzaile aktiboa",
-    "rankHonor": "Ohorezko brigadakidea",
-    "rankLegend": "Brigadako legenda"
+    "deleteAccountMediaPending": "Kontua ezabatu da. Argazki batzuk ezabatzeko daude, eta sistema berriro saiatuko da."
   },
   "admin": {
-    "title": "KOMUNITATEAREN ADMINISTRAZIOA",
-    "subtitle": "Sistemaren datu orokorrak eta erabiltzaileen kudeaketa.",
     "overview": "Komunitatearen laburpena",
     "statsError": "Ezin izan dira estatistikak kargatu.",
     "resolvedCount": "{{count}} gertakari konponduta",
@@ -268,19 +236,12 @@
     "actionsColumn": "Ekintzak",
     "you": "Zu",
     "usersTotal": "Erabiltzaileak, guztira",
-    "usersActive": "Erabiltzaile aktiboak",
-    "usersInactive": "Erabiltzaile inaktiboak",
     "incidentsTotal": "Gertakariak, guztira",
     "totalVotes": "Babes-botoak, guztira",
     "manageUsers": "Erabiltzaileen kudeaketa",
     "searchPlaceholder": "Bilatu izenaren edo helbide elektronikoaren arabera...",
-    "roleUser": "Bizilaguna",
-    "roleModerator": "Moderatzailea",
-    "roleAdmin": "Administratzailea",
     "statusActive": "Aktiboa",
     "statusInactive": "Inaktiboa",
-    "actionRole": "Aldatu rola",
-    "actionStatus": "Egoera",
     "activate": "Aktibatu",
     "deactivate": "Desaktibatu",
     "confirmRoleChange": "{{name}} erabiltzailearen rola aldatu nahi duzu? Rol berria: {{role}}.",
@@ -293,8 +254,6 @@
     "votingSettingError": "Ezin izan da botoen ezarpena gorde."
   },
   "editProfile": {
-    "backToProfile": "← Itzuli zure profilera",
-    "title": "EDITATU PROFILA",
     "accountData": "Kontuko datuak",
     "nameLabel": "Izena",
     "emailLabel": "Helbide elektronikoa",
@@ -310,12 +269,10 @@
     "changePassword": "Pasahitza aldatu",
     "currentPasswordLabel": "Uneko pasahitza",
     "newPasswordLabel": "Pasahitz berria",
-    "newPasswordHint": "(gutxienez 8 karaktere)",
     "confirmPasswordLabel": "Errepikatu pasahitz berria",
     "passwordMismatch": "Pasahitz berriak ez datoz bat.",
     "changePasswordSubmit": "Aldatu pasahitza",
     "changingPassword": "ALDATZEN…",
-    "passwordSuccess": "Pasahitza eguneratu da.",
     "passwordError": "Ezin izan da pasahitza aldatu."
   },
   "moderation": {
@@ -343,8 +300,6 @@
     "backLink": "← Itzuli gertakarien zerrendara"
   },
   "language": {
-    "label": "Hizkuntza",
-    "es": "Gaztelania",
-    "eu": "Euskara"
+    "label": "Hizkuntza"
   }
 }

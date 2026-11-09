@@ -1,5 +1,5 @@
 import PendingMediaDeletion from '../models/pendingMediaDeletion.model.js';
-import uploadService from './upload.service.js';
+import { uploadService } from './upload.service.js';
 import { randomUUID } from 'node:crypto';
 
 let processing = false;
@@ -23,10 +23,7 @@ export async function processPendingMediaDeletions() {
       const job = await PendingMediaDeletion.findOneAndUpdate(
         {
           nextAttemptAt: { $lte: now },
-          $or: [
-            { leaseUntil: null },
-            { leaseUntil: { $lte: now } },
-          ],
+          $or: [{ leaseUntil: null }, { leaseUntil: { $lte: now } }],
         },
         {
           $set: {
@@ -34,7 +31,7 @@ export async function processPendingMediaDeletions() {
             leaseUntil: new Date(now.getTime() + 15 * 60 * 1000),
           },
         },
-        { sort: { createdAt: 1 }, returnDocument: 'after' }
+        { sort: { createdAt: 1 }, returnDocument: 'after' },
       ).lean();
 
       if (!job) break;
@@ -54,7 +51,7 @@ export async function processPendingMediaDeletions() {
       }
 
       const attempts = job.attempts + 1;
-      const delayMs = Math.min(60 * 60 * 1000, 30_000 * (2 ** Math.min(attempts, 7)));
+      const delayMs = Math.min(60 * 60 * 1000, 30_000 * 2 ** Math.min(attempts, 7));
       const result = await PendingMediaDeletion.updateOne(
         { _id: job._id, leaseId },
         {
@@ -65,7 +62,7 @@ export async function processPendingMediaDeletions() {
             leaseUntil: null,
           },
           $inc: { attempts: 1 },
-        }
+        },
       );
       if (!result.modifiedCount) {
         console.error('Media deletion job lease was lost before retry could be saved');

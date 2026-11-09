@@ -116,67 +116,8 @@
   @apply space-y-3;
 }
 
-.statsWrapper {
-  @apply space-y-6;
-}
-
-.rankCard {
-  @apply bg-paper border border-line p-6 flex flex-col sm:flex-row items-center justify-between gap-4;
-  border-radius: 16px;
-}
-
-.rankLabel {
-  @apply font-mono text-xs uppercase text-ink/60;
-}
-
-.rankTitle {
-  @apply font-display font-extrabold text-2xl text-petrol uppercase;
-}
-
-.rankSubtext {
-  @apply text-xs font-mono text-ink/60 mt-1;
-}
-
-.memberSince {
-  @apply text-right font-mono text-xs text-ink/50;
-}
-
-.memberSinceBold {
-  @apply font-bold text-ink;
-}
-
-.statsGrid {
-  @apply grid grid-cols-2 sm:grid-cols-4 gap-4;
-}
-
-.statItem {
-  @apply bg-paper border border-line p-4 text-center;
-  border-radius: 18px;
-  box-shadow: 0 6px 16px rgba(51, 68, 58, 0.05);
-}
-
-.statItemLabel {
-  @apply block font-mono text-xs text-ink/60 uppercase;
-}
-
-.statValuePetrol {
-  @apply font-display font-bold text-3xl text-petrol;
-}
-
-.statValueSuccess {
-  @apply font-display font-bold text-3xl text-emerald-700;
-}
-
-.statValueSignal {
-  @apply font-display font-bold text-3xl text-signal-dark;
-}
-
 .adminSection {
   @apply space-y-6;
-}
-
-.adminNotice {
-  @apply bg-paper border border-line p-4 text-center font-mono text-xs text-ink/60;
 }
 
 .settingsGrid {
@@ -234,7 +175,7 @@
 
 .deleteAccountButton {
   @apply min-h-11 w-full px-4 py-2 font-semibold text-white transition-colors disabled:opacity-60;
-  background-color: #8A3929;
+  background-color: #8a3929;
 }
 
 .deleteAccountButton:hover:not(:disabled) {

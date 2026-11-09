@@ -2,21 +2,17 @@ import mongoose from 'mongoose';
 
 import Vote from '../models/vote.model.js';
 import Incident from '../models/incident.model.js';
-import appSettingsService from './app-settings.service.js';
+import { appSettingsService } from './app-settings.service.js';
 
 import { ServiceError } from '../errors/service.error.js';
 
 /**
  * Emite un voto.
  */
-async function castVote(
-  userId,
-  incidentId
-) {
+async function castVote(userId, incidentId) {
   await appSettingsService.requireVotingEnabled();
 
-  const session =
-    await mongoose.startSession();
+  const session = await mongoose.startSession();
 
   try {
     await session.withTransaction(async () => {
@@ -27,25 +23,15 @@ async function castVote(
       }
 
       if (!['pendiente', 'resuelta'].includes(incident.status)) {
-        throw new ServiceError(
-          'No se puede votar una incidencia que no está publicada',
-          403
-        );
+        throw new ServiceError('No se puede votar una incidencia que no está publicada', 403);
       }
 
       await Vote.create([{ incident: incidentId, user: userId }], { session });
-      await Incident.updateOne(
-        { _id: incidentId },
-        { $inc: { votesCount: 1 } },
-        { session }
-      );
+      await Incident.updateOne({ _id: incidentId }, { $inc: { votesCount: 1 } }, { session });
     });
   } catch (err) {
     if (err.code === 11000) {
-      throw new ServiceError(
-        'Ya has votado esta incidencia',
-        409
-      );
+      throw new ServiceError('Ya has votado esta incidencia', 409);
     }
 
     throw err;
@@ -63,20 +49,16 @@ async function castVote(
 /**
  * Retira un voto.
  */
-async function removeVote(
-  userId,
-  incidentId
-) {
+async function removeVote(userId, incidentId) {
   await appSettingsService.requireVotingEnabled();
 
-  const session =
-    await mongoose.startSession();
+  const session = await mongoose.startSession();
 
   try {
     await session.withTransaction(async () => {
       const deleted = await Vote.findOneAndDelete(
         { incident: incidentId, user: userId },
-        { session }
+        { session },
       );
 
       if (!deleted) {
@@ -86,7 +68,7 @@ async function removeVote(
       const updated = await Incident.updateOne(
         { _id: incidentId, votesCount: { $gt: 0 } },
         { $inc: { votesCount: -1 } },
-        { session }
+        { session },
       );
 
       if (updated.matchedCount === 0) {
@@ -109,17 +91,13 @@ async function removeVote(
 /**
  * Comprueba si un usuario ha votado.
  */
-async function hasVoted(
-  userId,
-  incidentId
-) {
+async function hasVoted(userId, incidentId) {
   await appSettingsService.requireVotingEnabled();
 
-  const vote =
-    await Vote.findOne({
-      incident: incidentId,
-      user: userId,
-    }).lean();
+  const vote = await Vote.findOne({
+    incident: incidentId,
+    user: userId,
+  }).lean();
 
   return Boolean(vote);
 }
@@ -128,28 +106,20 @@ async function hasVoted(
  * Obtiene las incidencias votadas por un usuario
  * dentro de una lista concreta.
  */
-async function getVotedIncidentIds(
-  userId,
-  incidentIds
-) {
-  const votes =
-    await Vote.find({
-      user: userId,
-      incident: {
-        $in: incidentIds,
-      },
-    })
-      .select('incident')
-      .lean();
+async function getVotedIncidentIds(userId, incidentIds) {
+  const votes = await Vote.find({
+    user: userId,
+    incident: {
+      $in: incidentIds,
+    },
+  })
+    .select('incident')
+    .lean();
 
-  return new Set(
-    votes.map((vote) =>
-      vote.incident.toString()
-    )
-  );
+  return new Set(votes.map((vote) => vote.incident.toString()));
 }
 
-export default {
+export const voteService = {
   castVote,
   removeVote,
   hasVoted,

@@ -1,18 +1,11 @@
 import express from 'express';
 
-import incidentController from '../controllers/incident.controller.js';
+import * as incidentController from '../controllers/incident.controller.js';
 import voteRoutes from './vote.route.js';
 
-import {
-  protect,
-  restrictTo,
-  attachUserIfPresent,
-} from '../middlewares/auth.middleware.js';
+import { protect, restrictTo, attachUserIfPresent } from '../middlewares/auth.middleware.js';
 
-import {
-  handleUploadErrors,
-  validateImageContent,
-} from '../middlewares/upload.middleware.js';
+import { handleUploadErrors, validateImageContent } from '../middlewares/upload.middleware.js';
 import { uploadLimiter } from '../middlewares/rate-limiters.js';
 
 import { validate } from '../middlewares/validate.middleware.js';
@@ -39,7 +32,7 @@ router.get(
   '/',
   attachUserIfPresent,
   validate(listIncidentsQuerySchema, 'query'),
-  incidentController.list
+  incidentController.list,
 );
 
 // Obtener incidencias votadas por el usuario logueado
@@ -47,7 +40,7 @@ router.get(
   '/user/voted',
   protect,
   validate(listVotedIncidentsQuerySchema, 'query'),
-  incidentController.listVoted
+  incidentController.listVoted,
 );
 
 // Obtener una incidencia concreta
@@ -55,7 +48,7 @@ router.get(
   '/:id',
   attachUserIfPresent,
   validate(mongoIdParamSchema, 'params'),
-  incidentController.getById
+  incidentController.getById,
 );
 
 // ============================================
@@ -74,16 +67,11 @@ router.post(
   handleUploadErrors,
   validateImageContent,
   validate(createIncidentSchema),
-  incidentController.create
+  incidentController.create,
 );
 
 // Eliminar incidencia
-router.delete(
-  '/:id',
-  protect,
-  validate(mongoIdParamSchema, 'params'),
-  incidentController.remove
-);
+router.delete('/:id', protect, validate(mongoIdParamSchema, 'params'), incidentController.remove);
 
 // Editar el contenido de una incidencia: solo administradores.
 router.patch(
@@ -95,7 +83,7 @@ router.patch(
   validateImageContent,
   validate(mongoIdParamSchema, 'params'),
   validate(updateIncidentSchema),
-  incidentController.update
+  incidentController.update,
 );
 
 // ============================================
@@ -109,7 +97,7 @@ router.patch(
   restrictTo('admin', 'moderator'),
   validate(mongoIdParamSchema, 'params'),
   validate(updateStatusSchema),
-  incidentController.updateStatus
+  incidentController.updateStatus,
 );
 
 // ============================================

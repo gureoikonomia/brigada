@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { listUsers, updateUserRole, updateUserStatus } from '../services/user.service';
 import { useAuth } from '../context/AuthContext';
@@ -24,35 +24,53 @@ export default function UserManagementTable() {
   const [error, setError] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const [updatingId, setUpdatingId] = useState(null);
+  const fetchRequestId = useRef(0);
 
   const fetchUsers = (page = 1) => {
-    setLoading(true);
-    setError(null);
+    const requestId = ++fetchRequestId.current;
     listUsers({ page, role: roleFilter || undefined, search: search || undefined, limit: 15 })
       .then((data) => {
+        if (requestId !== fetchRequestId.current) return;
         setUsers(data.items);
         setPagination(data.pagination);
       })
       .catch((err) => {
+        if (requestId !== fetchRequestId.current) return;
         setError(err?.response?.data?.message || t('admin.updateError'));
       })
       .finally(() => {
-        setLoading(false);
+        if (requestId === fetchRequestId.current) setLoading(false);
       });
   };
 
   useEffect(() => {
     fetchUsers(1);
+    return () => {
+      fetchRequestId.current += 1;
+    };
+    // Search is submitted explicitly; only role changes trigger this effect.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roleFilter]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
     fetchUsers(1);
   };
 
+  const handlePageChange = (page) => {
+    setLoading(true);
+    setError(null);
+    fetchUsers(page);
+  };
+
   const handleRoleChange = async (userId, targetName, newRole) => {
-    if (!window.confirm(t('admin.confirmRoleChange', { name: targetName, role: t(`role.${newRole}`) }))) {
+    if (
+      !window.confirm(
+        t('admin.confirmRoleChange', { name: targetName, role: t(`role.${newRole}`) }),
+      )
+    ) {
       return;
     }
 
@@ -63,7 +81,10 @@ export default function UserManagementTable() {
       setUsers((prev) => prev.map((u) => (u._id === userId ? { ...u, role: updated.role } : u)));
       setFeedback({ type: 'success', message: t('admin.updateSuccess') });
     } catch (err) {
-      setFeedback({ type: 'error', message: err?.response?.data?.message || t('admin.updateError') });
+      setFeedback({
+        type: 'error',
+        message: err?.response?.data?.message || t('admin.updateError'),
+      });
     } finally {
       setUpdatingId(null);
     }
@@ -80,10 +101,15 @@ export default function UserManagementTable() {
     setFeedback(null);
     try {
       const updated = await updateUserStatus(userId, nextStatus);
-      setUsers((prev) => prev.map((u) => (u._id === userId ? { ...u, isActive: updated.isActive } : u)));
+      setUsers((prev) =>
+        prev.map((u) => (u._id === userId ? { ...u, isActive: updated.isActive } : u)),
+      );
       setFeedback({ type: 'success', message: t('admin.updateSuccess') });
     } catch (err) {
-      setFeedback({ type: 'error', message: err?.response?.data?.message || t('admin.updateError') });
+      setFeedback({
+        type: 'error',
+        message: err?.response?.data?.message || t('admin.updateError'),
+      });
     } finally {
       setUpdatingId(null);
     }
@@ -121,7 +147,11 @@ export default function UserManagementTable() {
 
           <select
             value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
+            onChange={(e) => {
+              setLoading(true);
+              setError(null);
+              setRoleFilter(e.target.value);
+            }}
             className={styles.roleSelectFilter}
             aria-label={t('admin.filterByRole')}
           >
@@ -134,18 +164,16 @@ export default function UserManagementTable() {
       </div>
 
       {feedback && (
-        <div className={feedback.type === 'success' ? styles.feedbackSuccess : styles.feedbackError}>
+        <div
+          className={feedback.type === 'success' ? styles.feedbackSuccess : styles.feedbackError}
+        >
           {feedback.message}
         </div>
       )}
 
-      {error && (
-        <p className={styles.errorMessage}>{error}</p>
-      )}
+      {error && <p className={styles.errorMessage}>{error}</p>}
 
-      {loading && (
-        <p className={styles.loadingText}>{t('common.loading')}</p>
-      )}
+      {loading && <p className={styles.loadingText}>{t('common.loading')}</p>}
 
       {!loading && users.length === 0 && (
         <div className={styles.emptyState}>
@@ -176,23 +204,13 @@ export default function UserManagementTable() {
                     <td className={styles.tdCell}>
                       <div className={styles.userFlex}>
                         {u.avatarUrl ? (
-                          <img
-                            src={u.avatarUrl}
-                            alt=""
-                            className={styles.avatarImage}
-                          />
+                          <img src={u.avatarUrl} alt="" className={styles.avatarImage} />
                         ) : (
-                          <div className={styles.avatarInitials}>
-                            {initials(u.name)}
-                          </div>
+                          <div className={styles.avatarInitials}>{initials(u.name)}</div>
                         )}
                         <div>
                           <span className={styles.userName}>{u.name}</span>
-                          {isSelf && (
-                            <span className={styles.selfLabel}>
-                              {t('admin.you')}
-                            </span>
-                          )}
+                          {isSelf && <span className={styles.selfLabel}>{t('admin.you')}</span>}
                         </div>
                       </div>
                     </td>
@@ -250,7 +268,7 @@ export default function UserManagementTable() {
         <div className={styles.paginationRow}>
           <button
             disabled={pagination.page <= 1}
-            onClick={() => fetchUsers(pagination.page - 1)}
+            onClick={() => handlePageChange(pagination.page - 1)}
             className={styles.pageBtn}
           >
             {t('incidentList.prev')}
@@ -260,7 +278,7 @@ export default function UserManagementTable() {
           </span>
           <button
             disabled={pagination.page >= pagination.totalPages}
-            onClick={() => fetchUsers(pagination.page + 1)}
+            onClick={() => handlePageChange(pagination.page + 1)}
             className={styles.pageBtn}
           >
             {t('incidentList.next')}

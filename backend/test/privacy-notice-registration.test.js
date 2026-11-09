@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import User from '../src/models/user.model.js';
 import EmailVerificationToken from '../src/models/emailVerificationToken.model.js';
-import authService from '../src/services/auth.service.js';
+import { authService } from '../src/services/auth.service.js';
 
 function patchMethod(t, target, key, replacement) {
   const original = target[key];

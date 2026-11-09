@@ -9,13 +9,14 @@ export default function ImageGallery({ images }) {
 
   if (!images || images.length === 0) return null;
 
-  const active = images[activeIndex];
+  const visibleIndex = Math.min(activeIndex, images.length - 1);
+  const active = images[visibleIndex];
 
   return (
     <div>
       <img
         src={getCloudinaryImageUrl(active.url, 1200)}
-        alt={t('incidentDetail.photoAlt', { n: activeIndex + 1 })}
+        alt={t('incidentDetail.photoAlt', { n: visibleIndex + 1 })}
         decoding="async"
         className={styles.activeImage}
       />
@@ -29,7 +30,7 @@ export default function ImageGallery({ images }) {
               aria-label={t('incidentDetail.viewPhoto', { n: i + 1, total: images.length })}
               aria-current={i === activeIndex}
               className={`${styles.thumbButton} ${
-                i === activeIndex ? styles.thumbActive : styles.thumbInactive
+                i === visibleIndex ? styles.thumbActive : styles.thumbInactive
               }`}
             >
               <img

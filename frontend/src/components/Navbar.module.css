@@ -22,12 +22,9 @@
   @apply hidden md:flex items-center gap-5 text-sm font-semibold;
 }
 
-.navLink {
-  @apply min-h-11 inline-flex items-center text-ink/80 hover:text-petrol transition-colors;
-}
-
 .primaryButton {
   @apply min-h-11 inline-flex items-center justify-center px-4 py-2 border border-action bg-action text-action-ink hover:bg-action-hover transition-colors font-semibold;
+  border-radius: 10px;
 }
 
 .userLink {
@@ -43,10 +40,6 @@
   @apply w-9 h-9 flex items-center justify-center bg-petrol text-white text-sm font-bold;
   border-radius: 999px;
   object-fit: cover;
-}
-
-.logoutButton {
-  @apply text-ink/60 hover:text-signal transition-colors;
 }
 
 .mobileActions {

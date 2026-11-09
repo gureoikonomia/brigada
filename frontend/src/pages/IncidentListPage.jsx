@@ -56,7 +56,7 @@ export default function IncidentListPage() {
   return (
     <div className={styles.container}>
       <div className={styles.headerRow}>
-        <h1 className={styles.title}>{t('incidentList.title')}</h1>
+        {/* <h1 className={styles.title}>{t('incidentList.title')}</h1> */}
 
         <div className={`${styles.toolbar} ${!votingEnabled ? styles.toolbarWithoutVoting : ''}`}>
           {user && (

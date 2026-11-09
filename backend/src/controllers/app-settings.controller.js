@@ -1,4 +1,4 @@
-import appSettingsService from '../services/app-settings.service.js';
+import { appSettingsService } from '../services/app-settings.service.js';
 
 async function getSettings(req, res, next) {
   try {
@@ -19,4 +19,4 @@ async function updateVoting(req, res, next) {
   }
 }
 
-export default { getSettings, updateVoting };
+export { getSettings, updateVoting };

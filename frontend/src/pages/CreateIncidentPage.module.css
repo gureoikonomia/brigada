@@ -40,16 +40,8 @@
   @apply min-h-11 text-sm font-semibold text-petrol hover:text-signal-dark underline underline-offset-2 disabled:opacity-50;
 }
 
-.coordsGrid {
-  @apply grid grid-cols-2 gap-2;
-}
-
 .addressSearch {
   @apply flex flex-col sm:flex-row gap-2;
-}
-
-.coordInput {
-  @apply border border-line bg-paper px-3 py-2 focus:border-petrol font-mono text-sm;
 }
 
 .addressInput {

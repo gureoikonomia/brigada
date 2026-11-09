@@ -1,5 +1,5 @@
 import express from 'express';
-import appSettingsController from '../controllers/app-settings.controller.js';
+import * as appSettingsController from '../controllers/app-settings.controller.js';
 import { protect, restrictTo } from '../middlewares/auth.middleware.js';
 import { validate } from '../middlewares/validate.middleware.js';
 import { updateVotingSettingSchema } from '../validators/app-settings.validator.js';
@@ -13,7 +13,7 @@ router.patch(
   protect,
   restrictTo('admin'),
   validate(updateVotingSettingSchema),
-  appSettingsController.updateVoting
+  appSettingsController.updateVoting,
 );
 
 export default router;

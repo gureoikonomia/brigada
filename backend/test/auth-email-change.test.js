@@ -5,7 +5,7 @@ import test from 'node:test';
 import User from '../src/models/user.model.js';
 import EmailVerificationToken from '../src/models/emailVerificationToken.model.js';
 import PasswordResetToken from '../src/models/passwordResetToken.model.js';
-import authService from '../src/services/auth.service.js';
+import { authService } from '../src/services/auth.service.js';
 
 function patchMethod(t, target, key, replacement) {
   const original = target[key];
@@ -108,9 +108,8 @@ test('confirming an email-change token updates email and invalidates prior sessi
   assert.ok(capturedUpdate.options.session);
   assert.equal(transactionCount, 1);
   assert.equal(sessionEnded, true);
-  await assert.rejects(
-    authService.verifyEmail({ uid: 'user-id', token: 'a'.repeat(64) }),
-    { statusCode: 400 }
-  );
+  await assert.rejects(authService.verifyEmail({ uid: 'user-id', token: 'a'.repeat(64) }), {
+    statusCode: 400,
+  });
   assert.equal(transactionCount, 2);
 });
