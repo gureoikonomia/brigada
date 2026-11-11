@@ -39,8 +39,7 @@ async function register(req, res, next) {
     });
 
     if (result.token) setSessionCookie(res, result.token);
-    const { token, ...response } = result;
-    return res.status(result.token ? 201 : 202).json(response);
+    return res.status(202).json(result);
   } catch (err) {
     return next(err);
   }

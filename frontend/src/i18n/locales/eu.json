@@ -198,7 +198,11 @@
     "submit": "Kontua sortu",
     "submitting": "Kontua sortzen…",
     "error": "Ezin izan da kontua sortu",
-    "accountCreated": "Helbide elektroniko horrekin lehen aldiz erregistratzen bazara, kontua behar bezala sortu da eta saioa has dezakezu. Lehendik kontua bazenuen, hasi saioa zure datuekin.",
+    "accountCreated": "Helbide hori erregistratzeko erabil badaiteke, egiaztapen-esteka bat bidaliko dizugu. Begiratu sarrera-ontzia eta spam karpeta saioa hasi aurretik.",
+    "resendVerification": "Egiaztapen-mezua berriro bidali",
+    "resendingVerification": "Bidaltzen…",
+    "verificationResent": "Helbidea egiaztatu gabe duen kontu bati badagokio, beste esteka bat bidaliko dizugu.",
+    "resendVerificationError": "Ezin izan da beste mezu bat eskatu. Saiatu berriro geroago.",
     "hasAccount": "Kontua baduzu?",
     "loginLink": "Hasi saioa hemen"
   },

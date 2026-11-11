@@ -142,7 +142,7 @@ async function callLogout(token) {
   return { ...response, error };
 }
 
-test('login permits unverified accounts and creates a persisted session token', async (t) => {
+test('login rejects unverified accounts without creating a session', async (t) => {
   const sessions = createSessionStore(t);
   const user = {
     _id: '507f1f77bcf86cd799439011',
@@ -151,6 +151,29 @@ test('login permits unverified accounts and creates a persisted session token', 
     name: 'Test User',
     email: 'user@example.com',
     emailVerified: false,
+    isActive: true,
+    password: await bcrypt.hash('ValidPassword123', 4),
+  };
+  patchMethod(t, User, 'findOne', () => ({
+    select: async () => user,
+  }));
+
+  await assert.rejects(
+    authService.login({ email: user.email, password: 'ValidPassword123' }),
+    { statusCode: 403 },
+  );
+  assert.equal(sessions.size, 0);
+});
+
+test('verified login creates a persisted session token', async (t) => {
+  const sessions = createSessionStore(t);
+  const user = {
+    _id: '507f1f77bcf86cd799439011',
+    role: 'user',
+    tokenVersion: 4,
+    name: 'Test User',
+    email: 'user@example.com',
+    emailVerified: true,
     isActive: true,
     password: await bcrypt.hash('ValidPassword123', 4),
   };

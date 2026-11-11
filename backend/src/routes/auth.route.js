@@ -8,7 +8,11 @@ import {
   validateImageContent,
 } from '../middlewares/upload.middleware.js';
 import { validate } from '../middlewares/validate.middleware.js';
-import { emailChangeLimiter, uploadLimiter } from '../middlewares/rate-limiters.js';
+import {
+  emailChangeLimiter,
+  uploadLimiter,
+  verificationEmailLimiter,
+} from '../middlewares/rate-limiters.js';
 
 import {
   registerSchema,
@@ -31,6 +35,7 @@ router.post('/login', validate(loginSchema), authController.login);
 
 router.post(
   '/resend-verification',
+  verificationEmailLimiter,
   validate(resendVerificationSchema),
   authController.resendVerification,
 );

@@ -2,16 +2,24 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import { resendVerification } from '../services/auth.service';
 import styles from './RegisterPage.module.css';
 
 export default function RegisterPage() {
   const { register } = useAuth();
   const { t } = useTranslation();
   const location = useLocation();
-  const [form, setForm] = useState({ name: '', email: '', password: '', ageConfirmed: false });
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    ageConfirmed: false,
+  });
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendState, setResendState] = useState('idle');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,11 +35,38 @@ export default function RegisterPage() {
     }
   };
 
+  const handleResendVerification = async () => {
+    setResending(true);
+    setResendState('idle');
+    try {
+      await resendVerification(form.email);
+      setResendState('sent');
+    } catch {
+      setResendState('error');
+    } finally {
+      setResending(false);
+    }
+  };
+
   if (submitted) {
     return (
       <div className={styles.container}>
         <h1 className={styles.title}>{t('register.title')}</h1>
         <p className={styles.successBox} role="status">{t('register.accountCreated')}</p>
+        <button
+          type="button"
+          onClick={handleResendVerification}
+          disabled={resending}
+          className={styles.link}
+        >
+          {resending ? t('register.resendingVerification') : t('register.resendVerification')}
+        </button>
+        {resendState === 'sent' && (
+          <p className={styles.successBox} role="status">{t('register.verificationResent')}</p>
+        )}
+        {resendState === 'error' && (
+          <p className={styles.errorBox} role="alert">{t('register.resendVerificationError')}</p>
+        )}
         <p className={styles.footerText}>
           {t('register.hasAccount')}{' '}
           <Link to="/login" state={location.state} className={styles.link}>

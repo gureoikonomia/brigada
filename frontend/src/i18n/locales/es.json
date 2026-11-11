@@ -198,7 +198,11 @@
     "submit": "Crear cuenta",
     "submitting": "Creando cuenta…",
     "error": "No se pudo crear la cuenta",
-    "accountCreated": "Si es la primera vez que te registras con este email, tu cuenta se ha creado correctamente y ya puedes iniciar sesión. Si ya tenías una cuenta, entra con tus datos.",
+    "accountCreated": "Si la dirección puede registrarse, te enviaremos un enlace de verificación. Revisa tu bandeja de entrada y la carpeta de spam antes de iniciar sesión.",
+    "resendVerification": "Reenviar correo de verificación",
+    "resendingVerification": "Enviando…",
+    "verificationResent": "Si la dirección corresponde a una cuenta pendiente de verificación, enviaremos otro enlace.",
+    "resendVerificationError": "No se pudo solicitar otro correo. Inténtalo más tarde.",
     "hasAccount": "¿Ya tienes cuenta?",
     "loginLink": "Entra aquí"
   },

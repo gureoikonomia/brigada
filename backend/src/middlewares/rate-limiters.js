@@ -46,6 +46,14 @@ export const emailChangeLimiter = rateLimit({
   message: { message: 'Demasiadas solicitudes. Inténtalo más tarde.' },
 });
 
+export const verificationEmailLimiter = rateLimit({
+  ...commonOptions,
+  store: createRateLimitStore('verification-email'),
+  windowMs: 60 * 60 * 1000,
+  limit: 5,
+  message: { message: 'Demasiadas solicitudes. Inténtalo más tarde.' },
+});
+
 export const reportLimiter = rateLimit({
   ...commonOptions,
   store: createRateLimitStore('incident-report'),

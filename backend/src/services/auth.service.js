@@ -35,22 +35,22 @@ async function register({ name, email, password, ageConfirmed }) {
 
   const existing = await User.findOne({ email: normalizedEmail }).select('_id').lean();
   if (!existing) {
-    let user;
     try {
-      user = await User.create({
+      const user = await User.create({
         name,
         email: normalizedEmail,
         password: hashedPassword,
-        emailVerified: true,
+        emailVerified: false,
         adultAgeConfirmedAt: new Date(),
       });
+      await issueVerificationEmail(user);
     } catch (error) {
       if (error.code !== 11000) throw error;
     }
   }
 
   await normalizeAccountLookupDuration(startedAt);
-  return { registrationComplete: true };
+  return { registrationComplete: true, verificationRequired: true };
 }
 
 function hashVerificationToken(token) {
@@ -155,6 +155,10 @@ async function login({ email, password }) {
 
   if (!user || !user.isActive || !passwordMatches) {
     throw new ServiceError('Credenciales incorrectas', 401);
+  }
+
+  if (!user.emailVerified) {
+    throw new ServiceError('Debes verificar tu correo electrónico antes de iniciar sesión', 403);
   }
 
   const token = await createSessionToken(user);

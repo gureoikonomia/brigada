@@ -13,9 +13,9 @@ function patchMethod(t, target, key, replacement) {
   });
 }
 
-test('registration creates an immediately usable account without sending verification email', async (t) => {
+test('registration creates an unverified account and stores a hashed verification token', async (t) => {
   let createdUser;
-  let verificationTokenPersistenceCalled = false;
+  let createdToken;
   patchMethod(t, User, 'findOne', () => ({
     select: () => ({
       lean: async () => null,
@@ -25,13 +25,10 @@ test('registration creates an immediately usable account without sending verific
     createdUser = user;
     return { ...user, _id: 'created-test-user' };
   });
-  patchMethod(t, EmailVerificationToken, 'deleteMany', async () => {
-    verificationTokenPersistenceCalled = true;
-    throw new Error('Registration must not create verification tokens');
-  });
-  patchMethod(t, EmailVerificationToken, 'create', async () => {
-    verificationTokenPersistenceCalled = true;
-    throw new Error('Registration must not create verification tokens');
+  patchMethod(t, EmailVerificationToken, 'deleteMany', async () => ({ deletedCount: 0 }));
+  patchMethod(t, EmailVerificationToken, 'create', async (token) => {
+    createdToken = token;
+    return token;
   });
 
   const previousConsoleError = console.error;
@@ -47,15 +44,20 @@ test('registration creates an immediately usable account without sending verific
     ageConfirmed: true,
   });
 
-  assert.deepEqual(result, { registrationComplete: true });
+  assert.deepEqual(result, { registrationComplete: true, verificationRequired: true });
   assert.equal(createdUser.name, 'Test User');
   assert.equal(createdUser.email, 'test.user@example.invalid');
   assert.equal('password' in createdUser, true);
-  assert.equal(createdUser.emailVerified, true);
+  assert.equal(createdUser.emailVerified, false);
   assert.ok(createdUser.adultAgeConfirmedAt instanceof Date);
   assert.equal('privacyNoticeAcknowledgedAt' in createdUser, false);
   assert.equal('privacyNoticeVersion' in createdUser, false);
-  assert.equal(verificationTokenPersistenceCalled, false);
+  assert.equal(createdToken.userId, 'created-test-user');
+  assert.equal(createdToken.purpose, 'signup');
+  assert.equal(createdToken.email, 'test.user@example.invalid');
+  assert.match(createdToken.tokenHash, /^[a-f0-9]{64}$/);
+  assert.ok(createdToken.expiresAt instanceof Date);
+  assert.ok(createdToken.expiresAt.getTime() > Date.now());
 });
 
 test('registration rejects users who do not confirm the minimum age', async () => {
