@@ -64,6 +64,7 @@
     "empty": "Ez dago iragazkiekin bat datorren gertakaririk.",
     "prev": "← Aurrekoa",
     "next": "Hurrengoa →",
+    "pagination": "Gertakarien orrialdekatzea",
     "pageOf": "{{page}} / {{totalPages}}"
   },
   "incidentDetail": {

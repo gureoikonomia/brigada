@@ -28,5 +28,7 @@ const voteSchema = new mongoose.Schema(
 // Si se intenta insertar un duplicado, MongoDB lanza error de clave duplicada (código 11000),
 // que hay que capturar en vote.service.js y devolver como 409 Conflict.
 voteSchema.index({ incident: 1, user: 1 }, { unique: true });
+voteSchema.index({ user: 1, incident: 1 });
+voteSchema.index({ user: 1, createdAt: -1 });
 
 export default mongoose.model('Vote', voteSchema);

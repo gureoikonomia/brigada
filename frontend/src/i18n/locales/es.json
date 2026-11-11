@@ -64,6 +64,7 @@
     "empty": "No hay incidencias que coincidan con estos filtros.",
     "prev": "← Anterior",
     "next": "Siguiente →",
+    "pagination": "Paginación de incidencias",
     "pageOf": "{{page}} / {{totalPages}}"
   },
   "incidentDetail": {

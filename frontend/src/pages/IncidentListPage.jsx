@@ -141,7 +141,7 @@ export default function IncidentListPage() {
           </div>
 
           {pagination && pagination.totalPages > 1 && (
-            <div className={styles.pagination}>
+            <nav className={styles.pagination} aria-label={t('incidentList.pagination')}>
               <button
                 disabled={filters.page <= 1}
                 onClick={() => setFilters((f) => ({ ...f, page: f.page - 1 }))}
@@ -159,7 +159,7 @@ export default function IncidentListPage() {
               >
                 {t('incidentList.next')}
               </button>
-            </div>
+            </nav>
           )}
         </>
       )}

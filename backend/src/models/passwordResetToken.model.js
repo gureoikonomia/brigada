@@ -22,6 +22,7 @@ const passwordResetTokenSchema = new mongoose.Schema({
 
 // TTL index: Mongo borra el documento automáticamente al expirar
 passwordResetTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+passwordResetTokenSchema.index({ userId: 1, usedAt: 1 });
 
 const PasswordResetToken = mongoose.model('PasswordResetToken', passwordResetTokenSchema);
 

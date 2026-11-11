@@ -30,5 +30,5 @@
 }
 
 .unblockButton {
-  @apply min-h-10 border border-line px-3 py-1 font-semibold text-petrol hover:bg-concrete-dark disabled:opacity-60;
+  @apply min-h-11 border border-line px-3 py-1 font-semibold text-petrol hover:bg-concrete-dark disabled:opacity-60;
 }
