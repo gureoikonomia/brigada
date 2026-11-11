@@ -113,6 +113,18 @@
   @apply flex items-center justify-between flex-wrap gap-3 pt-4 border-t border-line;
 }
 
+.moderationActionBtn {
+  @apply min-h-11 border border-line px-3 py-2 text-sm font-semibold text-ink/70 hover:bg-concrete-dark disabled:opacity-60;
+}
+
+.reportForm {
+  @apply mt-4 space-y-3 border-t border-line pt-4;
+}
+
+.reportSuccess {
+  @apply mt-3 border border-ok bg-ok-soft px-3 py-3 text-sm text-ok;
+}
+
 .deleteBtn {
   @apply min-h-11 text-sm font-bold text-warn border border-warn px-3 py-1.5 hover:bg-warn hover:text-white transition-colors disabled:opacity-50;
 }

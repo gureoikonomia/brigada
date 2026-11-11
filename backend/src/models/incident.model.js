@@ -51,7 +51,7 @@ const incidentSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      default: null,
       index: true,
     },
     // Contador desnormalizado para no agregar la colección Vote en cada listado.

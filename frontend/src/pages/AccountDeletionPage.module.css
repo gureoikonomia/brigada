@@ -1,0 +1,55 @@
+@reference "../index.css";
+
+.container {
+  @apply max-w-xl mx-auto px-4 py-10;
+}
+
+.title {
+  @apply font-display font-bold text-3xl text-ink mb-4;
+}
+
+.card {
+  @apply border border-line bg-paper p-6;
+  border-radius: 14px;
+}
+
+.description {
+  @apply mb-5 text-sm leading-6 text-ink/70;
+}
+
+.form {
+  @apply space-y-4;
+}
+
+.label {
+  @apply block font-semibold text-sm text-ink;
+}
+
+.input {
+  @apply w-full border border-line bg-white px-3 py-3 focus:border-petrol;
+}
+
+.submitButton {
+  @apply min-h-12 w-full bg-action px-4 py-3 font-bold text-action-ink hover:bg-action-hover disabled:opacity-60;
+}
+
+.success,
+.error {
+  @apply border px-3 py-3 text-sm;
+}
+
+.success {
+  @apply border-ok bg-ok-soft text-ok;
+}
+
+.error {
+  @apply border-warn bg-warn-soft text-warn;
+}
+
+.footer {
+  @apply mt-4 text-sm;
+}
+
+.link {
+  @apply font-semibold text-petrol underline underline-offset-2;
+}

@@ -44,6 +44,7 @@ test('registration creates an immediately usable account without sending verific
     name: 'Test User',
     email: 'Test.User@Example.Invalid',
     password: 'StrongPass123',
+    ageConfirmed: true,
   });
 
   assert.deepEqual(result, { registrationComplete: true });
@@ -51,7 +52,20 @@ test('registration creates an immediately usable account without sending verific
   assert.equal(createdUser.email, 'test.user@example.invalid');
   assert.equal('password' in createdUser, true);
   assert.equal(createdUser.emailVerified, true);
+  assert.ok(createdUser.adultAgeConfirmedAt instanceof Date);
   assert.equal('privacyNoticeAcknowledgedAt' in createdUser, false);
   assert.equal('privacyNoticeVersion' in createdUser, false);
   assert.equal(verificationTokenPersistenceCalled, false);
+});
+
+test('registration rejects users who do not confirm the minimum age', async () => {
+  await assert.rejects(
+    authService.register({
+      name: 'Test User',
+      email: 'test@example.invalid',
+      password: 'StrongPass123',
+      ageConfirmed: false,
+    }),
+    { statusCode: 400 },
+  );
 });

@@ -45,3 +45,11 @@ export const emailChangeLimiter = rateLimit({
   limit: 3,
   message: { message: 'Demasiadas solicitudes. Inténtalo más tarde.' },
 });
+
+export const reportLimiter = rateLimit({
+  ...commonOptions,
+  store: createRateLimitStore('incident-report'),
+  windowMs: 60 * 60 * 1000,
+  limit: 10,
+  message: { message: 'Has alcanzado el límite temporal de denuncias.' },
+});

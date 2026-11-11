@@ -66,4 +66,41 @@ async function updateStatus(req, res, next) {
   }
 }
 
-export { getStats, getAdminStats, listUsers, updateRole, updateStatus };
+async function listBlockedUsers(req, res, next) {
+  try {
+    const users = await userService.listBlockedUsers(req.user.id);
+    return res.status(200).json(users);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function blockUser(req, res, next) {
+  try {
+    const result = await userService.blockUser(req.user.id, req.validated.params.id);
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error.statusCode) return res.status(error.statusCode).json({ message: error.message });
+    return next(error);
+  }
+}
+
+async function unblockUser(req, res, next) {
+  try {
+    const result = await userService.unblockUser(req.user.id, req.validated.params.id);
+    return res.status(200).json(result);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export {
+  getStats,
+  getAdminStats,
+  listUsers,
+  updateRole,
+  updateStatus,
+  listBlockedUsers,
+  blockUser,
+  unblockUser,
+};

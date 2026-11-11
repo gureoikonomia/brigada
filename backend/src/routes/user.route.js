@@ -7,9 +7,14 @@ import {
   listUsersQuerySchema,
   updateUserRoleSchema,
   updateUserStatusSchema,
+  blockUserParamSchema,
 } from '../validators/user.validator.js';
 
 const router = express.Router();
+
+router.get('/me/blocked', protect, userController.listBlockedUsers);
+router.put('/:id/blocked', protect, validate(blockUserParamSchema, 'params'), userController.blockUser);
+router.delete('/:id/blocked', protect, validate(blockUserParamSchema, 'params'), userController.unblockUser);
 
 // Estadísticas del usuario logueado
 router.get('/me/stats', protect, userController.getStats);

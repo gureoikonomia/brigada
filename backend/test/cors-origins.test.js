@@ -26,3 +26,17 @@ test('CORS includes the deployed Netlify frontend as an explicit origin', () => 
     else process.env.CORS_ORIGINS = previousCorsOrigins;
   }
 });
+
+test('CORS allows the default Capacitor iOS and Android origins', () => {
+  const previousNodeEnv = process.env.NODE_ENV;
+
+  try {
+    process.env.NODE_ENV = 'production';
+    const origins = getCorsOrigins();
+    assert.equal(origins.has('capacitor://localhost'), true);
+    assert.equal(origins.has('https://localhost'), true);
+  } finally {
+    if (previousNodeEnv === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = previousNodeEnv;
+  }
+});

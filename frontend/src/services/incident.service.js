@@ -28,6 +28,21 @@ export async function createIncident(formData) {
   return data;
 }
 
+export async function reportIncident(id, report) {
+  const { data } = await api.post(`/incidents/${id}/report`, report);
+  return data;
+}
+
+export async function listPendingIncidentReports() {
+  const { data } = await api.get('/incidents/reports/pending');
+  return data;
+}
+
+export async function resolveIncidentReport(id, status) {
+  const { data } = await api.patch(`/incidents/reports/${id}`, { status });
+  return data;
+}
+
 export async function updateIncidentStatus(id, status) {
   const { data } = await api.patch(`/incidents/${id}/status`, { status });
   return data;

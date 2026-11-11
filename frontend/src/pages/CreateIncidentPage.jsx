@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Camera } from '@capacitor/camera';
+import { Capacitor } from '@capacitor/core';
+import { Geolocation } from '@capacitor/geolocation';
 import L from 'leaflet';
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -39,6 +42,27 @@ function MapPosition({ lat, lng }) {
 }
 
 const CATEGORIES = ['infraestructura', 'seguridad', 'limpieza', 'ruido', 'trafico', 'otros'];
+const MAX_IMAGES = 5;
+const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+async function mediaResultToFile(result, index) {
+  const mediaUrl = result.uri ? Capacitor.convertFileSrc(result.uri) : result.webPath;
+  if (!mediaUrl) throw new Error('The selected photo has no readable path');
+
+  const response = await fetch(mediaUrl);
+  if (!response.ok) throw new Error('The selected photo could not be read');
+
+  const blob = await response.blob();
+  const format = result.metadata?.format?.toLowerCase();
+  const type = blob.type || (format === 'jpg' ? 'image/jpeg' : `image/${format}`);
+  if (!ALLOWED_IMAGE_TYPES.includes(type) || blob.size > MAX_IMAGE_SIZE_BYTES) {
+    throw new Error('UnsupportedPhoto');
+  }
+
+  const extension = type === 'image/jpeg' ? 'jpg' : type.slice('image/'.length);
+  return new File([blob], `incident-photo-${Date.now()}-${index + 1}.${extension}`, { type });
+}
 
 export default function CreateIncidentPage() {
   const { t } = useTranslation();
@@ -52,11 +76,14 @@ export default function CreateIncidentPage() {
     address: '',
   });
   const [images, setImages] = useState([]);
+  const [photoError, setPhotoError] = useState(null);
   const [error, setError] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [locating, setLocating] = useState(false);
   const [searchingAddress, setSearchingAddress] = useState(false);
+  const [selectingPhotos, setSelectingPhotos] = useState(false);
+  const isNative = Capacitor.isNativePlatform();
 
   const position = form.lat && form.lng
     ? [Number(form.lat), Number(form.lng)]
@@ -71,23 +98,62 @@ export default function CreateIncidentPage() {
     setLocationError(null);
   };
 
-  const handleUseMyLocation = () => {
-    if (!navigator.geolocation) {
+  const handleUseMyLocation = async () => {
+    setLocating(true);
+    setLocationError(null);
+    try {
+      let positionResult;
+      if (isNative) {
+        const permission = await Geolocation.requestPermissions({ permissions: ['location'] });
+        if (permission.location !== 'granted') throw new Error('Location permission was not granted');
+        positionResult = await Geolocation.getCurrentPosition({ enableHighAccuracy: true, timeout: 10000 });
+      } else {
+        if (!navigator.geolocation) throw new Error('Geolocation is unavailable');
+        positionResult = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+          });
+        });
+      }
+      selectLocation({ lat: positionResult.coords.latitude, lng: positionResult.coords.longitude });
+    } catch {
       setLocationError(t('createIncident.locationUnavailable'));
+    } finally {
+      setLocating(false);
+    }
+  };
+
+  const handleNativePhotoAction = async (action) => {
+    const remaining = MAX_IMAGES - images.length;
+    if (remaining <= 0) {
+      setPhotoError(t('createIncident.photosLimitReached'));
       return;
     }
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        selectLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        setLocating(false);
-      },
-      () => {
-        setLocationError(t('createIncident.locationUnavailable'));
-        setLocating(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
+
+    setSelectingPhotos(true);
+    setPhotoError(null);
+    try {
+      const results = action === 'camera'
+        ? [await Camera.takePhoto({ quality: 90, includeMetadata: true })]
+        : (await Camera.chooseFromGallery({
+          allowMultipleSelection: true,
+          limit: remaining,
+          quality: 90,
+          includeMetadata: true,
+        })).results;
+      const files = await Promise.all(results.slice(0, remaining).map(mediaResultToFile));
+      setImages((current) => [...current, ...files].slice(0, MAX_IMAGES));
+    } catch (photoActionError) {
+      if (photoActionError?.message === 'User cancelled photos app') return;
+      setPhotoError(photoActionError?.message === 'UnsupportedPhoto'
+        ? t('createIncident.photoFileInvalid')
+        : action === 'camera'
+          ? t('createIncident.photoCaptureError')
+          : t('createIncident.photoSelectionError'));
+    } finally {
+      setSelectingPhotos(false);
+    }
   };
 
   const handleAddressSearch = async () => {
@@ -247,25 +313,47 @@ export default function CreateIncidentPage() {
           <label className={styles.label} htmlFor="incident-photos">
             {t('createIncident.photosLabel')} <span className={styles.photosHint}>{t('createIncident.photosHint')}</span>
           </label>
-          <div className={styles.photoPickerWrap}>
-            <input
-              id="incident-photos"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              multiple
-              aria-describedby="incident-photo-status"
-              onChange={(e) => setImages(Array.from(e.target.files).slice(0, 5))}
-              className={styles.fileInput}
-            />
-            <label htmlFor="incident-photos" className={styles.photoPicker}>
-              {t('createIncident.choosePhotos')}
-            </label>
-          </div>
+          {isNative ? (
+            <div className={styles.photoActions}>
+              <button
+                type="button"
+                onClick={() => handleNativePhotoAction('camera')}
+                disabled={selectingPhotos || images.length >= MAX_IMAGES}
+                className={styles.photoPicker}
+              >
+                {t('createIncident.takePhoto')}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleNativePhotoAction('gallery')}
+                disabled={selectingPhotos || images.length >= MAX_IMAGES}
+                className={styles.photoPicker}
+              >
+                {t('createIncident.choosePhotos')}
+              </button>
+            </div>
+          ) : (
+            <div className={styles.photoPickerWrap}>
+              <input
+                id="incident-photos"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                aria-describedby="incident-photo-status"
+                onChange={(e) => setImages(Array.from(e.target.files).slice(0, MAX_IMAGES))}
+                className={styles.fileInput}
+              />
+              <label htmlFor="incident-photos" className={styles.photoPicker}>
+                {t('createIncident.choosePhotos')}
+              </label>
+            </div>
+          )}
           <p id="incident-photo-status" className={styles.fileSelectionStatus} aria-live="polite">
             {images.length
               ? t('createIncident.photosSelected', { count: images.length })
               : t('createIncident.noPhotosSelected')}
           </p>
+          {photoError && <p className={styles.locationError}>{photoError}</p>}
         </div>
 
         {error && (

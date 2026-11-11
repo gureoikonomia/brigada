@@ -16,6 +16,7 @@ const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage'));
+const AccountDeletionPage = lazy(() => import('./pages/AccountDeletionPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 import styles from './App.module.css';
 
@@ -72,6 +73,7 @@ export default function App() {
                 <Route path="/olvide-contrasena" element={<ForgotPasswordPage />} />
                 <Route path="/recuperar-contrasena" element={<ResetPasswordPage />} />
                 <Route path="/verificar-email" element={<VerifyEmailPage />} />
+                <Route path="/eliminar-cuenta" element={<AccountDeletionPage />} />
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </Suspense>

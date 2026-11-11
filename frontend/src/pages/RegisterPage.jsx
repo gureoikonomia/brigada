@@ -8,7 +8,7 @@ export default function RegisterPage() {
   const { register } = useAuth();
   const { t } = useTranslation();
   const location = useLocation();
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', ageConfirmed: false });
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -92,6 +92,17 @@ export default function RegisterPage() {
             onChange={(e) => setForm({ ...form, password: e.target.value })}
             className={styles.input}
           />
+        </div>
+
+        <div className={styles.ageConfirmation}>
+          <input
+            id="register-age-confirmation"
+            type="checkbox"
+            required
+            checked={form.ageConfirmed}
+            onChange={(e) => setForm({ ...form, ageConfirmed: e.target.checked })}
+          />
+          <label htmlFor="register-age-confirmation">{t('register.ageConfirmation')}</label>
         </div>
 
         {error && (

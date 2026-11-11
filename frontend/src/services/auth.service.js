@@ -29,6 +29,16 @@ export async function deleteAccount(currentPassword) {
   return data;
 }
 
+export async function requestAccountDeletion(email) {
+  const { data } = await api.post('/auth/request-account-deletion', { email });
+  return data;
+}
+
+export async function confirmAccountDeletion({ uid, token }) {
+  const { data } = await api.post('/auth/confirm-account-deletion', { uid, token });
+  return data;
+}
+
 export async function getProfile() {
   const { data } = await api.get('/auth/me');
   return data;

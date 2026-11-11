@@ -22,6 +22,15 @@
   @apply block;
 }
 
+.ageConfirmation {
+  @apply flex items-start gap-2 text-sm text-ink;
+}
+
+.ageConfirmation input {
+  @apply mt-1 accent-petrol;
+  flex: 0 0 auto;
+}
+
 .label {
   @apply block font-semibold text-sm text-ink mb-1;
 }

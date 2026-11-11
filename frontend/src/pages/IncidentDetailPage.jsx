@@ -6,7 +6,9 @@ import {
   deleteIncident,
   updateIncident,
   updateIncidentStatus,
+  reportIncident,
 } from '../services/incident.service';
+import { blockUser } from '../services/user.service';
 import { useAuth } from '../context/AuthContext';
 import useAppSettings from '../hooks/useAppSettings';
 import StatusBadge from '../components/StatusBadge';
@@ -37,6 +39,13 @@ export default function IncidentDetailPage() {
   const [editDraft, setEditDraft] = useState(null);
   const [editImages, setEditImages] = useState([]);
   const [actionError, setActionError] = useState(null);
+  const [reporting, setReporting] = useState(false);
+  const [reportReason, setReportReason] = useState('inappropriate');
+  const [reportDetails, setReportDetails] = useState('');
+  const [reportError, setReportError] = useState(null);
+  const [reportSubmitted, setReportSubmitted] = useState(false);
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [blocking, setBlocking] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -50,6 +59,9 @@ export default function IncidentDetailPage() {
           setEditImages([]);
           setEditError(null);
           setActionError(null);
+          setReporting(false);
+          setReportError(null);
+          setReportSubmitted(false);
           setLoadedIncidentId(id);
         }
       })
@@ -91,6 +103,34 @@ export default function IncidentDetailPage() {
       setActionError(err.response?.data?.message || t('moderation.statusChangeError'));
     } finally {
       setStatusSaving(false);
+    }
+  };
+
+  const handleReportSubmit = async (event) => {
+    event.preventDefault();
+    setReportSubmitting(true);
+    setReportError(null);
+    try {
+      await reportIncident(id, { reason: reportReason, details: reportDetails });
+      setReportSubmitted(true);
+      setReporting(false);
+    } catch (reportRequestError) {
+      setReportError(reportRequestError.response?.data?.message || t('incidentDetail.reportError'));
+    } finally {
+      setReportSubmitting(false);
+    }
+  };
+
+  const handleBlockAuthor = async () => {
+    if (!window.confirm(t('incidentDetail.confirmBlockAuthor'))) return;
+    setBlocking(true);
+    setActionError(null);
+    try {
+      await blockUser(incident.creator.id);
+      navigate('/');
+    } catch (blockError) {
+      setActionError(blockError.response?.data?.message || t('incidentDetail.blockError'));
+      setBlocking(false);
     }
   };
 
@@ -175,11 +215,15 @@ export default function IncidentDetailPage() {
   const canModerate = user && ['admin', 'moderator'].includes(user.role);
   const canAdminister = user?.role === 'admin';
   const canDelete = user && user.role !== 'moderator' && (isOwner || canAdminister);
+  const canReport = Boolean(user && !isOwner);
+  const canBlockAuthor = Boolean(user?.role === 'user' && !isOwner && incident.creator?.id);
   const isInReview = incident.status === 'en_revision';
   const availableStatuses = canAdminister
     ? STATUS_OPTIONS
     : user?.role === 'moderator' && incident.status === 'en_revision'
       ? ['en_revision', 'pendiente', 'rechazada']
+      : user?.role === 'moderator' && ['pendiente', 'resuelta'].includes(incident.status)
+        ? [incident.status, 'rechazada']
       : [incident.status];
 
   return (
@@ -349,7 +393,7 @@ export default function IncidentDetailPage() {
             </p>
           )}
 
-          {(votingEnabled || canDelete || canAdminister) && !editing && (
+          {(votingEnabled || canDelete || canAdminister || canReport) && !editing && (
             <div className={styles.actionsRow}>
               {votingEnabled && (
                 <VoteButton
@@ -371,7 +415,79 @@ export default function IncidentDetailPage() {
                   {t('incidentDetail.editIncident')}
                 </button>
               )}
+              {canReport && (
+                <>
+                  {!reportSubmitted && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setReporting((current) => !current);
+                        setReportError(null);
+                      }}
+                      className={styles.moderationActionBtn}
+                    >
+                      {t('incidentDetail.reportIncident')}
+                    </button>
+                  )}
+                  {canBlockAuthor && (
+                    <button
+                      type="button"
+                      onClick={handleBlockAuthor}
+                      disabled={blocking}
+                      className={styles.moderationActionBtn}
+                    >
+                      {blocking ? t('incidentDetail.blockingAuthor') : t('incidentDetail.blockAuthor')}
+                    </button>
+                  )}
+                </>
+              )}
             </div>
+          )}
+
+          {reporting && canReport && (
+            <form onSubmit={handleReportSubmit} className={styles.reportForm}>
+              <label htmlFor="incident-report-reason" className={styles.moderationLabel}>
+                {t('incidentDetail.reportReason')}
+              </label>
+              <select
+                id="incident-report-reason"
+                value={reportReason}
+                onChange={(event) => setReportReason(event.target.value)}
+                className={styles.statusSelect}
+              >
+                {['spam', 'inappropriate', 'personal_data', 'misinformation', 'other'].map((reason) => (
+                  <option key={reason} value={reason}>{t(`incidentDetail.reportReasons.${reason}`)}</option>
+                ))}
+              </select>
+              <label htmlFor="incident-report-details" className={styles.moderationLabel}>
+                {t('incidentDetail.reportDetails')}
+              </label>
+              <textarea
+                id="incident-report-details"
+                maxLength={1000}
+                rows={3}
+                value={reportDetails}
+                onChange={(event) => setReportDetails(event.target.value)}
+                className={styles.editTextarea}
+              />
+              {reportError && <p className={styles.errorBox} role="alert">{reportError}</p>}
+              <div className={styles.editActions}>
+                <button type="submit" disabled={reportSubmitting} className={styles.saveEditBtn}>
+                  {reportSubmitting ? t('incidentDetail.submittingReport') : t('incidentDetail.submitReport')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setReporting(false)}
+                  disabled={reportSubmitting}
+                  className={styles.cancelEditBtn}
+                >
+                  {t('common.cancel')}
+                </button>
+              </div>
+            </form>
+          )}
+          {reportSubmitted && (
+            <p className={styles.reportSuccess} role="status">{t('incidentDetail.reportSubmitted')}</p>
           )}
 
           {canModerate && (

@@ -43,3 +43,11 @@ export async function sendVerificationEmail(email, verificationLink, emailChange
             : `<p>Confirma tu correo para activar tu cuenta: <a href="${verificationLink}">verificar correo</a>.</p><p>El enlace caduca en 24 horas.</p>`
     );
 }
+
+export async function sendAccountDeletionEmail(email, deletionLink) {
+    return sendEmail(
+        email,
+        'Solicitud para eliminar tu cuenta de Brigada',
+        `<p>Hemos recibido una solicitud para eliminar tu cuenta y los datos asociados.</p><p>Para confirmar y completar la eliminación, <a href="${deletionLink}">confirma aquí</a>. El enlace caduca en 24 horas. Si no solicitaste esta acción, ignora este correo.</p>`
+    );
+}

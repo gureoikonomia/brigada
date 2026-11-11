@@ -18,3 +18,7 @@ export const updateUserStatusSchema = z.object({
     required_error: 'El estado isActive es obligatorio',
   }),
 });
+
+export const blockUserParamSchema = z.object({
+  id: z.string().regex(/^[0-9a-f]{24}$/i, 'ID de usuario no válido'),
+});

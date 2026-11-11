@@ -1,12 +1,13 @@
 import express from 'express';
 
 import * as incidentController from '../controllers/incident.controller.js';
+import * as incidentReportController from '../controllers/incident-report.controller.js';
 import voteRoutes from './vote.route.js';
 
 import { protect, restrictTo, attachUserIfPresent } from '../middlewares/auth.middleware.js';
 
 import { handleUploadErrors, validateImageContent } from '../middlewares/upload.middleware.js';
-import { uploadLimiter } from '../middlewares/rate-limiters.js';
+import { reportLimiter, uploadLimiter } from '../middlewares/rate-limiters.js';
 
 import { validate } from '../middlewares/validate.middleware.js';
 
@@ -18,6 +19,11 @@ import {
   mongoIdParamSchema,
   listVotedIncidentsQuerySchema,
 } from '../validators/incident.validator.js';
+import {
+  createIncidentReportSchema,
+  incidentReportIdParamSchema,
+  resolveIncidentReportSchema,
+} from '../validators/incident-report.validator.js';
 
 const router = express.Router();
 
@@ -41,6 +47,31 @@ router.get(
   protect,
   validate(listVotedIncidentsQuerySchema, 'query'),
   incidentController.listVoted,
+);
+
+router.get(
+  '/reports/pending',
+  protect,
+  restrictTo('admin', 'moderator'),
+  incidentReportController.listPending,
+);
+
+router.patch(
+  '/reports/:reportId',
+  protect,
+  restrictTo('admin', 'moderator'),
+  validate(incidentReportIdParamSchema, 'params'),
+  validate(resolveIncidentReportSchema),
+  incidentReportController.resolve,
+);
+
+router.post(
+  '/:id/report',
+  protect,
+  reportLimiter,
+  validate(mongoIdParamSchema, 'params'),
+  validate(createIncidentReportSchema),
+  incidentReportController.create,
 );
 
 // Obtener una incidencia concreta

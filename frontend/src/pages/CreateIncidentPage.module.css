@@ -83,6 +83,10 @@
   @apply mt-2;
 }
 
+.photoActions {
+  @apply mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2;
+}
+
 .fileInput {
   @apply sr-only;
 }

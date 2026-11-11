@@ -8,6 +8,7 @@ import {
 import { listUsersQuerySchema } from '../src/validators/user.validator.js';
 import {
   loginSchema,
+  registerSchema,
   requestEmailChangeSchema,
   updateProfileSchema,
 } from '../src/validators/auth.validator.js';
@@ -48,6 +49,17 @@ test('password validation respects bcrypt UTF-8 byte limit', () => {
     email: 'person@example.com',
     password: 'ValidPass123',
   }).success, true);
+});
+
+test('registration requires an explicit minimum-age confirmation', () => {
+  const credentials = {
+    name: 'Vecina',
+    email: 'person@example.com',
+    password: 'ValidPass123',
+  };
+  assert.equal(registerSchema.safeParse({ ...credentials, ageConfirmed: true }).success, true);
+  assert.equal(registerSchema.safeParse({ ...credentials, ageConfirmed: false }).success, false);
+  assert.equal(registerSchema.safeParse(credentials).success, false);
 });
 
 test('JWT expiration accepts bounded unit durations only', () => {

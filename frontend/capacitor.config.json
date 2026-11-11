@@ -1,0 +1,9 @@
+{
+  "appId": "com.gureoikonomia.brigada",
+  "appName": "Brigada",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "iosScheme": "capacitor"
+  }
+}

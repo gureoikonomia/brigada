@@ -23,7 +23,11 @@ async function normalizeAccountLookupDuration(startedAt) {
 /**
  * Registra un nuevo usuario.
  */
-async function register({ name, email, password }) {
+async function register({ name, email, password, ageConfirmed }) {
+  if (ageConfirmed !== true) {
+    throw new ServiceError('Debes confirmar que tienes al menos 18 años', 400);
+  }
+
   const startedAt = Date.now();
 
   const normalizedEmail = email.toLowerCase();
@@ -38,6 +42,7 @@ async function register({ name, email, password }) {
         email: normalizedEmail,
         password: hashedPassword,
         emailVerified: true,
+        adultAgeConfirmedAt: new Date(),
       });
     } catch (error) {
       if (error.code !== 11000) throw error;

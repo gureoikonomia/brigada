@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 import Vote from '../models/vote.model.js';
 import Incident from '../models/incident.model.js';
+import User from '../models/user.model.js';
 import { appSettingsService } from './app-settings.service.js';
 
 import { ServiceError } from '../errors/service.error.js';
@@ -19,6 +20,12 @@ async function castVote(userId, incidentId) {
       const incident = await Incident.findById(incidentId).session(session);
 
       if (!incident) {
+        throw new ServiceError('Incidencia no encontrada', 404);
+      }
+      if (
+        incident.createdBy
+        && await User.exists({ _id: userId, blockedUsers: incident.createdBy }).session(session)
+      ) {
         throw new ServiceError('Incidencia no encontrada', 404);
       }
 

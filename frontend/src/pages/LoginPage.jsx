@@ -96,6 +96,11 @@ export default function LoginPage() {
           {t('login.registerLink')}
         </Link>
       </p>
+      <p className={styles.footerText}>
+        <Link to="/eliminar-cuenta" className={styles.link}>
+          {t('accountDeletion.publicLink')}
+        </Link>
+      </p>
     </div>
   );
 }

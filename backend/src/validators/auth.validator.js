@@ -25,6 +25,9 @@ export const registerSchema = z.object({
   name: z.string().trim().min(2, 'El nombre debe tener al menos 2 caracteres').max(80),
   email: emailAddress,
   password: strongPassword,
+  ageConfirmed: z.boolean().refine((confirmed) => confirmed, {
+    message: 'Debes confirmar que tienes al menos 18 años',
+  }),
 });
 
 export const loginSchema = z.object({
@@ -79,4 +82,13 @@ export const resendVerificationSchema = z.object({
 
 export const deleteAccountSchema = z.object({
   currentPassword,
+});
+
+export const requestAccountDeletionSchema = z.object({
+  email: emailAddress,
+});
+
+export const confirmAccountDeletionSchema = z.object({
+  uid: z.string().regex(/^[0-9a-f]{24}$/i, 'Enlace inválido o expirado'),
+  token: z.string().regex(/^[0-9a-f]{64}$/i, 'Enlace inválido o expirado'),
 });

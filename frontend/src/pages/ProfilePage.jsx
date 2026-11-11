@@ -16,6 +16,7 @@ import IncidentCardSkeleton from '../components/IncidentCardSkeleton';
 import AdminStatsWidget from '../components/AdminStatsWidget';
 import VotingFeatureControl from '../components/VotingFeatureControl';
 import UserManagementTable from '../components/UserManagementTable';
+import BlockedUsersSection from '../components/BlockedUsersSection';
 import ModerationPage from './ModerationPage';
 import styles from './ProfilePage.module.css';
 
@@ -404,6 +405,7 @@ export default function ProfilePage() {
 
       {visibleTab === 'settings' && (
         <div className={styles.settingsGrid}>
+          <BlockedUsersSection />
           {/* Datos Personales */}
           <section className={styles.sectionCard}>
             <h3 className={styles.subSectionTitle}>{t('editProfile.accountData')}</h3>

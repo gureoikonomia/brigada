@@ -6,7 +6,10 @@ import Vote from '../models/vote.model.js';
 import AppSettings from '../models/app-settings.model.js';
 import PasswordResetToken from '../models/passwordResetToken.model.js';
 import EmailVerificationToken from '../models/emailVerificationToken.model.js';
+import AccountDeletionToken from '../models/accountDeletionToken.model.js';
+import IncidentReport from '../models/incidentReport.model.js';
 import PendingMediaDeletion from '../models/pendingMediaDeletion.model.js';
+import Session from '../models/session.model.js';
 import { ServiceError } from '../errors/service.error.js';
 import { appSettingsService } from './app-settings.service.js';
 import { enqueueMediaDeletion, processPendingMediaDeletions } from './media-deletion.service.js';
@@ -261,14 +264,28 @@ async function updateUserStatus(adminUserId, targetUserId, isActive) {
   return updated;
 }
 
-async function deleteAccount(userId, currentPassword) {
-  const user = await User.findById(userId).select('+password');
+async function listBlockedUsers(userId) {
+  const user = await User.findById(userId).select('blockedUsers')
+    .populate('blockedUsers', 'name')
+    .lean();
   if (!user) throw new ServiceError('Usuario no encontrado', 404);
+  return user.blockedUsers.filter(Boolean);
+}
 
-  if (!(await bcrypt.compare(currentPassword, user.password))) {
-    throw new ServiceError('La contraseña actual no es correcta', 401);
-  }
+async function blockUser(userId, targetUserId) {
+  if (userId === targetUserId) throw new ServiceError('No puedes bloquear tu propia cuenta', 400);
+  const targetExists = await User.exists({ _id: targetUserId });
+  if (!targetExists) throw new ServiceError('Usuario no encontrado', 404);
+  await User.updateOne({ _id: userId }, { $addToSet: { blockedUsers: targetUserId } });
+  return { blocked: true };
+}
 
+async function unblockUser(userId, targetUserId) {
+  await User.updateOne({ _id: userId }, { $pull: { blockedUsers: targetUserId } });
+  return { blocked: false };
+}
+
+async function deleteAccountData(userId, verificationTokenHash) {
   const session = await mongoose.startSession();
   let publicIds = [];
 
@@ -280,18 +297,31 @@ async function deleteAccount(userId, currentPassword) {
       if (!currentUser) {
         throw new ServiceError('Usuario no encontrado', 404);
       }
+      if (verificationTokenHash) {
+        const token = await AccountDeletionToken.findOneAndDelete({
+          userId,
+          tokenHash: verificationTokenHash,
+          expiresAt: { $gt: new Date() },
+        }, { session });
+        if (!token) throw new ServiceError('Enlace inválido o expirado', 400);
+      }
       if (currentUser.role === 'admin' && currentUser.isActive) {
         await ensureAnotherActiveAdminExists(session);
       }
 
-      const activeUser = await User.findOneAndUpdate(
-        { _id: userId, isActive: true },
-        { $set: { isActive: false }, $inc: { tokenVersion: 1 } },
-        { returnDocument: 'after', session },
-      ).select('+avatarPublicId');
-
+      const activeUser = await User.findById(userId).select('+avatarPublicId').session(session);
       if (!activeUser) {
-        throw new ServiceError('La cuenta ya no está activa', 409);
+        throw new ServiceError('Usuario no encontrado', 404);
+      }
+      if (activeUser.isActive) {
+        const deactivated = await User.updateOne(
+          { _id: userId, isActive: true },
+          { $set: { isActive: false }, $inc: { tokenVersion: 1 } },
+          { session },
+        );
+        if (deactivated.matchedCount !== 1) {
+          throw new ServiceError('La cuenta ya no está activa', 409);
+        }
       }
 
       const ownedIncidents = await Incident.find({ createdBy: userId })
@@ -299,7 +329,6 @@ async function deleteAccount(userId, currentPassword) {
         .session(session)
         .lean();
       const ownedIncidentIds = ownedIncidents.map((incident) => incident._id);
-      const ownedIdSet = new Set(ownedIncidentIds.map((id) => id.toString()));
 
       publicIds = [
         activeUser.avatarPublicId,
@@ -312,8 +341,6 @@ async function deleteAccount(userId, currentPassword) {
       ]).session(session);
 
       for (const voteGroup of votesByIncident) {
-        if (ownedIdSet.has(voteGroup._id.toString())) continue;
-
         const update = await Incident.updateOne(
           { _id: voteGroup._id, votesCount: { $gte: voteGroup.count } },
           { $inc: { votesCount: -voteGroup.count } },
@@ -326,11 +353,31 @@ async function deleteAccount(userId, currentPassword) {
 
       await Vote.deleteMany({ user: activeUser._id }, { session });
       if (ownedIncidentIds.length) {
-        await Vote.deleteMany({ incident: { $in: ownedIncidentIds } }, { session });
+        await Incident.updateMany(
+          { _id: { $in: ownedIncidentIds }, createdBy: activeUser._id },
+          { $set: { createdBy: null, images: [] } },
+          { session },
+        );
       }
-      await Incident.deleteMany({ createdBy: activeUser._id }, { session });
+      await IncidentReport.updateMany(
+        { reporter: activeUser._id },
+        { $set: { reporter: null } },
+        { session },
+      );
+      await IncidentReport.updateMany(
+        { reviewedBy: activeUser._id },
+        { $set: { reviewedBy: null } },
+        { session },
+      );
+      await User.updateMany(
+        { blockedUsers: activeUser._id },
+        { $pull: { blockedUsers: activeUser._id } },
+        { session },
+      );
       await PasswordResetToken.deleteMany({ userId: activeUser._id }, { session });
       await EmailVerificationToken.deleteMany({ userId: activeUser._id }, { session });
+      await AccountDeletionToken.deleteMany({ userId: activeUser._id }, { session });
+      await Session.deleteMany({ userId: activeUser._id }, { session });
       await enqueueMediaDeletion(publicIds, session);
       await User.deleteOne({ _id: activeUser._id }, { session });
     });
@@ -351,11 +398,28 @@ async function deleteAccount(userId, currentPassword) {
   return { deleted: true, mediaCleanupPending };
 }
 
+async function deleteAccount(userId, currentPassword) {
+  const user = await User.findById(userId).select('+password');
+  if (!user) throw new ServiceError('Usuario no encontrado', 404);
+  if (!(await bcrypt.compare(currentPassword, user.password))) {
+    throw new ServiceError('La contraseña actual no es correcta', 401);
+  }
+  return deleteAccountData(userId);
+}
+
+async function deleteAccountAfterEmailVerification(userId, tokenHash) {
+  return deleteAccountData(userId, tokenHash);
+}
+
 export const userService = {
   getUserStats,
   getAdminStats,
   listUsers,
   updateUserRole,
   updateUserStatus,
+  listBlockedUsers,
+  blockUser,
+  unblockUser,
   deleteAccount,
+  deleteAccountAfterEmailVerification,
 };

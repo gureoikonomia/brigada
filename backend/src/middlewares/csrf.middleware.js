@@ -8,6 +8,8 @@ const PREAUTH_JSON_ROUTES = new Set([
   '/api/auth/verify-email',
   '/api/auth/forgot-password',
   '/api/auth/reset-password',
+  '/api/auth/request-account-deletion',
+  '/api/auth/confirm-account-deletion',
 ]);
 
 export function csrfProtection(allowedOrigins) {

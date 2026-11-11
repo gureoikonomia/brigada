@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
 
 import Incident from '../models/incident.model.js';
+import IncidentReport from '../models/incidentReport.model.js';
 import Vote from '../models/vote.model.js';
+import User from '../models/user.model.js';
 
 import { uploadService } from './upload.service.js';
 import { voteService } from './vote.service.js';
@@ -16,9 +18,17 @@ const EARTH_RADIUS_METERS = 6378100;
 export function presentIncident(incident, user) {
   const result = { ...incident };
   const isPrivileged = ['admin', 'moderator'].includes(user?.role);
+  const creatorId = result.createdBy?._id || result.createdBy;
+
+  if (user?.id && creatorId) {
+    result.creator = {
+      id: creatorId.toString(),
+      name: result.createdBy?.name,
+      avatarUrl: result.createdBy?.avatarUrl,
+    };
+  }
 
   if (!isPrivileged) {
-    const creatorId = result.createdBy?._id || result.createdBy;
     result.isOwner = Boolean(user?.id && creatorId && user.id === creatorId.toString());
     delete result.createdBy;
   }
@@ -134,6 +144,16 @@ async function listIncidents({
     baseQuery.createdBy = createdBy;
   }
 
+  if (user?.id && !isPrivileged) {
+    const blockingUser = await User.findById(user.id).select('blockedUsers').lean();
+    const blockedIds = blockingUser?.blockedUsers || [];
+    if (blockedIds.length) {
+      baseQuery.createdBy = baseQuery.createdBy
+        ? { $eq: baseQuery.createdBy, $nin: blockedIds }
+        : { $nin: blockedIds };
+    }
+  }
+
   const findQuery = { ...baseQuery };
   const countQuery = { ...baseQuery };
 
@@ -238,6 +258,14 @@ async function getIncidentById(incidentId, user) {
   const isPrivileged = user && ['admin', 'moderator'].includes(user.role);
   const creatorId = incident.createdBy?._id || incident.createdBy;
   const isOwner = Boolean(user && creatorId && user.id === creatorId.toString());
+  if (
+    user?.id
+    && creatorId
+    && !isPrivileged
+    && await User.exists({ _id: user.id, blockedUsers: creatorId })
+  ) {
+    throw new ServiceError('Incidencia no encontrada', 404);
+  }
 
   // Si la incidencia está en estado 'en_revision' o 'rechazada', solo el autor o un admin/moderador pueden verla.
   if (['en_revision', 'rechazada'].includes(incident.status) && !isOwner && !isPrivileged) {
@@ -270,9 +298,13 @@ async function updateStatus(incidentId, status, requestingUser) {
   const isModerator = requestingUser?.role === 'moderator';
 
   if (isModerator) {
-    if (existing.status !== 'en_revision' || !['pendiente', 'rechazada'].includes(status)) {
+    const canDecideReview = existing.status === 'en_revision'
+      && ['pendiente', 'rechazada'].includes(status);
+    const canRejectReportedContent = ['pendiente', 'resuelta'].includes(existing.status)
+      && status === 'rechazada';
+    if (!canDecideReview && !canRejectReportedContent) {
       throw new ServiceError(
-        'Los moderadores solo pueden decidir si una incidencia en revisión queda pendiente o se rechaza',
+        'Los moderadores solo pueden resolver incidencias en revisión o rechazar contenido público denunciado',
         403,
       );
     }
@@ -341,7 +373,7 @@ async function deleteIncident(incidentId, requestingUser) {
     throw new ServiceError('Incidencia no encontrada', 404);
   }
 
-  const isOwner = incident.createdBy.toString() === requestingUser.id;
+  const isOwner = incident.createdBy?.toString() === requestingUser.id;
 
   const isPrivileged = requestingUser.role === 'admin';
 
@@ -354,6 +386,7 @@ async function deleteIncident(incidentId, requestingUser) {
   try {
     await session.withTransaction(async () => {
       await Vote.deleteMany({ incident: incidentId }, { session });
+      await IncidentReport.deleteMany({ incident: incidentId }, { session });
       await Incident.deleteOne({ _id: incidentId }, { session });
       await enqueueMediaDeletion(
         (incident.images || []).map((image) => image.publicId),
@@ -377,6 +410,10 @@ async function deleteIncident(incidentId, requestingUser) {
 async function listVotedIncidents({ userId, user, page = 1, limit = 20 }) {
   await appSettingsService.requireVotingEnabled();
   const userObjectId = new mongoose.Types.ObjectId(userId);
+  const blockingUser = await User.findById(userId).select('blockedUsers').lean();
+  const blockedMatch = blockingUser?.blockedUsers?.length
+    ? [{ $match: { 'incident.createdBy': { $nin: blockingUser.blockedUsers } } }]
+    : [];
   const visibilityMatch = votedIncidentVisibilityMatch(userObjectId, user?.role);
   const visibilityStages = visibilityMatch ? [{ $match: visibilityMatch }] : [];
   const [result] = await Vote.aggregate([
@@ -390,6 +427,7 @@ async function listVotedIncidents({ userId, user, page = 1, limit = 20 }) {
       },
     },
     { $unwind: '$incident' },
+    ...blockedMatch,
     ...visibilityStages,
     { $sort: { createdAt: -1, _id: -1 } },
     {

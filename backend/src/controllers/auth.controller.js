@@ -29,12 +29,13 @@ function csrf(req, res) {
  */
 async function register(req, res, next) {
   try {
-    const { name, email, password } = req.validated.body;
+    const { name, email, password, ageConfirmed } = req.validated.body;
 
     const result = await authService.register({
       name,
       email,
       password,
+      ageConfirmed,
     });
 
     if (result.token) setSessionCookie(res, result.token);

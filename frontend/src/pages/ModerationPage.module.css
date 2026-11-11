@@ -63,3 +63,32 @@
 .itemsSpace {
   @apply space-y-2;
 }
+
+.reportList {
+  @apply space-y-3;
+}
+
+.reportCard {
+  @apply border border-line bg-paper p-4;
+  border-radius: 12px;
+}
+
+.reportTitle {
+  @apply font-semibold text-petrol underline underline-offset-2;
+}
+
+.reportMeta {
+  @apply mt-2 text-sm text-ink/60;
+}
+
+.reportDetails {
+  @apply mt-2 whitespace-pre-wrap text-sm text-ink;
+}
+
+.reportActions {
+  @apply mt-4 flex flex-wrap gap-2;
+}
+
+.reportActionButton {
+  @apply min-h-11 border border-line px-3 py-2 text-sm font-semibold text-ink hover:bg-concrete-dark disabled:opacity-60;
+}

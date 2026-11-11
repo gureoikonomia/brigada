@@ -44,6 +44,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    adultAgeConfirmedAt: {
+      type: Date,
+      default: null,
+    },
     avatarUrl: {
       type: String,
       default: null,
@@ -57,6 +61,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    blockedUsers: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    }],
   },
   {
     timestamps: true,

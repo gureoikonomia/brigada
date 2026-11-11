@@ -25,10 +25,28 @@ export async function updateUserStatus(userId, isActive) {
   return response.data;
 }
 
+export async function listBlockedUsers() {
+  const response = await api.get('/users/me/blocked');
+  return response.data;
+}
+
+export async function blockUser(userId) {
+  const response = await api.put(`/users/${userId}/blocked`);
+  return response.data;
+}
+
+export async function unblockUser(userId) {
+  const response = await api.delete(`/users/${userId}/blocked`);
+  return response.data;
+}
+
 export default {
   getUserStats,
   getAdminStats,
   listUsers,
   updateUserRole,
   updateUserStatus,
+  listBlockedUsers,
+  blockUser,
+  unblockUser,
 };

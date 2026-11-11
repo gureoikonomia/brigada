@@ -6,13 +6,38 @@ import { validateEnvironment } from './config/env.js';
 import mongoose from 'mongoose';
 import { startMediaDeletionWorker } from './services/media-deletion.service.js';
 import { initializeRateLimitStores } from './middlewares/mongo-rate-limit.store.js';
+import IncidentReport from './models/incidentReport.model.js';
 
 const PORT = process.env.PORT || 3000;
+
+async function migrateIncidentReportIndexes() {
+  const [collection] = await mongoose.connection.db
+    .listCollections({ name: IncidentReport.collection.name })
+    .toArray();
+  if (!collection) return;
+
+  const indexes = await IncidentReport.collection.indexes();
+  const legacyReporterIndex = indexes.find((index) =>
+    index.key?.incident === 1
+    && index.key?.reporter === 1
+    && index.unique
+    && index.partialFilterExpression?.reporter?.$type !== 'objectId',
+  );
+
+  if (legacyReporterIndex) {
+    try {
+      await IncidentReport.collection.dropIndex(legacyReporterIndex.name);
+    } catch (error) {
+      if (error.code !== 27) throw error;
+    }
+  }
+}
 
 const startServer = async () => {
   try {
     validateEnvironment();
     await connectDB();
+    await migrateIncidentReportIndexes();
     await Promise.all(
       Object.values(mongoose.models).map((model) => model.createIndexes())
     );

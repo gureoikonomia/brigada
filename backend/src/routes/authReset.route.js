@@ -5,12 +5,15 @@ import rateLimit from 'express-rate-limit';
 
 import User from '../models/user.model.js';
 import PasswordResetToken from '../models/passwordResetToken.model.js';
+import { accountDeletionService } from '../services/account-deletion.service.js';
 import { sendResetEmail, sendPasswordChangedNotification } from '../utils/email.js';
 import { validate } from '../middlewares/validate.middleware.js';
 import { ServiceError } from '../errors/service.error.js';
 import {
   forgotPasswordSchema,
   resetPasswordSchema,
+  requestAccountDeletionSchema,
+  confirmAccountDeletionSchema,
 } from '../validators/auth.validator.js';
 import { SESSION_COOKIE_NAME, cookieOptions } from '../utils/security.js';
 import { createRateLimitStore } from '../middlewares/mongo-rate-limit.store.js';
@@ -28,6 +31,15 @@ const resetRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: 'Demasiados intentos, prueba más tarde' },
+});
+
+const accountDeletionRateLimiter = rateLimit({
+  store: createRateLimitStore('account-deletion'),
+  windowMs: 60 * 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Demasiadas solicitudes. Inténtalo más tarde.' },
 });
 
 function sanitizeMailDiagnostic(value) {
@@ -113,6 +125,34 @@ router.post(
       message: 'Si el email existe en nuestro sistema, recibirás un enlace de recuperación.',
     });
   }
+);
+
+router.post(
+  '/request-account-deletion',
+  accountDeletionRateLimiter,
+  validate(requestAccountDeletionSchema),
+  async (req, res, next) => {
+    try {
+      const result = await accountDeletionService.requestAccountDeletion(req.validated.body.email);
+      return res.status(202).json(result);
+    } catch (error) {
+      return next(error);
+    }
+  },
+);
+
+router.post(
+  '/confirm-account-deletion',
+  accountDeletionRateLimiter,
+  validate(confirmAccountDeletionSchema),
+  async (req, res, next) => {
+    try {
+      const result = await accountDeletionService.confirmAccountDeletion(req.validated.body);
+      return res.status(200).json(result);
+    } catch (error) {
+      return next(error);
+    }
+  },
 );
 
 /**

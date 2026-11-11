@@ -1,8 +1,11 @@
 import axios from 'axios';
+import { Capacitor } from '@capacitor/core';
 
-const apiBaseUrl = import.meta.env.DEV
-  ? import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
-  : '/api';
+const apiBaseUrl = Capacitor.isNativePlatform()
+  ? import.meta.env.VITE_NATIVE_API_URL || 'https://appbrigada.netlify.app/api'
+  : import.meta.env.DEV
+    ? import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+    : '/api';
 
 const api = axios.create({
   baseURL: apiBaseUrl,
@@ -20,6 +23,8 @@ const csrfExemptPostPaths = new Set([
   '/auth/verify-email',
   '/auth/forgot-password',
   '/auth/reset-password',
+  '/auth/request-account-deletion',
+  '/auth/confirm-account-deletion',
 ]);
 
 async function getCsrfToken() {

@@ -110,6 +110,18 @@ test('CSRF protection rejects unsafe requests without a trusted origin and match
     });
     assert.equal(continued, true);
 
+    for (const path of [
+      '/api/auth/request-account-deletion',
+      '/api/auth/confirm-account-deletion',
+    ]) {
+      continued = false;
+      req.path = path;
+      middleware(req, res, () => {
+        continued = true;
+      });
+      assert.equal(continued, true);
+    }
+
     continued = false;
     req.path = '/api/auth/logout';
     middleware(req, res, () => {

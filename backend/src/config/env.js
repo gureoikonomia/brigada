@@ -1,6 +1,7 @@
 import { getEmailConfiguration } from './email.js';
 
 const PRODUCTION_FRONTEND_ORIGIN = 'https://appbrigada.netlify.app';
+const CAPACITOR_ORIGINS = ['capacitor://localhost', 'https://localhost'];
 
 function parseHttpsOrigin(value, name) {
   let url;
@@ -24,6 +25,7 @@ export function getCorsOrigins() {
     .filter(Boolean);
 
   configuredOrigins.push(PRODUCTION_FRONTEND_ORIGIN);
+  configuredOrigins.push(...CAPACITOR_ORIGINS);
 
   if (process.env.NODE_ENV !== 'production') {
     configuredOrigins.push('http://localhost:5173', 'http://127.0.0.1:5173');
