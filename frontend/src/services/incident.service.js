@@ -11,7 +11,10 @@ export async function listIncidents(params = {}) {
     ))
   );
 
-  const { data } = await api.get('/incidents', { params: cleanParams });
+  const { data } = await api.get('/incidents', {
+    params: cleanParams,
+    paramsSerializer: { indexes: null },
+  });
   return data;
 }
 

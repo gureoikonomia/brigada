@@ -23,8 +23,17 @@ export default function UserManagementTable() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [feedback, setFeedback] = useState(null);
-  const [updatingId, setUpdatingId] = useState(null);
+  const [updatingIds, setUpdatingIds] = useState(() => new Set());
   const fetchRequestId = useRef(0);
+
+  const setUserUpdating = (userId, isUpdating) => {
+    setUpdatingIds((current) => {
+      const next = new Set(current);
+      if (isUpdating) next.add(userId);
+      else next.delete(userId);
+      return next;
+    });
+  };
 
   const fetchUsers = (page = 1) => {
     const requestId = ++fetchRequestId.current;
@@ -74,7 +83,7 @@ export default function UserManagementTable() {
       return;
     }
 
-    setUpdatingId(userId);
+    setUserUpdating(userId, true);
     setFeedback(null);
     try {
       const updated = await updateUserRole(userId, newRole);
@@ -86,7 +95,7 @@ export default function UserManagementTable() {
         message: err?.response?.data?.message || t('admin.updateError'),
       });
     } finally {
-      setUpdatingId(null);
+      setUserUpdating(userId, false);
     }
   };
 
@@ -97,7 +106,7 @@ export default function UserManagementTable() {
       return;
     }
 
-    setUpdatingId(userId);
+    setUserUpdating(userId, true);
     setFeedback(null);
     try {
       const updated = await updateUserStatus(userId, nextStatus);
@@ -111,7 +120,7 @@ export default function UserManagementTable() {
         message: err?.response?.data?.message || t('admin.updateError'),
       });
     } finally {
-      setUpdatingId(null);
+      setUserUpdating(userId, false);
     }
   };
 
@@ -196,7 +205,7 @@ export default function UserManagementTable() {
             <tbody className={styles.tbody}>
               {users.map((u) => {
                 const isSelf = currentUser?.id === u._id;
-                const isBusy = updatingId === u._id;
+                const isBusy = updatingIds.has(u._id);
 
                 return (
                   <tr key={u._id} className={styles.trRow}>
