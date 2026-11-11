@@ -9,7 +9,8 @@ import { protect } from '../src/middlewares/auth.middleware.js';
 import PasswordResetToken from '../src/models/passwordResetToken.model.js';
 import Session from '../src/models/session.model.js';
 import User from '../src/models/user.model.js';
-import { createPasswordResetLink, resetPassword } from '../src/routes/authReset.route.js';
+import { authResetController } from '../src/controllers/auth-reset.controller.js';
+import { createPasswordResetLink } from '../src/services/password-reset.service.js';
 import { createSessionToken } from '../src/services/session.service.js';
 import { SESSION_COOKIE_NAME } from '../src/utils/security.js';
 
@@ -332,7 +333,7 @@ test('password reset increments tokenVersion and rejects sessions issued before 
   };
   let error;
 
-  await resetPassword(
+  await authResetController.resetPassword(
     {
       validated: {
         body: {
