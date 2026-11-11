@@ -9,7 +9,6 @@ async function create(req, res, next) {
     );
     return res.status(201).json(result);
   } catch (error) {
-    if (error.statusCode) return res.status(error.statusCode).json({ message: error.message });
     return next(error);
   }
 }
@@ -32,7 +31,6 @@ async function resolve(req, res, next) {
     );
     return res.status(200).json(report);
   } catch (error) {
-    if (error.statusCode) return res.status(error.statusCode).json({ message: error.message });
     return next(error);
   }
 }

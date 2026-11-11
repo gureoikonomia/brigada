@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { listBlockedUsers, unblockUser } from '../services/user.service';
-import styles from '../pages/ProfilePage.module.css';
+import styles from './BlockedUsersSection.module.css';
 
 export default function BlockedUsersSection() {
   const { t } = useTranslation();

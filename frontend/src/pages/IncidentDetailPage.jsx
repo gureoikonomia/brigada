@@ -9,7 +9,7 @@ import {
   reportIncident,
 } from '../services/incident.service';
 import { blockUser } from '../services/user.service';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import useAppSettings from '../hooks/useAppSettings';
 import StatusBadge from '../components/StatusBadge';
 import VoteButton from '../components/VoteButton';

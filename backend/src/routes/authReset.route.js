@@ -49,7 +49,12 @@ function sanitizeMailDiagnostic(value) {
     .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '[redacted-email]')
     .replace(/\b[a-f0-9]{32,}\b/gi, '[redacted-token]')
     .replace(/\b(password|pass|token|secret|key)\s*[:=]\s*\S+/gi, '$1=[redacted]')
-    .replace(/[\r\n\x00-\x1f\x7f]+/g, ' ')
+    .split('')
+    .map((character) => {
+      const code = character.charCodeAt(0);
+      return code < 0x20 || code === 0x7f ? ' ' : character;
+    })
+    .join('')
     .slice(0, 300);
 }
 

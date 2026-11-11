@@ -6,7 +6,7 @@ import {
   listPendingIncidentReports,
   resolveIncidentReport,
 } from '../services/incident.service';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import useAppSettings from '../hooks/useAppSettings';
 import ModerationRow from '../components/ModerationRow';
 import styles from './ModerationPage.module.css';

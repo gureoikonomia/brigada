@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import { useAuth } from './context/AuthContext';
+import { useAuth } from './hooks/useAuth';
 import { AppSettingsProvider } from './context/AppSettingsContext';
 import { useTranslation } from 'react-i18next';
 import Navbar from './components/Navbar';

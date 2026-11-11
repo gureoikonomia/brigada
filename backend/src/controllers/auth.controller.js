@@ -72,9 +72,6 @@ async function deleteAccount(req, res, next) {
     clearSessionCookies(res);
     return res.status(200).json(result);
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ message: err.message });
-    }
     return next(err);
   }
 }
@@ -92,7 +89,7 @@ async function login(req, res, next) {
     });
 
     setSessionCookie(res, result.token);
-    const { token, ...response } = result;
+    const { token: _token, ...response } = result;
     return res.status(200).json(response);
   } catch (err) {
     return next(err);
@@ -121,9 +118,6 @@ async function updateProfile(req, res, next) {
     const updated = await authService.updateProfile(req.user.id, req.validated.body);
     return res.status(200).json(updated);
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ message: err.message });
-    }
     return next(err);
   }
 }
@@ -133,9 +127,6 @@ async function requestEmailChange(req, res, next) {
     const result = await authService.requestEmailChange(req.user.id, req.validated.body);
     return res.status(202).json(result);
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ message: err.message });
-    }
     return next(err);
   }
 }
@@ -153,9 +144,6 @@ async function updateAvatar(req, res, next) {
     const updated = await authService.updateAvatar(req.user.id, req.file);
     return res.status(200).json(updated);
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ message: err.message });
-    }
     return next(err);
   }
 }
@@ -171,9 +159,6 @@ async function changePassword(req, res, next) {
     clearSessionCookies(res);
     return res.status(200).json(result);
   } catch (err) {
-    if (err.statusCode) {
-      return res.status(err.statusCode).json({ message: err.message });
-    }
     return next(err);
   }
 }

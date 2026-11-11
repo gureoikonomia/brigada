@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { listUsers, updateUserRole, updateUserStatus } from '../services/user.service';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import styles from './UserManagementTable.module.css';
 
 function initials(name = '') {

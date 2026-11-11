@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { voteIncident, unvoteIncident } from '../services/incident.service';
 import { useNavigate } from 'react-router-dom';
 import styles from './VoteButton.module.css';

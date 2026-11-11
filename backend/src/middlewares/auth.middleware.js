@@ -77,7 +77,7 @@ export async function attachUserIfPresent(req, res, next) {
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (err) {
+    } catch {
       return next(); // token inválido/expirado -> seguimos como anónimo, sin romper la petición
     }
 

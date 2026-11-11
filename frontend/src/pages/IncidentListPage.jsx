@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { listIncidents } from '../services/incident.service';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import useAppSettings from '../hooks/useAppSettings';
 import IncidentCard from '../components/IncidentCard';
 import IncidentCardSkeleton from '../components/IncidentCardSkeleton';

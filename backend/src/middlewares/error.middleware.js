@@ -2,7 +2,7 @@
  * 404 para cualquier ruta que no haya encontrado
  * ningún router.
  */
-export function notFound(req, res, next) {
+export function notFound(req, res) {
   res.status(404).json({
     message: 'Ruta no encontrada',
   });
@@ -15,7 +15,7 @@ export function errorHandler(
   err,
   req,
   res,
-  next
+  _next
 ) {
   if (process.env.NODE_ENV === 'production') {
     console.error('Request failed:', err.name || 'Error');

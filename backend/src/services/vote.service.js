@@ -82,8 +82,6 @@ async function removeVote(userId, incidentId) {
         throw new ServiceError('Incidencia no encontrada', 404);
       }
     });
-  } catch (err) {
-    throw err;
   } finally {
     await session.endSession();
   }
