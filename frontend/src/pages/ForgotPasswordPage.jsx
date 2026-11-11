@@ -64,7 +64,11 @@ export default function ForgotPasswordPage() {
             />
           </div>
 
-          {error && <p className={styles.errorBox} role="alert">{error}</p>}
+          {error && (
+            <p className={styles.errorBox} role="alert">
+              {error}
+            </p>
+          )}
 
           <button
             id="forgot-submit"

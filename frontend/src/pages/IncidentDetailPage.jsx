@@ -224,7 +224,7 @@ export default function IncidentDetailPage() {
       ? ['en_revision', 'pendiente', 'rechazada']
       : user?.role === 'moderator' && ['pendiente', 'resuelta'].includes(incident.status)
         ? [incident.status, 'rechazada']
-      : [incident.status];
+        : [incident.status];
 
   return (
     <div className={styles.container}>
@@ -436,7 +436,9 @@ export default function IncidentDetailPage() {
                       disabled={blocking}
                       className={styles.moderationActionBtn}
                     >
-                      {blocking ? t('incidentDetail.blockingAuthor') : t('incidentDetail.blockAuthor')}
+                      {blocking
+                        ? t('incidentDetail.blockingAuthor')
+                        : t('incidentDetail.blockAuthor')}
                     </button>
                   )}
                 </>
@@ -455,9 +457,13 @@ export default function IncidentDetailPage() {
                 onChange={(event) => setReportReason(event.target.value)}
                 className={styles.statusSelect}
               >
-                {['spam', 'inappropriate', 'personal_data', 'misinformation', 'other'].map((reason) => (
-                  <option key={reason} value={reason}>{t(`incidentDetail.reportReasons.${reason}`)}</option>
-                ))}
+                {['spam', 'inappropriate', 'personal_data', 'misinformation', 'other'].map(
+                  (reason) => (
+                    <option key={reason} value={reason}>
+                      {t(`incidentDetail.reportReasons.${reason}`)}
+                    </option>
+                  ),
+                )}
               </select>
               <label htmlFor="incident-report-details" className={styles.moderationLabel}>
                 {t('incidentDetail.reportDetails')}
@@ -470,10 +476,16 @@ export default function IncidentDetailPage() {
                 onChange={(event) => setReportDetails(event.target.value)}
                 className={styles.editTextarea}
               />
-              {reportError && <p className={styles.errorBox} role="alert">{reportError}</p>}
+              {reportError && (
+                <p className={styles.errorBox} role="alert">
+                  {reportError}
+                </p>
+              )}
               <div className={styles.editActions}>
                 <button type="submit" disabled={reportSubmitting} className={styles.saveEditBtn}>
-                  {reportSubmitting ? t('incidentDetail.submittingReport') : t('incidentDetail.submitReport')}
+                  {reportSubmitting
+                    ? t('incidentDetail.submittingReport')
+                    : t('incidentDetail.submitReport')}
                 </button>
                 <button
                   type="button"
@@ -487,7 +499,9 @@ export default function IncidentDetailPage() {
             </form>
           )}
           {reportSubmitted && (
-            <p className={styles.reportSuccess} role="status">{t('incidentDetail.reportSubmitted')}</p>
+            <p className={styles.reportSuccess} role="status">
+              {t('incidentDetail.reportSubmitted')}
+            </p>
           )}
 
           {canModerate && (

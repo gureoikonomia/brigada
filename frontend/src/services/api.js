@@ -59,13 +59,11 @@ function refreshCsrfToken() {
 
 api.interceptors.request.use(async (config) => {
   const method = config.method?.toUpperCase();
-  const requestPath = config.url
-    ?.split('?')[0]
-    .replace(/^\/api(?=\/)/, '');
+  const requestPath = config.url?.split('?')[0].replace(/^\/api(?=\/)/, '');
   if (
-    method
-    && !['GET', 'HEAD', 'OPTIONS'].includes(method)
-    && !(method === 'POST' && csrfExemptPostPaths.has(requestPath))
+    method &&
+    !['GET', 'HEAD', 'OPTIONS'].includes(method) &&
+    !(method === 'POST' && csrfExemptPostPaths.has(requestPath))
   ) {
     config.headers['X-CSRF-Token'] = await getCsrfToken();
   }
@@ -79,10 +77,10 @@ api.interceptors.response.use(
   async (error) => {
     const config = error.config;
     if (
-      error.response?.status === 403
-      && error.response.data?.code === 'CSRF_INVALID'
-      && config
-      && !config._csrfRetried
+      error.response?.status === 403 &&
+      error.response.data?.code === 'CSRF_INVALID' &&
+      config &&
+      !config._csrfRetried
     ) {
       config._csrfRetried = true;
       await refreshCsrfToken();
@@ -94,7 +92,7 @@ api.interceptors.response.use(
       window.dispatchEvent(new Event('brigada:unauthorized'));
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

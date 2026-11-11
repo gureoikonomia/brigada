@@ -25,7 +25,11 @@ function SessionCheckNotice() {
   const { t } = useTranslation();
 
   if (!sessionCheckFailed) return null;
-  return <p className={styles.sessionNotice} role="status">{t('auth.sessionCheckFailed')}</p>;
+  return (
+    <p className={styles.sessionNotice} role="status">
+      {t('auth.sessionCheckFailed')}
+    </p>
+  );
 }
 
 export default function App() {
@@ -39,7 +43,13 @@ export default function App() {
           <Navbar />
           <SessionCheckNotice />
           <main className={styles.mainContent}>
-            <Suspense fallback={<div className={styles.loadingState} role="status">{t('common.loading')}</div>}>
+            <Suspense
+              fallback={
+                <div className={styles.loadingState} role="status">
+                  {t('common.loading')}
+                </div>
+              }
+            >
               <Routes>
                 <Route path="/" element={<IncidentListPage />} />
                 <Route path="/incidencias/:id" element={<IncidentDetailPage />} />
@@ -59,7 +69,10 @@ export default function App() {
                     </ProtectedRoute>
                   }
                 />
-                <Route path="/perfil/editar" element={<Navigate to="/perfil?tab=settings" replace />} />
+                <Route
+                  path="/perfil/editar"
+                  element={<Navigate to="/perfil?tab=settings" replace />}
+                />
                 <Route
                   path="/moderacion"
                   element={

@@ -17,11 +17,12 @@ async function migrateIncidentReportIndexes() {
   if (!collection) return;
 
   const indexes = await IncidentReport.collection.indexes();
-  const legacyReporterIndex = indexes.find((index) =>
-    index.key?.incident === 1
-    && index.key?.reporter === 1
-    && index.unique
-    && index.partialFilterExpression?.reporter?.$type !== 'objectId',
+  const legacyReporterIndex = indexes.find(
+    (index) =>
+      index.key?.incident === 1 &&
+      index.key?.reporter === 1 &&
+      index.unique &&
+      index.partialFilterExpression?.reporter?.$type !== 'objectId',
   );
 
   if (legacyReporterIndex) {
@@ -38,16 +39,12 @@ const startServer = async () => {
     validateEnvironment();
     await connectDB();
     await migrateIncidentReportIndexes();
-    await Promise.all(
-      Object.values(mongoose.models).map((model) => model.createIndexes())
-    );
+    await Promise.all(Object.values(mongoose.models).map((model) => model.createIndexes()));
     await initializeRateLimitStores();
     startMediaDeletionWorker();
 
     const server = app.listen(PORT, () => {
-      console.log(
-        `Server running on http://localhost:${PORT}`
-      );
+      console.log(`Server running on http://localhost:${PORT}`);
     });
 
     let shuttingDown = false;
@@ -77,10 +74,7 @@ const startServer = async () => {
     process.on('SIGTERM', () => shutdown('SIGTERM'));
     process.on('SIGINT', () => shutdown('SIGINT'));
   } catch (error) {
-    console.error(
-      'Error starting server:',
-      error
-    );
+    console.error('Error starting server:', error);
 
     try {
       await mongoose.disconnect();

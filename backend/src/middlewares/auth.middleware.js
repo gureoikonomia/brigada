@@ -23,8 +23,7 @@ export async function protect(req, res, next) {
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
-      const message =
-        err.name === 'TokenExpiredError' ? 'El token ha expirado' : 'Token inválido';
+      const message = err.name === 'TokenExpiredError' ? 'El token ha expirado' : 'Token inválido';
       return res.status(401).json({ message });
     }
 

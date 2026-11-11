@@ -32,13 +32,19 @@ export default function LoginPage() {
       <h1 className={styles.title}>{t('login.title')}</h1>
       <p className={styles.subtitle}>{t('login.subtitle')}</p>
       {location.state?.passwordChanged && (
-        <p className={styles.infoBox} role="status">{t('login.passwordChanged')}</p>
+        <p className={styles.infoBox} role="status">
+          {t('login.passwordChanged')}
+        </p>
       )}
       {location.state?.accountDeleted && (
-        <p className={styles.infoBox} role="status">{t('login.accountDeleted')}</p>
+        <p className={styles.infoBox} role="status">
+          {t('login.accountDeleted')}
+        </p>
       )}
       {location.state?.mediaCleanupPending && (
-        <p className={styles.infoBox} role="status">{t('profile.deleteAccountMediaPending')}</p>
+        <p className={styles.infoBox} role="status">
+          {t('profile.deleteAccountMediaPending')}
+        </p>
       )}
 
       <form onSubmit={handleSubmit} className={styles.form}>
@@ -78,14 +84,12 @@ export default function LoginPage() {
         </div>
 
         {error && (
-          <p className={styles.errorBox} role="alert">{error}</p>
+          <p className={styles.errorBox} role="alert">
+            {error}
+          </p>
         )}
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className={styles.submitBtn}
-        >
+        <button type="submit" disabled={submitting} className={styles.submitBtn}>
           {submitting ? t('login.submitting') : t('login.submit')}
         </button>
       </form>

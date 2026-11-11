@@ -52,7 +52,9 @@ export default function RegisterPage() {
     return (
       <div className={styles.container}>
         <h1 className={styles.title}>{t('register.title')}</h1>
-        <p className={styles.successBox} role="status">{t('register.accountCreated')}</p>
+        <p className={styles.successBox} role="status">
+          {t('register.accountCreated')}
+        </p>
         <button
           type="button"
           onClick={handleResendVerification}
@@ -62,10 +64,14 @@ export default function RegisterPage() {
           {resending ? t('register.resendingVerification') : t('register.resendVerification')}
         </button>
         {resendState === 'sent' && (
-          <p className={styles.successBox} role="status">{t('register.verificationResent')}</p>
+          <p className={styles.successBox} role="status">
+            {t('register.verificationResent')}
+          </p>
         )}
         {resendState === 'error' && (
-          <p className={styles.errorBox} role="alert">{t('register.resendVerificationError')}</p>
+          <p className={styles.errorBox} role="alert">
+            {t('register.resendVerificationError')}
+          </p>
         )}
         <p className={styles.footerText}>
           {t('register.hasAccount')}{' '}
@@ -115,7 +121,8 @@ export default function RegisterPage() {
 
         <div className={styles.fieldGroup}>
           <label htmlFor="register-password" className={styles.label}>
-            {t('register.passwordLabel')} <span className={styles.hint}>{t('register.passwordHint')}</span>
+            {t('register.passwordLabel')}{' '}
+            <span className={styles.hint}>{t('register.passwordHint')}</span>
           </label>
           <input
             id="register-password"
@@ -141,14 +148,12 @@ export default function RegisterPage() {
         </div>
 
         {error && (
-          <p className={styles.errorBox} role="alert">{error}</p>
+          <p className={styles.errorBox} role="alert">
+            {error}
+          </p>
         )}
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className={styles.submitBtn}
-        >
+        <button type="submit" disabled={submitting} className={styles.submitBtn}>
           {submitting ? t('register.submitting') : t('register.submit')}
         </button>
       </form>

@@ -9,11 +9,7 @@ export default function ProtectedRoute({ children, roles }) {
   const location = useLocation();
 
   if (loading) {
-    return (
-      <div className={styles.loadingContainer}>
-        {t('common.loadingSession')}
-      </div>
-    );
+    return <div className={styles.loadingContainer}>{t('common.loadingSession')}</div>;
   }
 
   if (!user) {
@@ -21,11 +17,7 @@ export default function ProtectedRoute({ children, roles }) {
   }
 
   if (roles && !roles.includes(user.role)) {
-    return (
-      <div className={styles.forbiddenBox}>
-        {t('common.noPermission')}
-      </div>
-    );
+    return <div className={styles.forbiddenBox}>{t('common.noPermission')}</div>;
   }
 
   return children;

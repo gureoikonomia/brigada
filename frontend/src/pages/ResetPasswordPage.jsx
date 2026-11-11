@@ -112,7 +112,11 @@ export default function ResetPasswordPage() {
             />
           </div>
 
-          {error && <p className={styles.errorBox} role="alert">{error}</p>}
+          {error && (
+            <p className={styles.errorBox} role="alert">
+              {error}
+            </p>
+          )}
 
           <button
             id="reset-submit"

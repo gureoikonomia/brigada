@@ -56,8 +56,12 @@ test('account deletion unlinks retained incidents, removes media and votes, and 
   patchMethod(t, User, 'updateMany', async () => ({ matchedCount: 1 }));
   patchMethod(t, User, 'deleteOne', async () => ({ deletedCount: 1 }));
   patchMethod(t, Incident, 'find', () => ({
-    select() { return this; },
-    session() { return this; },
+    select() {
+      return this;
+    },
+    session() {
+      return this;
+    },
     lean: async () => [{ _id: incidentId, images: [{ publicId: 'incident-photo' }] }],
   }));
   patchMethod(t, Incident, 'updateOne', async () => ({ matchedCount: 1 }));
@@ -100,10 +104,12 @@ test('account deletion unlinks retained incidents, removes media and votes, and 
   const result = await userService.deleteAccount(userId, 'current-password');
 
   assert.deepEqual(result, { deleted: true, mediaCleanupPending: false });
-  assert.deepEqual(incidentUpdates, [{
-    filter: { _id: { $in: [incidentId] }, createdBy: userId },
-    update: { $set: { createdBy: null, images: [] } },
-  }]);
+  assert.deepEqual(incidentUpdates, [
+    {
+      filter: { _id: { $in: [incidentId] }, createdBy: userId },
+      update: { $set: { createdBy: null, images: [] } },
+    },
+  ]);
   assert.deepEqual(voteDeletes, [{ user: userId }]);
   assert.deepEqual(reportUpdates, [
     { filter: { reporter: userId }, update: { $set: { reporter: null } } },

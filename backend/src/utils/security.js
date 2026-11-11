@@ -24,9 +24,11 @@ export function csrfTokenMatches(cookieToken, headerToken) {
   const cookieBuffer = Buffer.from(cookieToken);
   const headerBuffer = Buffer.from(headerToken);
 
-  return cookieBuffer.length === headerBuffer.length
-    && cookieBuffer.length > 0
-    && timingSafeEqual(cookieBuffer, headerBuffer);
+  return (
+    cookieBuffer.length === headerBuffer.length &&
+    cookieBuffer.length > 0 &&
+    timingSafeEqual(cookieBuffer, headerBuffer)
+  );
 }
 
 export function votedIncidentVisibilityMatch(userId, role) {

@@ -32,7 +32,10 @@ export const registerSchema = z.object({
 
 export const loginSchema = z.object({
   email: emailAddress,
-  password: z.string().min(1, 'La contraseña es obligatoria').max(72)
+  password: z
+    .string()
+    .min(1, 'La contraseña es obligatoria')
+    .max(72)
     .refine((password) => Buffer.byteLength(password, 'utf8') <= 72, {
       message: 'La contraseña no puede superar 72 bytes UTF-8',
     }),

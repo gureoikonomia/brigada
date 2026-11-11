@@ -63,7 +63,11 @@ export default function AccountDeletionPage() {
         ) : (
           <section className={styles.card}>
             <p className={styles.description}>{t('accountDeletion.confirmDescription')}</p>
-            {error && <p className={styles.error} role="alert">{error}</p>}
+            {error && (
+              <p className={styles.error} role="alert">
+                {error}
+              </p>
+            )}
             <button
               type="button"
               onClick={handleConfirm}
@@ -75,7 +79,9 @@ export default function AccountDeletionPage() {
           </section>
         )
       ) : hasPartialToken ? (
-        <p className={styles.error} role="alert">{t('accountDeletion.invalidLink')}</p>
+        <p className={styles.error} role="alert">
+          {t('accountDeletion.invalidLink')}
+        </p>
       ) : (
         <section className={styles.card}>
           <p className={styles.description}>{t('accountDeletion.requestDescription')}</p>
@@ -93,8 +99,16 @@ export default function AccountDeletionPage() {
               onChange={(event) => setEmail(event.target.value)}
               className={styles.input}
             />
-            {message && <p className={styles.success} role="status">{message}</p>}
-            {error && <p className={styles.error} role="alert">{error}</p>}
+            {message && (
+              <p className={styles.success} role="status">
+                {message}
+              </p>
+            )}
+            {error && (
+              <p className={styles.error} role="alert">
+                {error}
+              </p>
+            )}
             <button type="submit" disabled={submitting} className={styles.submitButton}>
               {submitting ? t('accountDeletion.requesting') : t('accountDeletion.requestButton')}
             </button>
@@ -102,7 +116,9 @@ export default function AccountDeletionPage() {
         </section>
       )}
       <p className={styles.footer}>
-        <Link to="/login" className={styles.link}>{t('accountDeletion.loginLink')}</Link>
+        <Link to="/login" className={styles.link}>
+          {t('accountDeletion.loginLink')}
+        </Link>
       </p>
     </div>
   );

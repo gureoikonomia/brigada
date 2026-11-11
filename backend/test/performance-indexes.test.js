@@ -5,10 +5,13 @@ import PasswordResetToken from '../src/models/passwordResetToken.model.js';
 import Vote from '../src/models/vote.model.js';
 
 function hasIndex(schema, expectedKeys) {
-  return schema.indexes().some(([keys]) => (
-    Object.keys(keys).length === Object.keys(expectedKeys).length
-    && Object.entries(expectedKeys).every(([field, direction]) => keys[field] === direction)
-  ));
+  return schema
+    .indexes()
+    .some(
+      ([keys]) =>
+        Object.keys(keys).length === Object.keys(expectedKeys).length &&
+        Object.entries(expectedKeys).every(([field, direction]) => keys[field] === direction),
+    );
 }
 
 test('vote and password-reset lookups have supporting compound indexes', () => {

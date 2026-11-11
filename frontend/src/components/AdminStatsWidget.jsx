@@ -33,17 +33,23 @@ export default function AdminStatsWidget() {
     return (
       <div className={styles.skeletonWidget}>
         <div className={styles.skeletonHeader}></div>
-          <div className={`${styles.skeletonGrid} ${!votingEnabled ? styles.skeletonGridWithoutVotes : ''}`}>
-            {Array.from({ length: votingEnabled ? 4 : 3 }, (_, index) => (
-              <div className={styles.skeletonBox} key={index}></div>
-            ))}
+        <div
+          className={`${styles.skeletonGrid} ${!votingEnabled ? styles.skeletonGridWithoutVotes : ''}`}
+        >
+          {Array.from({ length: votingEnabled ? 4 : 3 }, (_, index) => (
+            <div className={styles.skeletonBox} key={index}></div>
+          ))}
         </div>
       </div>
     );
   }
 
   if (error || !stats) {
-    return <p className={styles.error} role="alert">{error || t('admin.statsError')}</p>;
+    return (
+      <p className={styles.error} role="alert">
+        {error || t('admin.statsError')}
+      </p>
+    );
   }
 
   const pendingCount = stats.incidents?.byStatus?.pendiente || 0;
@@ -55,18 +61,14 @@ export default function AdminStatsWidget() {
     <div className={styles.widgetContainer}>
       <div className={styles.widgetHeader}>
         <div className={styles.headerTitleBox}>
-          <h3 className={styles.title}>
-            {t('admin.overview')}
-          </h3>
+          <h3 className={styles.title}>{t('admin.overview')}</h3>
         </div>
       </div>
 
       <div className={statsGridClass}>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>{t('admin.usersTotal')}</span>
-          <span className={styles.statValue}>
-            {stats.users?.total || 0}
-          </span>
+          <span className={styles.statValue}>{stats.users?.total || 0}</span>
           <span className={styles.statSubtext}>
             {t('admin.activeUsersCount', { count: stats.users?.active || 0 })}
           </span>
@@ -74,9 +76,7 @@ export default function AdminStatsWidget() {
 
         <div className={styles.statCard}>
           <span className={styles.statLabel}>{t('admin.incidentsTotal')}</span>
-          <span className={styles.statValueInk}>
-            {totalIncidents}
-          </span>
+          <span className={styles.statValueInk}>{totalIncidents}</span>
           <span className={styles.statSubtextHighlight}>
             {t('admin.pendingCount', { count: pendingCount })}
           </span>
@@ -92,9 +92,7 @@ export default function AdminStatsWidget() {
 
         <div className={styles.statCard}>
           <span className={styles.statLabel}>{t('status.resuelta')}</span>
-          <span className={styles.statValueSuccess}>
-            {resolvedCount}
-          </span>
+          <span className={styles.statValueSuccess}>{resolvedCount}</span>
           <span className={styles.statSubtext}>
             ({totalIncidents > 0 ? Math.round((resolvedCount / totalIncidents) * 100) : 0}%)
           </span>

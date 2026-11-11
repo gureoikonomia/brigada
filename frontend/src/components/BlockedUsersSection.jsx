@@ -45,7 +45,11 @@ export default function BlockedUsersSection() {
       <h3 className={styles.subSectionTitle}>{t('profile.blockedUsersTitle')}</h3>
       <p className={styles.emailChangeDescription}>{t('profile.blockedUsersDescription')}</p>
       {loading && <p className={styles.emptyText}>{t('common.loading')}</p>}
-      {error && <p className={styles.formError} role="alert">{error}</p>}
+      {error && (
+        <p className={styles.formError} role="alert">
+          {error}
+        </p>
+      )}
       {!loading && !error && users.length === 0 && (
         <p className={styles.emptyText}>{t('profile.noBlockedUsers')}</p>
       )}

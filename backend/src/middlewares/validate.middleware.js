@@ -4,7 +4,7 @@ export function validate(schema, source = 'body') {
 
     if (!result.success) {
       const messages = result.error.issues.map(
-        (issue) => `${issue.path.join('.') || source}: ${issue.message}`
+        (issue) => `${issue.path.join('.') || source}: ${issue.message}`,
       );
 
       return res.status(400).json({

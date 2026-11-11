@@ -48,10 +48,11 @@ test('CSRF protection rejects unsafe requests without a trusted origin and match
   const middleware = csrfProtection(new Set(['https://brigada.example']));
   const req = {
     method: 'POST',
-    get: (name) => ({
-      Origin: 'https://brigada.example',
-      'X-CSRF-Token': 'header-token',
-    })[name],
+    get: (name) =>
+      ({
+        Origin: 'https://brigada.example',
+        'X-CSRF-Token': 'header-token',
+      })[name],
     cookies: { brigada_csrf: 'cookie-token' },
   };
   let status;
@@ -78,9 +79,10 @@ test('CSRF protection rejects unsafe requests without a trusted origin and match
       method: 'POST',
       path: '/api/auth/verify-email',
       is: (contentType) => contentType === 'application/json',
-      get: (name) => ({
-        Origin: 'https://brigada.example',
-      })[name],
+      get: (name) =>
+        ({
+          Origin: 'https://brigada.example',
+        })[name],
       cookies: {},
     };
     let continued = false;

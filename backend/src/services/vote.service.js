@@ -23,8 +23,8 @@ async function castVote(userId, incidentId) {
         throw new ServiceError('Incidencia no encontrada', 404);
       }
       if (
-        incident.createdBy
-        && await User.exists({ _id: userId, blockedUsers: incident.createdBy }).session(session)
+        incident.createdBy &&
+        (await User.exists({ _id: userId, blockedUsers: incident.createdBy }).session(session))
       ) {
         throw new ServiceError('Incidencia no encontrada', 404);
       }

@@ -5,15 +5,9 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { getCorsOrigins } from './config/env.js';
 
-import {
-  notFound,
-  errorHandler,
-} from './middlewares/error.middleware.js';
+import { notFound, errorHandler } from './middlewares/error.middleware.js';
 import { csrfProtection } from './middlewares/csrf.middleware.js';
-import {
-  loginLimiter,
-  registerLimiter,
-} from './middlewares/rate-limiters.js';
+import { loginLimiter, registerLimiter } from './middlewares/rate-limiters.js';
 import mongoose from 'mongoose';
 import { createRateLimitStore } from './middlewares/mongo-rate-limit.store.js';
 
@@ -35,7 +29,7 @@ if (Number.isInteger(trustProxyHops) && trustProxyHops > 0) {
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' },
-  })
+  }),
 );
 
 // 2. Rate Limiting (Seguridad anti-bruteforce y anti-DoS)
@@ -63,7 +57,7 @@ app.use(
   cors({
     origin: (origin, callback) => callback(null, !origin || allowedOrigins.has(origin)),
     credentials: true,
-  })
+  }),
 );
 
 app.use(globalLimiter);

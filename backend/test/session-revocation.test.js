@@ -159,10 +159,9 @@ test('login rejects unverified accounts without creating a session', async (t) =
     select: async () => user,
   }));
 
-  await assert.rejects(
-    authService.login({ email: user.email, password: 'ValidPassword123' }),
-    { statusCode: 403 },
-  );
+  await assert.rejects(authService.login({ email: user.email, password: 'ValidPassword123' }), {
+    statusCode: 403,
+  });
   assert.equal(sessions.size, 0);
 });
 

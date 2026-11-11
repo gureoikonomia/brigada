@@ -51,10 +51,7 @@ export function validateEnvironment() {
   validateJwtExpiry();
   if (process.env.NODE_ENV !== 'production') return;
 
-  if (
-    process.env.TRUST_PROXY_HOPS !== undefined &&
-    !/^\d+$/.test(process.env.TRUST_PROXY_HOPS)
-  ) {
+  if (process.env.TRUST_PROXY_HOPS !== undefined && !/^\d+$/.test(process.env.TRUST_PROXY_HOPS)) {
     throw new Error('TRUST_PROXY_HOPS debe ser un número entero no negativo');
   }
   if (Number(process.env.TRUST_PROXY_HOPS) < 1) {
@@ -71,9 +68,7 @@ export function validateEnvironment() {
     'CORS_ORIGINS',
     'TRUST_PROXY_HOPS',
   ];
-  const missingVariables = requiredVariables.filter(
-    (name) => !process.env[name]?.trim()
-  );
+  const missingVariables = requiredVariables.filter((name) => !process.env[name]?.trim());
 
   if (missingVariables.length) {
     throw new Error(`Faltan variables de producción: ${missingVariables.join(', ')}`);
@@ -85,7 +80,10 @@ export function validateEnvironment() {
     throw new Error(`Configuración de correo inválida: ${error.message}`);
   }
 
-  if (process.env.JWT_SECRET.length < 32 || /cambia-|change-me|your-secret/i.test(process.env.JWT_SECRET)) {
+  if (
+    process.env.JWT_SECRET.length < 32 ||
+    /cambia-|change-me|your-secret/i.test(process.env.JWT_SECRET)
+  ) {
     throw new Error('JWT_SECRET debe ser un secreto aleatorio de al menos 32 caracteres');
   }
 

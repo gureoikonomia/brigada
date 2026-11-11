@@ -20,7 +20,12 @@ export default function IncidentListPage() {
   const [pagination, setPagination] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filters, setFilters] = useState({ category: '', status: 'pendiente', sortBy: 'recent', page: 1 });
+  const [filters, setFilters] = useState({
+    category: '',
+    status: 'pendiente',
+    sortBy: 'recent',
+    page: 1,
+  });
 
   const isPrivileged = user && ['admin', 'moderator'].includes(user.role);
   const statusOptions = isPrivileged ? STATUS_VALUES : PUBLIC_STATUS_VALUES;
@@ -77,7 +82,9 @@ export default function IncidentListPage() {
             >
               <option value="">{t('category.all')}</option>
               {CATEGORY_VALUES.map((category) => (
-                <option key={category} value={category}>{t(`category.${category}`)}</option>
+                <option key={category} value={category}>
+                  {t(`category.${category}`)}
+                </option>
               ))}
             </select>
           </div>
@@ -92,7 +99,9 @@ export default function IncidentListPage() {
             >
               <option value="">{t('status.all')}</option>
               {statusOptions.map((status) => (
-                <option key={status} value={status}>{t(`status.${status}`)}</option>
+                <option key={status} value={status}>
+                  {t(`status.${status}`)}
+                </option>
               ))}
             </select>
           </label>
@@ -122,9 +131,7 @@ export default function IncidentListPage() {
         </div>
       )}
 
-      {error && (
-        <p className={styles.errorBox}>{error}</p>
-      )}
+      {error && <p className={styles.errorBox}>{error}</p>}
 
       {!loading && !error && items.length === 0 && (
         <div className={styles.emptyState}>
@@ -150,7 +157,10 @@ export default function IncidentListPage() {
                 {t('incidentList.prev')}
               </button>
               <span className={styles.pageText}>
-                {t('incidentList.pageOf', { page: pagination.page, totalPages: pagination.totalPages })}
+                {t('incidentList.pageOf', {
+                  page: pagination.page,
+                  totalPages: pagination.totalPages,
+                })}
               </span>
               <button
                 disabled={filters.page >= pagination.totalPages}

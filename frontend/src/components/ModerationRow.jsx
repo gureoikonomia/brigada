@@ -59,7 +59,8 @@ export default function ModerationRow({ incident, onChanged, allowedStatuses }) 
     if (allowedStatuses && Array.isArray(allowedStatuses)) {
       return allowedStatuses.includes(s.value) || s.value === status;
     }
-    if (isModerator && status === 'en_revision') return ['pendiente', 'rechazada', 'en_revision'].includes(s.value);
+    if (isModerator && status === 'en_revision')
+      return ['pendiente', 'rechazada', 'en_revision'].includes(s.value);
     return user?.role === 'admin' || s.value === status;
   });
 
@@ -69,15 +70,15 @@ export default function ModerationRow({ incident, onChanged, allowedStatuses }) 
         <Link to={`/incidencias/${incident._id}`} className={styles.titleLink}>
           {incident.title}
         </Link>
-        <p className={styles.metaText}>
-          {metaParts.join(' · ')}
-        </p>
+        <p className={styles.metaText}>{metaParts.join(' · ')}</p>
         {error && <p className={styles.errorMsg}>{error}</p>}
       </div>
 
       <div className={styles.actionsGroup}>
         <label className={styles.statusField}>
-          <span className="sr-only">{t('moderation.selectStatusFor', { title: incident.title })}</span>
+          <span className="sr-only">
+            {t('moderation.selectStatusFor', { title: incident.title })}
+          </span>
           <select
             value={selectedStatus}
             disabled={busy || availableSteps.length < 2}
@@ -101,7 +102,6 @@ export default function ModerationRow({ incident, onChanged, allowedStatuses }) 
             {busy ? t('common.saving') : t('moderation.updateStatus')}
           </button>
         )}
-
       </div>
     </div>
   );

@@ -21,7 +21,7 @@ const voteSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // CLAVE: índice único compuesto -> un usuario solo puede tener 1 voto por incidencia.

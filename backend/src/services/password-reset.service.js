@@ -62,7 +62,8 @@ async function requestPasswordReset(email) {
       expiresAt,
     });
 
-    const frontendUrl = process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173';
+    const frontendUrl =
+      process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173';
     const resetLink = createPasswordResetLink(frontendUrl, rawToken, user._id);
 
     stage = 'smtp_submission';

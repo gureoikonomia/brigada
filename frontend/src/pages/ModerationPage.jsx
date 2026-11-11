@@ -38,15 +38,16 @@ export default function ModerationPage() {
     setLoading(true);
     setError(null);
 
-    const request = activeTab === 'reports'
-      ? listPendingIncidentReports().then((data) => {
-        if (!cancelled) setReports(data);
-      })
-      : listIncidents({ status: activeTab, sortBy: 'recent', limit: 50 }).then((data) => {
-        if (!cancelled) {
-          setItems(data.items.filter((incident) => incident.status === activeTab));
-        }
-      });
+    const request =
+      activeTab === 'reports'
+        ? listPendingIncidentReports().then((data) => {
+            if (!cancelled) setReports(data);
+          })
+        : listIncidents({ status: activeTab, sortBy: 'recent', limit: 50 }).then((data) => {
+            if (!cancelled) {
+              setItems(data.items.filter((incident) => incident.status === activeTab));
+            }
+          });
 
     request
       .catch(() => {
@@ -86,7 +87,9 @@ export default function ModerationPage() {
         <p className={styles.subtitle}>
           {activeTab === 'reports'
             ? t('moderation.reportsSubtitle')
-            : isModerator ? t('moderation.moderatorSubtitle') : t('moderation.subtitle')}
+            : isModerator
+              ? t('moderation.moderatorSubtitle')
+              : t('moderation.subtitle')}
         </p>
       </div>
 
@@ -107,33 +110,35 @@ export default function ModerationPage() {
 
       {loading && <p className={styles.loadingText}>{t('common.loading')}</p>}
 
-      {error && (
-        <p className={styles.errorBox}>{error}</p>
-      )}
+      {error && <p className={styles.errorBox}>{error}</p>}
 
-      {!loading && !error && (activeTab === 'reports' ? reports.length === 0 : items.length === 0) && (
-        <div className={styles.emptyState}>
-          <p className={styles.emptyText}>
-            {activeTab === 'reports'
-              ? t('moderation.reportsEmpty')
-              : isModerator ? t('moderation.moderatorEmpty') : t('moderation.empty')}
-          </p>
-        </div>
-      )}
+      {!loading &&
+        !error &&
+        (activeTab === 'reports' ? reports.length === 0 : items.length === 0) && (
+          <div className={styles.emptyState}>
+            <p className={styles.emptyText}>
+              {activeTab === 'reports'
+                ? t('moderation.reportsEmpty')
+                : isModerator
+                  ? t('moderation.moderatorEmpty')
+                  : t('moderation.empty')}
+            </p>
+          </div>
+        )}
 
       {!loading && activeTab === 'reports' && reports.length > 0 && (
         <div className={styles.reportList}>
           {reports.map((report) => (
             <article key={report._id} className={styles.reportCard}>
               <h3 className={styles.reportTitle}>
-                <Link to={`/incidencias/${report.incident._id}`}>
-                  {report.incident.title}
-                </Link>
+                <Link to={`/incidencias/${report.incident._id}`}>{report.incident.title}</Link>
               </h3>
               <p className={styles.reportMeta}>
                 {t(`incidentDetail.reportReasons.${report.reason}`)}
                 {' · '}
-                {t('moderation.reportedBy', { name: report.reporter?.name || t('moderation.unknownUser') })}
+                {t('moderation.reportedBy', {
+                  name: report.reporter?.name || t('moderation.unknownUser'),
+                })}
               </p>
               {report.details && <p className={styles.reportDetails}>{report.details}</p>}
               <p className={styles.reportMeta}>

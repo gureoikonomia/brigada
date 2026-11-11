@@ -26,7 +26,7 @@ test('unexpected errors never expose stack traces in HTTP responses', () => {
           return this;
         },
       },
-      () => {}
+      () => {},
     );
   } finally {
     console.error = previousConsoleError;

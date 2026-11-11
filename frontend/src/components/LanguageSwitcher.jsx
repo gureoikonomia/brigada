@@ -10,7 +10,11 @@ export default function LanguageSwitcher({ className = '' }) {
   const { i18n, t } = useTranslation();
 
   return (
-    <div className={`${styles.switcherGroup} ${className}`} role="group" aria-label={t('language.label')}>
+    <div
+      className={`${styles.switcherGroup} ${className}`}
+      role="group"
+      aria-label={t('language.label')}
+    >
       {LANGUAGES.map((lang, i) => (
         <button
           key={lang.code}

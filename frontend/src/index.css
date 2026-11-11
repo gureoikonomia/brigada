@@ -1,48 +1,49 @@
-@import "tailwindcss";
-@import "leaflet/dist/leaflet.css";
+@import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
 
 @theme {
-  --color-concrete: #F4F7F6;
-  --color-concrete-dark: #E8EFEC;
-  --color-ink: #1F2933;
-  --color-petrol: #145D63;
-  --color-petrol-light: #B7D5D1;
-  --color-signal: #B4533C;
-  --color-signal-dark: #8A3929;
-  --color-signal-soft: #FBE9E4;
-  --color-action: #0F696B;
-  --color-action-hover: #0C575A;
-  --color-action-ink: #FFFFFF;
-  --color-line: #CBD6D2;
-  --color-ok: #17633E;
-  --color-ok-soft: #E5F3E9;
-  --color-warn: #A12D2D;
-  --color-warn-soft: #FCE8E8;
-  --color-paper: #FFFFFF;
+  --color-concrete: #f4f7f6;
+  --color-concrete-dark: #e8efec;
+  --color-ink: #1f2933;
+  --color-petrol: #145d63;
+  --color-petrol-light: #b7d5d1;
+  --color-signal: #b4533c;
+  --color-signal-dark: #8a3929;
+  --color-signal-soft: #fbe9e4;
+  --color-action: #0f696b;
+  --color-action-hover: #0c575a;
+  --color-action-ink: #ffffff;
+  --color-line: #cbd6d2;
+  --color-ok: #17633e;
+  --color-ok-soft: #e5f3e9;
+  --color-warn: #a12d2d;
+  --color-warn-soft: #fce8e8;
+  --color-paper: #ffffff;
   --color-status-pending: #704900;
-  --color-status-pending-bg: #FFF2D3;
-  --color-status-review: #15566B;
-  --color-status-review-bg: #DDEFF5;
-  --color-status-resolved: #17633E;
-  --color-status-resolved-bg: #E5F3E9;
-  --color-status-rejected: #A12D2D;
-  --color-status-rejected-bg: #FCE8E8;
-  --color-category-infrastructure-ink: #15566B;
-  --color-category-infrastructure-bg: #DDEFF5;
-  --color-category-security-ink: #8E2F3A;
-  --color-category-security-bg: #F8E5E8;
-  --color-category-cleaning-ink: #17633E;
-  --color-category-cleaning-bg: #E5F3E9;
+  --color-status-pending-bg: #fff2d3;
+  --color-status-review: #15566b;
+  --color-status-review-bg: #ddeff5;
+  --color-status-resolved: #17633e;
+  --color-status-resolved-bg: #e5f3e9;
+  --color-status-rejected: #a12d2d;
+  --color-status-rejected-bg: #fce8e8;
+  --color-category-infrastructure-ink: #15566b;
+  --color-category-infrastructure-bg: #ddeff5;
+  --color-category-security-ink: #8e2f3a;
+  --color-category-security-bg: #f8e5e8;
+  --color-category-cleaning-ink: #17633e;
+  --color-category-cleaning-bg: #e5f3e9;
   --color-category-noise-ink: #704900;
-  --color-category-noise-bg: #FFF2D3;
-  --color-category-traffic-ink: #51458A;
-  --color-category-traffic-bg: #EEEAFB;
+  --color-category-noise-bg: #fff2d3;
+  --color-category-traffic-ink: #51458a;
+  --color-category-traffic-bg: #eeeafb;
   --color-category-other-ink: #734522;
-  --color-category-other-bg: #F8EBDD;
+  --color-category-other-bg: #f8ebdd;
 
-  --font-display: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-body: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   --radius-none: 0px;
   --radius-sm: 10px;
@@ -67,13 +68,20 @@
     line-height: 1.5;
   }
 
-  h1, h2, h3, h4, .font-display {
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-display {
     font-family: var(--font-display);
     letter-spacing: -0.025em;
     line-height: 1.2;
   }
 
-  button, input, select, textarea {
+  button,
+  input,
+  select,
+  textarea {
     border-radius: 10px;
     color: inherit;
     font: inherit;
@@ -103,7 +111,7 @@
 
   ::selection {
     background: var(--color-petrol);
-    color: #FFFFFF;
+    color: #ffffff;
   }
 
   :focus-visible {
@@ -113,42 +121,42 @@
 
   [data-theme='dark'] {
     color-scheme: dark;
-    --color-concrete: #141F25;
-    --color-concrete-dark: #1E2B32;
-    --color-ink: #F2F5F4;
-    --color-petrol: #75C6BE;
-    --color-petrol-light: #477D7A;
-    --color-signal: #F0A48F;
-    --color-signal-dark: #F4B5A3;
-    --color-signal-soft: #432C2A;
-    --color-action: #167A78;
-    --color-action-hover: #218F8B;
-    --color-action-ink: #FFFFFF;
-    --color-line: #3A4B52;
-    --color-ok: #8BD0A4;
-    --color-ok-soft: #203B2D;
-    --color-warn: #FFAAAA;
+    --color-concrete: #141f25;
+    --color-concrete-dark: #1e2b32;
+    --color-ink: #f2f5f4;
+    --color-petrol: #75c6be;
+    --color-petrol-light: #477d7a;
+    --color-signal: #f0a48f;
+    --color-signal-dark: #f4b5a3;
+    --color-signal-soft: #432c2a;
+    --color-action: #167a78;
+    --color-action-hover: #218f8b;
+    --color-action-ink: #ffffff;
+    --color-line: #3a4b52;
+    --color-ok: #8bd0a4;
+    --color-ok-soft: #203b2d;
+    --color-warn: #ffaaaa;
     --color-warn-soft: #432728;
-    --color-paper: #1A282E;
-    --color-status-pending: #F1CC75;
-    --color-status-pending-bg: #433A24;
-    --color-status-review: #8DD4E8;
+    --color-paper: #1a282e;
+    --color-status-pending: #f1cc75;
+    --color-status-pending-bg: #433a24;
+    --color-status-review: #8dd4e8;
     --color-status-review-bg: #203943;
-    --color-status-resolved: #8BD0A4;
-    --color-status-resolved-bg: #203B2D;
-    --color-status-rejected: #FFAAAA;
+    --color-status-resolved: #8bd0a4;
+    --color-status-resolved-bg: #203b2d;
+    --color-status-rejected: #ffaaaa;
     --color-status-rejected-bg: #432728;
-    --color-category-infrastructure-ink: #8DD4E8;
+    --color-category-infrastructure-ink: #8dd4e8;
     --color-category-infrastructure-bg: #203943;
-    --color-category-security-ink: #F3A6B0;
-    --color-category-security-bg: #42292F;
-    --color-category-cleaning-ink: #8BD0A4;
-    --color-category-cleaning-bg: #203B2D;
-    --color-category-noise-ink: #F1CC75;
-    --color-category-noise-bg: #433A24;
-    --color-category-traffic-ink: #C7B9FF;
-    --color-category-traffic-bg: #302C46;
-    --color-category-other-ink: #F0C096;
+    --color-category-security-ink: #f3a6b0;
+    --color-category-security-bg: #42292f;
+    --color-category-cleaning-ink: #8bd0a4;
+    --color-category-cleaning-bg: #203b2d;
+    --color-category-noise-ink: #f1cc75;
+    --color-category-noise-bg: #433a24;
+    --color-category-traffic-ink: #c7b9ff;
+    --color-category-traffic-bg: #302c46;
+    --color-category-other-ink: #f0c096;
     --color-category-other-bg: #403124;
   }
 
@@ -161,7 +169,9 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       scroll-behavior: auto !important;

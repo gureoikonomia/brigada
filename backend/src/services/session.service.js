@@ -7,11 +7,11 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h';
 
 function isSessionClaims(decoded) {
   return Boolean(
-    decoded
-    && typeof decoded === 'object'
-    && typeof decoded.id === 'string'
-    && typeof decoded.jti === 'string'
-    && Number.isInteger(decoded.tokenVersion)
+    decoded &&
+    typeof decoded === 'object' &&
+    typeof decoded.id === 'string' &&
+    typeof decoded.jti === 'string' &&
+    Number.isInteger(decoded.tokenVersion),
   );
 }
 
@@ -28,7 +28,7 @@ export async function createSessionToken(user) {
     {
       expiresIn: JWT_EXPIRES_IN,
       jwtid: sessionId,
-    }
+    },
   );
   const decoded = jwt.decode(token);
 

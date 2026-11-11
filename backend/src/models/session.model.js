@@ -23,7 +23,7 @@ const sessionSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 sessionSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });

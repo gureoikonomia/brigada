@@ -15,7 +15,7 @@ function fileFilter(req, file, cb) {
   if (!isAllowedMime) {
     return cb(new Error('Formato no permitido. Solo se aceptan JPEG, PNG o WEBP'));
   }
-  
+
   return cb(null, true);
 }
 
@@ -54,9 +54,7 @@ function handleUpload(parser, req, res, next, { filesMessage, fieldMessage, size
     // Errores propios de Multer (tamaño, número de archivos)
     if (err instanceof multer.MulterError) {
       if (err.code === 'LIMIT_FILE_SIZE') {
-        return res
-          .status(400)
-          .json({ message: sizeMessage });
+        return res.status(400).json({ message: sizeMessage });
       }
       if (err.code === 'LIMIT_FILE_COUNT') {
         return res.status(400).json({ message: filesMessage });

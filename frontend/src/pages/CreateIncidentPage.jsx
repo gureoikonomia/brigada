@@ -85,9 +85,7 @@ export default function CreateIncidentPage() {
   const [selectingPhotos, setSelectingPhotos] = useState(false);
   const isNative = Capacitor.isNativePlatform();
 
-  const position = form.lat && form.lng
-    ? [Number(form.lat), Number(form.lng)]
-    : null;
+  const position = form.lat && form.lng ? [Number(form.lat), Number(form.lng)] : null;
 
   const selectLocation = ({ lat, lng }) => {
     setForm((current) => ({
@@ -105,8 +103,12 @@ export default function CreateIncidentPage() {
       let positionResult;
       if (isNative) {
         const permission = await Geolocation.requestPermissions({ permissions: ['location'] });
-        if (permission.location !== 'granted') throw new Error('Location permission was not granted');
-        positionResult = await Geolocation.getCurrentPosition({ enableHighAccuracy: true, timeout: 10000 });
+        if (permission.location !== 'granted')
+          throw new Error('Location permission was not granted');
+        positionResult = await Geolocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 10000,
+        });
       } else {
         if (!navigator.geolocation) throw new Error('Geolocation is unavailable');
         positionResult = await new Promise((resolve, reject) => {
@@ -134,23 +136,28 @@ export default function CreateIncidentPage() {
     setSelectingPhotos(true);
     setPhotoError(null);
     try {
-      const results = action === 'camera'
-        ? [await Camera.takePhoto({ quality: 90, includeMetadata: true })]
-        : (await Camera.chooseFromGallery({
-          allowMultipleSelection: true,
-          limit: remaining,
-          quality: 90,
-          includeMetadata: true,
-        })).results;
+      const results =
+        action === 'camera'
+          ? [await Camera.takePhoto({ quality: 90, includeMetadata: true })]
+          : (
+              await Camera.chooseFromGallery({
+                allowMultipleSelection: true,
+                limit: remaining,
+                quality: 90,
+                includeMetadata: true,
+              })
+            ).results;
       const files = await Promise.all(results.slice(0, remaining).map(mediaResultToFile));
       setImages((current) => [...current, ...files].slice(0, MAX_IMAGES));
     } catch (photoActionError) {
       if (photoActionError?.message === 'User cancelled photos app') return;
-      setPhotoError(photoActionError?.message === 'UnsupportedPhoto'
-        ? t('createIncident.photoFileInvalid')
-        : action === 'camera'
-          ? t('createIncident.photoCaptureError')
-          : t('createIncident.photoSelectionError'));
+      setPhotoError(
+        photoActionError?.message === 'UnsupportedPhoto'
+          ? t('createIncident.photoFileInvalid')
+          : action === 'camera'
+            ? t('createIncident.photoCaptureError')
+            : t('createIncident.photoSelectionError'),
+      );
     } finally {
       setSelectingPhotos(false);
     }
@@ -253,7 +260,9 @@ export default function CreateIncidentPage() {
             className={styles.selectInput}
           >
             {CATEGORIES.map((c) => (
-              <option key={c} value={c}>{t(`category.${c}`)}</option>
+              <option key={c} value={c}>
+                {t(`category.${c}`)}
+              </option>
             ))}
           </select>
         </div>
@@ -287,7 +296,9 @@ export default function CreateIncidentPage() {
               disabled={searchingAddress}
               className={styles.searchAddressBtn}
             >
-              {searchingAddress ? t('createIncident.searchingAddress') : t('createIncident.searchAddress')}
+              {searchingAddress
+                ? t('createIncident.searchingAddress')
+                : t('createIncident.searchAddress')}
             </button>
           </div>
           <p className={styles.locationHint}>{t('createIncident.locationHint')}</p>
@@ -305,13 +316,16 @@ export default function CreateIncidentPage() {
             <MapPosition lat={position?.[0]} lng={position?.[1]} />
             {position && <Marker position={position} />}
           </MapContainer>
-          {position && <p className={styles.locationSelected}>{t('createIncident.locationSelected')}</p>}
+          {position && (
+            <p className={styles.locationSelected}>{t('createIncident.locationSelected')}</p>
+          )}
           {locationError && <p className={styles.locationError}>{locationError}</p>}
         </div>
 
         <div className={styles.photoSection}>
           <label className={styles.label} htmlFor="incident-photos">
-            {t('createIncident.photosLabel')} <span className={styles.photosHint}>{t('createIncident.photosHint')}</span>
+            {t('createIncident.photosLabel')}{' '}
+            <span className={styles.photosHint}>{t('createIncident.photosHint')}</span>
           </label>
           {isNative ? (
             <div className={styles.photoActions}>
@@ -356,15 +370,9 @@ export default function CreateIncidentPage() {
           {photoError && <p className={styles.locationError}>{photoError}</p>}
         </div>
 
-        {error && (
-          <p className={styles.errorBox}>{error}</p>
-        )}
+        {error && <p className={styles.errorBox}>{error}</p>}
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className={styles.submitBtn}
-        >
+        <button type="submit" disabled={submitting} className={styles.submitBtn}>
           {submitting ? t('createIncident.submitting') : t('createIncident.submit')}
         </button>
       </form>

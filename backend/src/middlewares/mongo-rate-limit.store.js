@@ -40,25 +40,23 @@ export class MongoRateLimitStore {
       try {
         const client = await collection.findOneAndUpdate(
           { _id },
-          [{
-            $set: {
-              totalHits: {
-                $cond: [
-                  { $gt: ['$expiresAt', now] },
-                  { $add: [{ $ifNull: ['$totalHits', 0] }, 1] },
-                  1,
-                ],
-              },
-              expiresAt: {
-                $cond: [
-                  { $gt: ['$expiresAt', now] },
-                  '$expiresAt',
-                  resetTime,
-                ],
+          [
+            {
+              $set: {
+                totalHits: {
+                  $cond: [
+                    { $gt: ['$expiresAt', now] },
+                    { $add: [{ $ifNull: ['$totalHits', 0] }, 1] },
+                    1,
+                  ],
+                },
+                expiresAt: {
+                  $cond: [{ $gt: ['$expiresAt', now] }, '$expiresAt', resetTime],
+                },
               },
             },
-          }],
-          { upsert: true, returnDocument: 'after' }
+          ],
+          { upsert: true, returnDocument: 'after' },
         );
 
         if (!client) throw new Error('MongoDB no devolvió el contador del limitador');
@@ -73,10 +71,12 @@ export class MongoRateLimitStore {
 
   async decrement(key) {
     await this.initialize();
-    await mongoose.connection.collection(COLLECTION_NAME).updateOne(
-      { _id: `${this.namespace}:${key}`, totalHits: { $gt: 0 } },
-      { $inc: { totalHits: -1 } }
-    );
+    await mongoose.connection
+      .collection(COLLECTION_NAME)
+      .updateOne(
+        { _id: `${this.namespace}:${key}`, totalHits: { $gt: 0 } },
+        { $inc: { totalHits: -1 } },
+      );
   }
 
   async resetKey(key) {

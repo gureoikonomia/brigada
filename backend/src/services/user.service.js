@@ -265,7 +265,8 @@ async function updateUserStatus(adminUserId, targetUserId, isActive) {
 }
 
 async function listBlockedUsers(userId) {
-  const user = await User.findById(userId).select('blockedUsers')
+  const user = await User.findById(userId)
+    .select('blockedUsers')
     .populate('blockedUsers', 'name')
     .lean();
   if (!user) throw new ServiceError('Usuario no encontrado', 404);
@@ -298,11 +299,14 @@ async function deleteAccountData(userId, verificationTokenHash) {
         throw new ServiceError('Usuario no encontrado', 404);
       }
       if (verificationTokenHash) {
-        const token = await AccountDeletionToken.findOneAndDelete({
-          userId,
-          tokenHash: verificationTokenHash,
-          expiresAt: { $gt: new Date() },
-        }, { session });
+        const token = await AccountDeletionToken.findOneAndDelete(
+          {
+            userId,
+            tokenHash: verificationTokenHash,
+            expiresAt: { $gt: new Date() },
+          },
+          { session },
+        );
         if (!token) throw new ServiceError('Enlace inválido o expirado', 400);
       }
       if (currentUser.role === 'admin' && currentUser.isActive) {

@@ -259,10 +259,10 @@ async function getIncidentById(incidentId, user) {
   const creatorId = incident.createdBy?._id || incident.createdBy;
   const isOwner = Boolean(user && creatorId && user.id === creatorId.toString());
   if (
-    user?.id
-    && creatorId
-    && !isPrivileged
-    && await User.exists({ _id: user.id, blockedUsers: creatorId })
+    user?.id &&
+    creatorId &&
+    !isPrivileged &&
+    (await User.exists({ _id: user.id, blockedUsers: creatorId }))
   ) {
     throw new ServiceError('Incidencia no encontrada', 404);
   }
@@ -298,10 +298,10 @@ async function updateStatus(incidentId, status, requestingUser) {
   const isModerator = requestingUser?.role === 'moderator';
 
   if (isModerator) {
-    const canDecideReview = existing.status === 'en_revision'
-      && ['pendiente', 'rechazada'].includes(status);
-    const canRejectReportedContent = ['pendiente', 'resuelta'].includes(existing.status)
-      && status === 'rechazada';
+    const canDecideReview =
+      existing.status === 'en_revision' && ['pendiente', 'rechazada'].includes(status);
+    const canRejectReportedContent =
+      ['pendiente', 'resuelta'].includes(existing.status) && status === 'rechazada';
     if (!canDecideReview && !canRejectReportedContent) {
       throw new ServiceError(
         'Los moderadores solo pueden resolver incidencias en revisión o rechazar contenido público denunciado',

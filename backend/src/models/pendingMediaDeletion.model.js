@@ -23,7 +23,7 @@ const pendingMediaDeletionSchema = new mongoose.Schema(
       default: null,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 pendingMediaDeletionSchema.index({ nextAttemptAt: 1, createdAt: 1 });

@@ -26,11 +26,13 @@ function patchMethod(t, target, key, replacement) {
 }
 
 test('public account deletion links use the deployed frontend route and one-time values', () => {
-  const link = new URL(createAccountDeletionLink(
-    'https://appbrigada.netlify.app/',
-    'a'.repeat(64),
-    '507f1f77bcf86cd799439011',
-  ));
+  const link = new URL(
+    createAccountDeletionLink(
+      'https://appbrigada.netlify.app/',
+      'a'.repeat(64),
+      '507f1f77bcf86cd799439011',
+    ),
+  );
 
   assert.equal(link.origin, 'https://appbrigada.netlify.app');
   assert.equal(link.pathname, '/eliminar-cuenta');
@@ -41,21 +43,30 @@ test('public account deletion links use the deployed frontend route and one-time
 test('account deletion schemas validate request emails and confirmation tokens', () => {
   assert.equal(requestAccountDeletionSchema.safeParse({ email: 'user@example.com' }).success, true);
   assert.equal(requestAccountDeletionSchema.safeParse({ email: 'not-an-email' }).success, false);
-  assert.equal(confirmAccountDeletionSchema.safeParse({
-    uid: '507f1f77bcf86cd799439011',
-    token: 'a'.repeat(64),
-  }).success, true);
-  assert.equal(confirmAccountDeletionSchema.safeParse({
-    uid: 'invalid',
-    token: 'short',
-  }).success, false);
+  assert.equal(
+    confirmAccountDeletionSchema.safeParse({
+      uid: '507f1f77bcf86cd799439011',
+      token: 'a'.repeat(64),
+    }).success,
+    true,
+  );
+  assert.equal(
+    confirmAccountDeletionSchema.safeParse({
+      uid: 'invalid',
+      token: 'short',
+    }).success,
+    false,
+  );
 });
 
 test('incident reports accept only supported reasons and moderator outcomes', () => {
-  assert.equal(createIncidentReportSchema.safeParse({
-    reason: 'personal_data',
-    details: 'Incluye información privada.',
-  }).success, true);
+  assert.equal(
+    createIncidentReportSchema.safeParse({
+      reason: 'personal_data',
+      details: 'Incluye información privada.',
+    }).success,
+    true,
+  );
   assert.equal(createIncidentReportSchema.safeParse({ reason: 'unknown' }).success, false);
   assert.equal(resolveIncidentReportSchema.safeParse({ status: 'actioned' }).success, true);
   assert.equal(resolveIncidentReportSchema.safeParse({ status: 'pending' }).success, false);
@@ -151,11 +162,21 @@ test('authenticated incident listings exclude authors blocked by the current use
   patchMethod(t, Incident, 'find', (query) => {
     incidentQuery = query;
     return {
-      populate() { return this; },
-      sort() { return this; },
-      skip() { return this; },
-      limit() { return this; },
-      async lean() { return []; },
+      populate() {
+        return this;
+      },
+      sort() {
+        return this;
+      },
+      skip() {
+        return this;
+      },
+      limit() {
+        return this;
+      },
+      async lean() {
+        return [];
+      },
     };
   });
   patchMethod(t, Incident, 'countDocuments', async () => 0);

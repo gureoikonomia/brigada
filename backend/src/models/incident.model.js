@@ -64,7 +64,7 @@ const incidentSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Índice geoespacial para buscar incidencias cercanas a un punto

@@ -26,7 +26,11 @@ export default function VotingFeatureControl() {
       <div className={styles.copy}>
         <h2 className={styles.title}>{t('admin.votingSettingTitle')}</h2>
         <p className={styles.description}>{t('admin.votingSettingDescription')}</p>
-        {error && <p className={styles.error} role="alert">{error}</p>}
+        {error && (
+          <p className={styles.error} role="alert">
+            {error}
+          </p>
+        )}
       </div>
       <label className={styles.toggleLabel}>
         <input

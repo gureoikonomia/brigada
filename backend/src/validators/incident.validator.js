@@ -1,25 +1,14 @@
 import { z } from 'zod';
 
-const CATEGORIES = [
-  'infraestructura',
-  'seguridad',
-  'limpieza',
-  'ruido',
-  'trafico',
-  'otros',
-];
+const CATEGORIES = ['infraestructura', 'seguridad', 'limpieza', 'ruido', 'trafico', 'otros'];
 
-const STATUSES = [
-  'pendiente',
-  'en_revision',
-  'resuelta',
-  'rechazada',
-];
+const STATUSES = ['pendiente', 'en_revision', 'resuelta', 'rechazada'];
 
-const queryArray = (values) => z.preprocess(
-  (value) => (Array.isArray(value) ? value : value == null ? value : [value]),
-  z.array(z.enum(values)).min(1).optional()
-);
+const queryArray = (values) =>
+  z.preprocess(
+    (value) => (Array.isArray(value) ? value : value == null ? value : [value]),
+    z.array(z.enum(values)).min(1).optional(),
+  );
 
 // POST /api/incidents
 // req.body llega de multipart/form-data,
@@ -37,22 +26,11 @@ export const createIncidentSchema = z.object({
     .min(10, 'La descripción debe tener al menos 10 caracteres')
     .max(3000, 'La descripción no puede superar los 3000 caracteres'),
 
-  category: z
-    .enum(CATEGORIES)
-    .optional()
-    .default('otros'),
+  category: z.enum(CATEGORIES).optional().default('otros'),
 
-  lat: z
-    .coerce
-    .number()
-    .min(-90, 'Latitud no válida')
-    .max(90, 'Latitud no válida'),
+  lat: z.coerce.number().min(-90, 'Latitud no válida').max(90, 'Latitud no válida'),
 
-  lng: z
-    .coerce
-    .number()
-    .min(-180, 'Longitud no válida')
-    .max(180, 'Longitud no válida'),
+  lng: z.coerce.number().min(-180, 'Longitud no válida').max(180, 'Longitud no válida'),
 
   address: z
     .string()
@@ -69,14 +47,16 @@ export const updateStatusSchema = z.object({
 });
 
 // PATCH /api/incidents/:id
-export const updateIncidentSchema = z.object({
-  title: z.string().trim().min(3).max(150).optional(),
-  description: z.string().trim().min(10).max(3000).optional(),
-  category: z.enum(CATEGORIES).optional(),
-  address: z.string().trim().max(300).optional(),
-}).refine((data) => Object.keys(data).length > 0, {
-  message: 'Debes indicar al menos un campo para actualizar',
-});
+export const updateIncidentSchema = z
+  .object({
+    title: z.string().trim().min(3).max(150).optional(),
+    description: z.string().trim().min(10).max(3000).optional(),
+    category: z.enum(CATEGORIES).optional(),
+    address: z.string().trim().max(300).optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: 'Debes indicar al menos un campo para actualizar',
+  });
 
 // GET /api/incidents
 export const listIncidentsQuerySchema = z.object({
@@ -86,55 +66,24 @@ export const listIncidentsQuerySchema = z.object({
 
   createdBy: z
     .string()
-    .regex(
-      /^[0-9a-fA-F]{24}$/,
-      'createdBy debe ser un ObjectId válido'
-    )
+    .regex(/^[0-9a-fA-F]{24}$/, 'createdBy debe ser un ObjectId válido')
     .optional(),
 
-  lat: z
-    .coerce
-    .number()
-    .min(-90, 'Latitud no válida')
-    .max(90, 'Latitud no válida')
-    .optional(),
+  lat: z.coerce.number().min(-90, 'Latitud no válida').max(90, 'Latitud no válida').optional(),
 
-  lng: z
-    .coerce
-    .number()
-    .min(-180, 'Longitud no válida')
-    .max(180, 'Longitud no válida')
-    .optional(),
+  lng: z.coerce.number().min(-180, 'Longitud no válida').max(180, 'Longitud no válida').optional(),
 
-  maxDistanceMeters: z
-    .coerce
+  maxDistanceMeters: z.coerce
     .number()
     .positive('maxDistanceMeters debe ser positivo')
     .max(50_000, 'maxDistanceMeters no puede superar los 50 km')
     .optional(),
 
-  page: z
-    .coerce
-    .number()
-    .int()
-    .positive()
-    .max(1_000)
-    .optional()
-    .default(1),
+  page: z.coerce.number().int().positive().max(1_000).optional().default(1),
 
-  limit: z
-    .coerce
-    .number()
-    .int()
-    .positive()
-    .max(100)
-    .optional()
-    .default(20),
+  limit: z.coerce.number().int().positive().max(100).optional().default(20),
 
-  sortBy: z
-    .enum(['recent', 'popular'])
-    .optional()
-    .default('recent'),
+  sortBy: z.enum(['recent', 'popular']).optional().default('recent'),
 });
 
 export const listVotedIncidentsQuerySchema = z.object({
@@ -144,20 +93,10 @@ export const listVotedIncidentsQuerySchema = z.object({
 
 // GET /api/incidents/:id
 export const mongoIdParamSchema = z.object({
-  id: z
-    .string()
-    .regex(
-      /^[0-9a-fA-F]{24}$/,
-      'id debe ser un ObjectId válido'
-    ),
+  id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'id debe ser un ObjectId válido'),
 });
 
 // /api/incidents/:incidentId/vote
 export const incidentIdParamSchema = z.object({
-  incidentId: z
-    .string()
-    .regex(
-      /^[0-9a-fA-F]{24}$/,
-      'incidentId debe ser un ObjectId válido'
-    ),
+  incidentId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'incidentId debe ser un ObjectId válido'),
 });

@@ -39,11 +39,11 @@ async function requestAccountDeletion(email) {
   };
   let token;
   try {
-    token = await AccountDeletionToken.findOneAndUpdate(
-      { userId: user._id },
-      tokenUpdate,
-      { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true },
-    );
+    token = await AccountDeletionToken.findOneAndUpdate({ userId: user._id }, tokenUpdate, {
+      upsert: true,
+      returnDocument: 'after',
+      setDefaultsOnInsert: true,
+    });
   } catch (error) {
     if (error.code !== 11000) throw error;
     token = await AccountDeletionToken.findOneAndUpdate(

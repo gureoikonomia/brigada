@@ -74,10 +74,22 @@ export default function Navbar() {
         <NavLink
           to="/"
           end
-          className={({ isActive }) => `${styles.mobileBottomLink} ${isActive ? styles.mobileBottomLinkActive : ''}`}
+          className={({ isActive }) =>
+            `${styles.mobileBottomLink} ${isActive ? styles.mobileBottomLinkActive : ''}`
+          }
         >
-          <svg className={styles.mobileBottomIcon} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+          <svg
+            className={styles.mobileBottomIcon}
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10Z"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinejoin="round"
+            />
           </svg>
           <span>{t('nav.mobileHome')}</span>
         </NavLink>
@@ -85,10 +97,22 @@ export default function Navbar() {
         {user && (
           <NavLink
             to="/incidencias/nueva"
-            className={({ isActive }) => `${styles.mobileBottomLink} ${styles.mobileBottomCreate} ${isActive ? styles.mobileBottomLinkActive : ''}`}
+            className={({ isActive }) =>
+              `${styles.mobileBottomLink} ${styles.mobileBottomCreate} ${isActive ? styles.mobileBottomLinkActive : ''}`
+            }
           >
-            <svg className={styles.mobileBottomIcon} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <svg
+              className={styles.mobileBottomIcon}
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 5v14M5 12h14"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
             </svg>
             <span>{t('nav.mobileCreate')}</span>
           </NavLink>
@@ -96,13 +120,25 @@ export default function Navbar() {
 
         <NavLink
           to={user ? '/perfil' : '/login'}
-          className={({ isActive }) => `${styles.mobileBottomLink} ${isActive ? styles.mobileBottomLinkActive : ''}`}
+          className={({ isActive }) =>
+            `${styles.mobileBottomLink} ${isActive ? styles.mobileBottomLinkActive : ''}`
+          }
         >
           {user?.avatarUrl ? (
             <img src={user.avatarUrl} alt="" className={styles.mobileBottomAvatar} />
           ) : (
-            <svg className={styles.mobileBottomIcon} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M20 21a8 8 0 0 0-16 0m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            <svg
+              className={styles.mobileBottomIcon}
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M20 21a8 8 0 0 0-16 0m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
             </svg>
           )}
           <span>{user ? t('nav.mobileProfile') : t('nav.mobileLogin')}</span>
