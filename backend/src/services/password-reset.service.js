@@ -5,6 +5,7 @@ import User from '../models/user.model.js';
 import PasswordResetToken from '../models/passwordResetToken.model.js';
 import { ServiceError } from '../errors/service.error.js';
 import { sendPasswordChangedNotification, sendResetEmail } from '../utils/email.js';
+import { BCRYPT_SALT_ROUNDS } from '../utils/password.js';
 
 function sanitizeMailDiagnostic(value) {
   if (typeof value !== 'string') return undefined;
@@ -51,7 +52,7 @@ async function requestPasswordReset(email) {
     }
 
     const rawToken = randomBytes(32).toString('hex');
-    const tokenHash = await bcrypt.hash(rawToken, 10);
+    const tokenHash = await bcrypt.hash(rawToken, BCRYPT_SALT_ROUNDS);
     const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
 
     stage = 'token_storage';
@@ -90,7 +91,7 @@ async function resetPassword({ uid, token, newPassword }) {
     throw new ServiceError('Enlace inválido o expirado', 400);
   }
 
-  const newHash = await bcrypt.hash(newPassword, 12);
+  const newHash = await bcrypt.hash(newPassword, BCRYPT_SALT_ROUNDS);
   const session = await User.startSession();
   let user;
 

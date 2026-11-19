@@ -6,13 +6,13 @@ import User from '../models/user.model.js';
 import EmailVerificationToken from '../models/emailVerificationToken.model.js';
 import PasswordResetToken from '../models/passwordResetToken.model.js';
 import { ServiceError } from '../errors/service.error.js';
-import { createSessionToken } from './session.service.js';
+import { createSession } from './session.service.js';
 import { uploadService } from './upload.service.js';
 import { sendVerificationEmail } from '../utils/email.js';
 import { enqueueMediaDeletion, processPendingMediaDeletions } from './media-deletion.service.js';
+import { BCRYPT_SALT_ROUNDS } from '../utils/password.js';
 
-const SALT_ROUNDS = 10;
-const dummyPasswordHash = bcrypt.hash('not-a-real-account-password', SALT_ROUNDS);
+const dummyPasswordHash = bcrypt.hash('not-a-real-account-password', BCRYPT_SALT_ROUNDS);
 const MIN_ACCOUNT_LOOKUP_RESPONSE_MS = 500;
 
 async function normalizeAccountLookupDuration(startedAt) {
@@ -31,7 +31,7 @@ async function register({ name, email, password, ageConfirmed }) {
   const startedAt = Date.now();
 
   const normalizedEmail = email.toLowerCase();
-  const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+  const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
 
   const existing = await User.findOne({ email: normalizedEmail }).select('_id').lean();
   if (!existing) {
@@ -145,7 +145,7 @@ async function verifyEmail({ uid, token }) {
 /**
  * Login.
  */
-async function login({ email, password }) {
+async function login({ email, password, userAgent }) {
   const user = await User.findOne({
     email: email.toLowerCase(),
   }).select('+password +tokenVersion');
@@ -154,17 +154,26 @@ async function login({ email, password }) {
   const passwordMatches = await bcrypt.compare(password, passwordHash);
 
   if (!user || !user.isActive || !passwordMatches) {
-    throw new ServiceError('Credenciales incorrectas', 401);
+    throw new ServiceError('Credenciales incorrectas', 400, 'INVALID_CREDENTIALS');
   }
 
-  if (!user.emailVerified) {
-    throw new ServiceError('Debes verificar tu correo electrónico antes de iniciar sesión', 403);
+  // La verificación del correo no es un requisito para iniciar sesión.
+  // if (!user.emailVerified) {
+  //   throw new ServiceError('Debes verificar tu correo electrónico antes de iniciar sesión', 403);
+  // }
+
+  if (bcrypt.getRounds(user.password) < BCRYPT_SALT_ROUNDS) {
+    const upgradedPasswordHash = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
+    await User.updateOne(
+      { _id: user._id, password: user.password },
+      { $set: { password: upgradedPasswordHash } },
+    );
   }
 
-  const token = await createSessionToken(user);
+  const session = await createSession(user, userAgent);
 
   return {
-    token,
+    ...session,
     user: {
       id: user._id,
       name: user.name,
@@ -217,7 +226,7 @@ async function requestEmailChange(userId, { email, currentPassword }) {
 
   const passwordMatches = await bcrypt.compare(currentPassword, user.password);
   if (!passwordMatches) {
-    throw new ServiceError('La contraseña actual no es correcta', 401);
+    throw new ServiceError('La contraseña actual no es correcta', 403, 'INVALID_CURRENT_PASSWORD');
   }
 
   const normalizedEmail = email.toLowerCase().trim();
@@ -316,10 +325,10 @@ async function changePassword(userId, { currentPassword, newPassword }) {
 
   const matches = await bcrypt.compare(currentPassword, user.password);
   if (!matches) {
-    throw new ServiceError('La contraseña actual no es correcta', 401);
+    throw new ServiceError('La contraseña actual no es correcta', 403, 'INVALID_CURRENT_PASSWORD');
   }
 
-  const newHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+  const newHash = await bcrypt.hash(newPassword, BCRYPT_SALT_ROUNDS);
   const session = await User.startSession();
   try {
     await session.withTransaction(async () => {

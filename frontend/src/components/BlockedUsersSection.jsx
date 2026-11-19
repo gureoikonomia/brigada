@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../hooks/useAuth';
+import { isSessionRefreshUnavailable } from '../services/api';
 import { listBlockedUsers, unblockUser } from '../services/user.service';
 import styles from './BlockedUsersSection.module.css';
 
 export default function BlockedUsersSection() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -12,20 +15,29 @@ export default function BlockedUsersSection() {
 
   useEffect(() => {
     let cancelled = false;
+    let waitingForSession = false;
     listBlockedUsers()
       .then((result) => {
-        if (!cancelled) setUsers(result);
+        if (!cancelled) {
+          setUsers(result);
+          setError(null);
+        }
       })
-      .catch(() => {
+      .catch((error) => {
+        if (isSessionRefreshUnavailable(error)) {
+          waitingForSession = true;
+          setError(null);
+          return;
+        }
         if (!cancelled) setError(t('profile.blockedUsersLoadError'));
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled && !waitingForSession) setLoading(false);
       });
     return () => {
       cancelled = true;
     };
-  }, [t]);
+  }, [t, user]);
 
   const handleUnblock = async (id) => {
     setUnblockingId(id);
@@ -33,8 +45,8 @@ export default function BlockedUsersSection() {
     try {
       await unblockUser(id);
       setUsers((current) => current.filter((user) => user._id !== id));
-    } catch {
-      setError(t('profile.unblockUserError'));
+    } catch (error) {
+      if (!isSessionRefreshUnavailable(error)) setError(t('profile.unblockUserError'));
     } finally {
       setUnblockingId(null);
     }

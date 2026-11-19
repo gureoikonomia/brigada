@@ -4,6 +4,7 @@ const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 const PREAUTH_JSON_ROUTES = new Set([
   '/api/auth/register',
   '/api/auth/login',
+  '/api/auth/refresh',
   '/api/auth/resend-verification',
   '/api/auth/verify-email',
   '/api/auth/forgot-password',

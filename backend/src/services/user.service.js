@@ -406,7 +406,11 @@ async function deleteAccount(userId, currentPassword) {
   const user = await User.findById(userId).select('+password');
   if (!user) throw new ServiceError('Usuario no encontrado', 404);
   if (!(await bcrypt.compare(currentPassword, user.password))) {
-    throw new ServiceError('La contraseña actual no es correcta', 401);
+    throw new ServiceError(
+      'La contraseña actual no es correcta',
+      403,
+      'INVALID_CURRENT_PASSWORD',
+    );
   }
   return deleteAccountData(userId);
 }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { updateIncidentStatus } from '../services/incident.service';
+import { isSessionRefreshUnavailable } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import useAppSettings from '../hooks/useAppSettings';
 import styles from './ModerationRow.module.css';
@@ -39,7 +40,9 @@ export default function ModerationRow({ incident, onChanged, allowedStatuses }) 
     } catch (err) {
       setStatus(prev);
       setSelectedStatus(prev);
-      setError(err?.response?.data?.message || t('moderation.statusChangeError'));
+      if (!isSessionRefreshUnavailable(err)) {
+        setError(err?.response?.data?.message || t('moderation.statusChangeError'));
+      }
     } finally {
       setBusy(false);
     }

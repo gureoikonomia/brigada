@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getAdminStats } from '../services/user.service';
+import { useAuth } from '../hooks/useAuth';
 import useAppSettings from '../hooks/useAppSettings';
+import { isSessionRefreshUnavailable } from '../services/api';
 import styles from './AdminStatsWidget.module.css';
 
 export default function AdminStatsWidget() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const { votingEnabled } = useAppSettings();
   const statsGridClass = `${styles.statsGrid} ${!votingEnabled ? styles.statsGridWithoutVotes : ''}`;
   const [stats, setStats] = useState(null);
@@ -14,20 +17,29 @@ export default function AdminStatsWidget() {
 
   useEffect(() => {
     let cancelled = false;
+    let waitingForSession = false;
     getAdminStats()
       .then((data) => {
-        if (!cancelled) setStats(data);
+        if (!cancelled) {
+          setStats(data);
+          setError(null);
+        }
       })
       .catch((err) => {
+        if (isSessionRefreshUnavailable(err)) {
+          waitingForSession = true;
+          setError(null);
+          return;
+        }
         if (!cancelled) setError(err?.response?.data?.message || t('admin.statsError'));
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled && !waitingForSession) setLoading(false);
       });
     return () => {
       cancelled = true;
     };
-  }, [t, votingEnabled]);
+  }, [t, user, votingEnabled]);
 
   if (loading) {
     return (

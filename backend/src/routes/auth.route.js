@@ -10,6 +10,7 @@ import {
 import { validate } from '../middlewares/validate.middleware.js';
 import {
   emailChangeLimiter,
+  refreshLimiter,
   uploadLimiter,
   verificationEmailLimiter,
 } from '../middlewares/rate-limiters.js';
@@ -32,6 +33,8 @@ router.get('/csrf', authController.csrf);
 router.post('/register', validate(registerSchema), authController.register);
 
 router.post('/login', validate(loginSchema), authController.login);
+
+router.post('/refresh', refreshLimiter, authController.refresh);
 
 router.post(
   '/resend-verification',

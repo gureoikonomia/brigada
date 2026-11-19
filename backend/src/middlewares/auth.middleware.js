@@ -8,23 +8,36 @@ function getSessionToken(req) {
 }
 
 /**
- * Protege una ruta: exige un JWT válido en el header Authorization.
+ * Protege una ruta: exige un JWT válido en la cookie de sesión.
  * Si es correcto, deja el usuario autenticado en req.user (id + role).
  *
- * Espera header: Authorization: Bearer <token>
+ * Espera la cookie brigada_session.
  * Espera variable de entorno: JWT_SECRET
  */
 export async function protect(req, res, next) {
   try {
     const token = getSessionToken(req);
-    if (!token) return res.status(401).json({ message: 'No autenticado' });
+    if (!token) {
+      return res.status(401).json({
+        message: 'No autenticado',
+        code: 'SESSION_INVALID',
+      });
+    }
 
     let decoded;
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET);
+      decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
     } catch (err) {
-      const message = err.name === 'TokenExpiredError' ? 'El token ha expirado' : 'Token inválido';
-      return res.status(401).json({ message });
+      if (err.name === 'TokenExpiredError') {
+        return res.status(401).json({
+          message: 'El token ha expirado',
+          code: 'SESSION_EXPIRED',
+        });
+      }
+      return res.status(401).json({
+        message: 'Token inválido',
+        code: 'SESSION_INVALID',
+      });
     }
 
     // Comprobamos que el usuario todavía existe y está activo
@@ -39,7 +52,10 @@ export async function protect(req, res, next) {
       !activeSession ||
       !sessionVersionMatches(decoded.tokenVersion, user.tokenVersion || 0)
     ) {
-      return res.status(401).json({ message: 'Usuario no válido o inactivo' });
+      return res.status(401).json({
+        message: 'Usuario no válido o inactivo',
+        code: 'SESSION_INVALID',
+      });
     }
 
     req.user = { id: user._id.toString(), role: user.role };
@@ -75,7 +91,7 @@ export async function attachUserIfPresent(req, res, next) {
 
     let decoded;
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET);
+      decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
     } catch {
       return next(); // token inválido/expirado -> seguimos como anónimo, sin romper la petición
     }

@@ -2,8 +2,10 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  bearerTokenMatches,
   cookieOptions,
   csrfTokenMatches,
+  refreshCookieOptions,
   sessionVersionMatches,
   votedIncidentVisibilityMatch,
 } from '../src/utils/security.js';
@@ -34,6 +36,15 @@ test('CSRF cookies and headers must contain the same token', () => {
   assert.equal(csrfTokenMatches('', ''), false);
 });
 
+test('debug bearer token matching requires the configured token and exact syntax', () => {
+  assert.equal(bearerTokenMatches('Bearer secret-value', 'secret-value'), true);
+  assert.equal(bearerTokenMatches('Bearer wrong-value', 'secret-value'), false);
+  assert.equal(bearerTokenMatches('secret-value', 'secret-value'), false);
+  assert.equal(bearerTokenMatches('Bearer secret-value extra', 'secret-value'), false);
+  assert.equal(bearerTokenMatches('Bearer secret-value', ''), false);
+  assert.equal(bearerTokenMatches(undefined, 'secret-value'), false);
+});
+
 test('authentication cookies are HttpOnly and secure in production', () => {
   assert.deepEqual(cookieOptions(true), {
     httpOnly: true,
@@ -42,6 +53,13 @@ test('authentication cookies are HttpOnly and secure in production', () => {
     path: '/api',
   });
   assert.equal(cookieOptions(false).sameSite, 'lax');
+  assert.deepEqual(refreshCookieOptions(true, 30_000), {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+    path: '/api/auth',
+    maxAge: 30_000,
+  });
 });
 
 test('CSRF protection rejects unsafe requests without a trusted origin and matching token', () => {
@@ -115,6 +133,7 @@ test('CSRF protection rejects unsafe requests without a trusted origin and match
     for (const path of [
       '/api/auth/request-account-deletion',
       '/api/auth/confirm-account-deletion',
+      '/api/auth/refresh',
     ]) {
       continued = false;
       req.path = path;

@@ -6,6 +6,7 @@ import {
   listPendingIncidentReports,
   resolveIncidentReport,
 } from '../services/incident.service';
+import { isSessionRefreshUnavailable } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import useAppSettings from '../hooks/useAppSettings';
 import ModerationRow from '../components/ModerationRow';
@@ -35,6 +36,7 @@ export default function ModerationPage() {
 
   useEffect(() => {
     let cancelled = false;
+    let waitingForSession = false;
     setLoading(true);
     setError(null);
 
@@ -50,18 +52,22 @@ export default function ModerationPage() {
           });
 
     request
-      .catch(() => {
+      .catch((requestError) => {
+        if (isSessionRefreshUnavailable(requestError)) {
+          waitingForSession = true;
+          return;
+        }
         if (!cancelled) setError(t('moderation.loadError'));
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled && !waitingForSession) setLoading(false);
       });
 
     return () => {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab, votingEnabled]);
+  }, [activeTab, user, votingEnabled]);
 
   const handleChanged = (id) => {
     setItems((prev) => prev.filter((i) => i._id !== id));
@@ -74,7 +80,9 @@ export default function ModerationPage() {
       await resolveIncidentReport(id, status);
       setReports((current) => current.filter((report) => report._id !== id));
     } catch (requestError) {
-      setError(requestError.response?.data?.message || t('moderation.reportActionError'));
+      if (!isSessionRefreshUnavailable(requestError)) {
+        setError(requestError.response?.data?.message || t('moderation.reportActionError'));
+      }
     } finally {
       setResolvingReportId(null);
     }

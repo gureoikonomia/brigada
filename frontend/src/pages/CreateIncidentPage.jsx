@@ -6,6 +6,7 @@ import { Capacitor } from '@capacitor/core';
 import { Geolocation } from '@capacitor/geolocation';
 import L from 'leaflet';
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
+import { isSessionRefreshUnavailable } from '../services/api';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -206,7 +207,9 @@ export default function CreateIncidentPage() {
       const incident = await createIncident(formData);
       navigate(`/incidencias/${incident._id}`);
     } catch (err) {
-      setError(err.response?.data?.message || t('createIncident.error'));
+      if (!isSessionRefreshUnavailable(err)) {
+        setError(err.response?.data?.message || t('createIncident.error'));
+      }
     } finally {
       setSubmitting(false);
     }

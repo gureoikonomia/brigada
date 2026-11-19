@@ -22,6 +22,14 @@ export const loginLimiter = rateLimit({
   message: { message: 'Demasiados intentos. Inténtalo más tarde.' },
 });
 
+export const refreshLimiter = rateLimit({
+  ...commonOptions,
+  store: createRateLimitStore('session-refresh'),
+  windowMs: 15 * 60 * 1000,
+  limit: 30,
+  message: { message: 'Demasiadas solicitudes. Inténtalo más tarde.' },
+});
+
 export const uploadLimiter = rateLimit({
   ...commonOptions,
   store: createRateLimitStore('upload'),

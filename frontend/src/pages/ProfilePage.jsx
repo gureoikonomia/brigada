@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import useAppSettings from '../hooks/useAppSettings';
 import { listIncidents, listVotedIncidents } from '../services/incident.service';
+import { isSessionRefreshUnavailable } from '../services/api';
 import {
   updateProfile,
   requestEmailChange,
@@ -85,16 +86,26 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
+    let waitingForSession = false;
+    setLoadingMy(true);
+    setErrorMy(null);
 
     listIncidents({ createdBy: user.id, sortBy: 'recent' })
       .then((data) => {
-        if (!cancelled) setMyIncidents(data.items);
+        if (!cancelled) {
+          setMyIncidents(data.items);
+          setErrorMy(null);
+        }
       })
-      .catch(() => {
+      .catch((error) => {
+        if (isSessionRefreshUnavailable(error)) {
+          waitingForSession = true;
+          return;
+        }
         if (!cancelled) setErrorMy(t('profile.loadError'));
       })
       .finally(() => {
-        if (!cancelled) setLoadingMy(false);
+        if (!cancelled && !waitingForSession) setLoadingMy(false);
       });
 
     return () => {
@@ -106,6 +117,7 @@ export default function ProfilePage() {
   // Cargar incidencias votadas si se selecciona la pestaña 2
   useEffect(() => {
     if (activeTab === 'voted' && votingEnabled && !votedLoaded) {
+      let waitingForSession = false;
       setLoadingVoted(true);
       setErrorVoted(null);
       listVotedIncidents()
@@ -113,14 +125,18 @@ export default function ProfilePage() {
           setVotedIncidents(data.items);
           setVotedLoaded(true);
         })
-        .catch(() => {
+        .catch((error) => {
+          if (isSessionRefreshUnavailable(error)) {
+            waitingForSession = true;
+            return;
+          }
           setErrorVoted(t('profile.loadError'));
         })
         .finally(() => {
-          setLoadingVoted(false);
+          if (!waitingForSession) setLoadingVoted(false);
         });
     }
-  }, [activeTab, votedLoaded, t, votingEnabled]);
+  }, [activeTab, user, votedLoaded, t, votingEnabled]);
 
   if (!user) return null;
 
@@ -152,7 +168,9 @@ export default function ProfilePage() {
       updateUser({ name: updated.name });
       setProfileSuccess(true);
     } catch (err) {
-      setProfileError(err.response?.data?.message || t('editProfile.saveError'));
+      if (!isSessionRefreshUnavailable(err)) {
+        setProfileError(err.response?.data?.message || t('editProfile.saveError'));
+      }
     } finally {
       setSavingProfile(false);
     }
@@ -169,7 +187,9 @@ export default function ProfilePage() {
       setEmailChangeForm({ email: '', currentPassword: '' });
       setEmailChangeSuccess(true);
     } catch (error) {
-      setEmailChangeError(error.response?.data?.message || t('editProfile.emailChangeError'));
+      if (!isSessionRefreshUnavailable(error)) {
+        setEmailChangeError(error.response?.data?.message || t('editProfile.emailChangeError'));
+      }
     } finally {
       setRequestingEmailChange(false);
     }
@@ -198,7 +218,9 @@ export default function ProfilePage() {
       updateUser({ avatarUrl: updated.avatarUrl });
       setAvatarSuccess(true);
     } catch (err) {
-      setAvatarError(err.response?.data?.message || t('profile.avatarUploadError'));
+      if (!isSessionRefreshUnavailable(err)) {
+        setAvatarError(err.response?.data?.message || t('profile.avatarUploadError'));
+      }
     } finally {
       setUploadingAvatar(false);
     }
@@ -225,7 +247,9 @@ export default function ProfilePage() {
         state: { passwordChanged: true },
       });
     } catch (err) {
-      setPasswordError(err.response?.data?.message || t('editProfile.passwordError'));
+      if (!isSessionRefreshUnavailable(err)) {
+        setPasswordError(err.response?.data?.message || t('editProfile.passwordError'));
+      }
     } finally {
       setSavingPassword(false);
     }
@@ -248,7 +272,9 @@ export default function ProfilePage() {
         },
       });
     } catch (err) {
-      setDeleteAccountError(err.response?.data?.message || t('profile.deleteAccountError'));
+      if (!isSessionRefreshUnavailable(err)) {
+        setDeleteAccountError(err.response?.data?.message || t('profile.deleteAccountError'));
+      }
     } finally {
       setDeletingAccount(false);
     }

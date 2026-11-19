@@ -12,7 +12,7 @@ import {
   requestEmailChangeSchema,
   updateProfileSchema,
 } from '../src/validators/auth.validator.js';
-import { validateJwtExpiry } from '../src/config/env.js';
+import { validateJwtExpiry, validateRefreshTtl } from '../src/config/env.js';
 
 test('incident list bounds pagination and geographic search', () => {
   assert.equal(
@@ -78,8 +78,15 @@ test('registration requires an explicit minimum-age confirmation', () => {
 });
 
 test('JWT expiration accepts bounded unit durations only', () => {
+  assert.doesNotThrow(() => validateJwtExpiry('30m'));
   assert.doesNotThrow(() => validateJwtExpiry('1h'));
-  assert.doesNotThrow(() => validateJwtExpiry('24h'));
-  assert.throws(() => validateJwtExpiry('25h'));
+  assert.throws(() => validateJwtExpiry('2h'));
   assert.throws(() => validateJwtExpiry('100'));
+});
+
+test('refresh expiration accepts durations up to the absolute session lifetime', () => {
+  assert.doesNotThrow(() => validateRefreshTtl('30d'));
+  assert.doesNotThrow(() => validateRefreshTtl('90d'));
+  assert.throws(() => validateRefreshTtl('91d'));
+  assert.throws(() => validateRefreshTtl('30'));
 });

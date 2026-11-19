@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { listUsers, updateUserRole, updateUserStatus } from '../services/user.service';
 import { useAuth } from '../hooks/useAuth';
+import { isSessionRefreshUnavailable } from '../services/api';
 import styles from './UserManagementTable.module.css';
 
 function initials(name = '') {
@@ -37,18 +38,26 @@ export default function UserManagementTable() {
 
   const fetchUsers = (page = 1) => {
     const requestId = ++fetchRequestId.current;
+    let waitingForSession = false;
+    setLoading(true);
     listUsers({ page, role: roleFilter || undefined, search: search || undefined, limit: 15 })
       .then((data) => {
         if (requestId !== fetchRequestId.current) return;
         setUsers(data.items);
         setPagination(data.pagination);
+        setError(null);
       })
       .catch((err) => {
         if (requestId !== fetchRequestId.current) return;
+        if (isSessionRefreshUnavailable(err)) {
+          waitingForSession = true;
+          setError(null);
+          return;
+        }
         setError(err?.response?.data?.message || t('admin.updateError'));
       })
       .finally(() => {
-        if (requestId === fetchRequestId.current) setLoading(false);
+        if (requestId === fetchRequestId.current && !waitingForSession) setLoading(false);
       });
   };
 
@@ -57,9 +66,9 @@ export default function UserManagementTable() {
     return () => {
       fetchRequestId.current += 1;
     };
-    // Search is submitted explicitly; only role changes trigger this effect.
+    // Search is submitted explicitly; role or session changes trigger this effect.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roleFilter]);
+  }, [roleFilter, currentUser]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -90,6 +99,7 @@ export default function UserManagementTable() {
       setUsers((prev) => prev.map((u) => (u._id === userId ? { ...u, role: updated.role } : u)));
       setFeedback({ type: 'success', message: t('admin.updateSuccess') });
     } catch (err) {
+      if (isSessionRefreshUnavailable(err)) return;
       setFeedback({
         type: 'error',
         message: err?.response?.data?.message || t('admin.updateError'),
@@ -115,6 +125,7 @@ export default function UserManagementTable() {
       );
       setFeedback({ type: 'success', message: t('admin.updateSuccess') });
     } catch (err) {
+      if (isSessionRefreshUnavailable(err)) return;
       setFeedback({
         type: 'error',
         message: err?.response?.data?.message || t('admin.updateError'),

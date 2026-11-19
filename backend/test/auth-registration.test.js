@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import bcrypt from 'bcrypt';
 import test from 'node:test';
 
 import User from '../src/models/user.model.js';
@@ -48,6 +49,7 @@ test('registration creates an unverified account and stores a hashed verificatio
   assert.equal(createdUser.name, 'Test User');
   assert.equal(createdUser.email, 'test.user@example.invalid');
   assert.equal('password' in createdUser, true);
+  assert.equal(bcrypt.getRounds(createdUser.password), 12);
   assert.equal(createdUser.emailVerified, false);
   assert.ok(createdUser.adultAgeConfirmedAt instanceof Date);
   assert.equal('privacyNoticeAcknowledgedAt' in createdUser, false);

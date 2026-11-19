@@ -8,6 +8,7 @@ import { getCorsOrigins } from './config/env.js';
 import { notFound, errorHandler } from './middlewares/error.middleware.js';
 import { csrfProtection } from './middlewares/csrf.middleware.js';
 import { loginLimiter, registerLimiter } from './middlewares/rate-limiters.js';
+import { bearerTokenMatches } from './utils/security.js';
 import mongoose from 'mongoose';
 import { createRateLimitStore } from './middlewares/mongo-rate-limit.store.js';
 
@@ -73,6 +74,19 @@ app.get('/api/health', (req, res) => {
   return res.status(databaseReady ? 200 : 503).json({
     success: databaseReady,
     database: databaseReady ? 'connected' : 'unavailable',
+  });
+});
+
+app.get('/api/_debug/ip', (req, res) => {
+  const expectedToken = process.env.DEBUG_IP_TOKEN;
+  if (!bearerTokenMatches(req.get('authorization'), expectedToken)) {
+    return res.sendStatus(404);
+  }
+
+  return res.json({
+    ip: req.ip,
+    ips: req.ips,
+    xForwardedFor: req.get('x-forwarded-for') || null,
   });
 });
 

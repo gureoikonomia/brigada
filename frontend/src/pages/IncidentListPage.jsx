@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { listIncidents } from '../services/incident.service';
+import { isSessionRefreshUnavailable } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import useAppSettings from '../hooks/useAppSettings';
 import IncidentCard from '../components/IncidentCard';
@@ -32,6 +33,7 @@ export default function IncidentListPage() {
 
   useEffect(() => {
     let cancelled = false;
+    let waitingForSession = false;
     setLoading(true);
     setError(null);
 
@@ -41,18 +43,22 @@ export default function IncidentListPage() {
         setItems(data.items);
         setPagination(data.pagination);
       })
-      .catch(() => {
+      .catch((requestError) => {
+        if (isSessionRefreshUnavailable(requestError)) {
+          waitingForSession = true;
+          return;
+        }
         if (!cancelled) setError(t('incidentList.loadError'));
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled && !waitingForSession) setLoading(false);
       });
 
     return () => {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, votingEnabled]);
+  }, [filters, user, votingEnabled]);
 
   const updateFilter = (key, value) => {
     setFilters((f) => ({ ...f, [key]: value, page: 1 }));

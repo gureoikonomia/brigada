@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useAppSettings from '../hooks/useAppSettings';
+import { isSessionRefreshUnavailable } from '../services/api';
 import styles from './VotingFeatureControl.module.css';
 
 export default function VotingFeatureControl() {
@@ -14,8 +15,8 @@ export default function VotingFeatureControl() {
     setError(null);
     try {
       await saveVotingSetting(event.target.checked);
-    } catch {
-      setError(t('admin.votingSettingError'));
+    } catch (error) {
+      if (!isSessionRefreshUnavailable(error)) setError(t('admin.votingSettingError'));
     } finally {
       setSaving(false);
     }

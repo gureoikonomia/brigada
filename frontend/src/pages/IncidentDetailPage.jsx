@@ -9,6 +9,7 @@ import {
   reportIncident,
 } from '../services/incident.service';
 import { blockUser } from '../services/user.service';
+import { isSessionRefreshUnavailable } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import useAppSettings from '../hooks/useAppSettings';
 import StatusBadge from '../components/StatusBadge';
@@ -49,6 +50,7 @@ export default function IncidentDetailPage() {
 
   useEffect(() => {
     let cancelled = false;
+    let waitingForSession = false;
     getIncident(id)
       .then((data) => {
         if (!cancelled) {
@@ -66,6 +68,11 @@ export default function IncidentDetailPage() {
         }
       })
       .catch((err) => {
+        if (isSessionRefreshUnavailable(err)) {
+          waitingForSession = true;
+          setError(null);
+          return;
+        }
         if (!cancelled) {
           setIncident(null);
           setError(err.response?.data?.message || t('incidentDetail.loadError'));
@@ -73,12 +80,12 @@ export default function IncidentDetailPage() {
         }
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled && !waitingForSession) setLoading(false);
       });
     return () => {
       cancelled = true;
     };
-  }, [id, t, votingEnabled]);
+  }, [id, t, user, votingEnabled]);
 
   const handleDelete = async () => {
     if (!window.confirm(t('incidentDetail.confirmDelete'))) return;
@@ -89,7 +96,9 @@ export default function IncidentDetailPage() {
       navigate('/');
     } catch (err) {
       setDeleting(false);
-      setActionError(err.response?.data?.message || t('incidentDetail.deleteError'));
+      if (!isSessionRefreshUnavailable(err)) {
+        setActionError(err.response?.data?.message || t('incidentDetail.deleteError'));
+      }
     }
   };
 
@@ -100,7 +109,9 @@ export default function IncidentDetailPage() {
       const updated = await updateIncidentStatus(id, status);
       setIncident((prev) => ({ ...prev, status: updated.status }));
     } catch (err) {
-      setActionError(err.response?.data?.message || t('moderation.statusChangeError'));
+      if (!isSessionRefreshUnavailable(err)) {
+        setActionError(err.response?.data?.message || t('moderation.statusChangeError'));
+      }
     } finally {
       setStatusSaving(false);
     }
@@ -115,7 +126,11 @@ export default function IncidentDetailPage() {
       setReportSubmitted(true);
       setReporting(false);
     } catch (reportRequestError) {
-      setReportError(reportRequestError.response?.data?.message || t('incidentDetail.reportError'));
+      if (!isSessionRefreshUnavailable(reportRequestError)) {
+        setReportError(
+          reportRequestError.response?.data?.message || t('incidentDetail.reportError'),
+        );
+      }
     } finally {
       setReportSubmitting(false);
     }
@@ -129,7 +144,9 @@ export default function IncidentDetailPage() {
       await blockUser(incident.creator.id);
       navigate('/');
     } catch (blockError) {
-      setActionError(blockError.response?.data?.message || t('incidentDetail.blockError'));
+      if (!isSessionRefreshUnavailable(blockError)) {
+        setActionError(blockError.response?.data?.message || t('incidentDetail.blockError'));
+      }
       setBlocking(false);
     }
   };
@@ -165,7 +182,9 @@ export default function IncidentDetailPage() {
       setEditDraft(null);
       setEditImages([]);
     } catch (err) {
-      setEditError(err.response?.data?.message || t('incidentDetail.editError'));
+      if (!isSessionRefreshUnavailable(err)) {
+        setEditError(err.response?.data?.message || t('incidentDetail.editError'));
+      }
     } finally {
       setSavingEdit(false);
     }

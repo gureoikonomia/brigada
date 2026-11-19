@@ -20,9 +20,9 @@ export function errorHandler(err, req, res, _next) {
 
   // Errores de negocio
   if (err.statusCode) {
-    return res.status(err.statusCode).json({
-      message: err.message,
-    });
+    const response = { message: err.message };
+    if (err.code) response.code = err.code;
+    return res.status(err.statusCode).json(response);
   }
 
   // Errores de validación de Mongoose

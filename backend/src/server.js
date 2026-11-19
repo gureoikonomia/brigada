@@ -7,6 +7,12 @@ import mongoose from 'mongoose';
 import { startMediaDeletionWorker } from './services/media-deletion.service.js';
 import { initializeRateLimitStores } from './middlewares/mongo-rate-limit.store.js';
 import IncidentReport from './models/incidentReport.model.js';
+import {
+  createIndexesWithDiagnostics,
+  migrateSessionRefreshIndex,
+} from './services/index-maintenance.service.js';
+
+export { createIndexesWithDiagnostics, migrateSessionRefreshIndex };
 
 const PORT = process.env.PORT || 3000;
 
@@ -39,7 +45,8 @@ const startServer = async () => {
     validateEnvironment();
     await connectDB();
     await migrateIncidentReportIndexes();
-    await Promise.all(Object.values(mongoose.models).map((model) => model.createIndexes()));
+    await migrateSessionRefreshIndex();
+    await createIndexesWithDiagnostics();
     await initializeRateLimitStores();
     startMediaDeletionWorker();
 

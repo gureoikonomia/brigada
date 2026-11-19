@@ -1,4 +1,5 @@
 import { getEmailConfiguration } from './email.js';
+import { parseDurationMs } from '../utils/duration.js';
 
 const PRODUCTION_FRONTEND_ORIGIN = 'https://appbrigada.netlify.app';
 const CAPACITOR_ORIGINS = ['capacitor://localhost', 'https://localhost'];
@@ -34,21 +35,23 @@ export function getCorsOrigins() {
   return new Set(configuredOrigins);
 }
 
-export function validateJwtExpiry(value = process.env.JWT_EXPIRES_IN || '1h') {
-  const match = /^([1-9]\d*)(s|m|h|d)$/.exec(value);
-  if (!match) {
-    throw new Error('JWT_EXPIRES_IN debe usar segundos, minutos, horas o días (por ejemplo, 1h)');
+export function validateJwtExpiry(value = process.env.JWT_EXPIRES_IN || '30m') {
+  const durationMs = parseDurationMs(value);
+  if (durationMs > 60 * 60 * 1000) {
+    throw new Error('JWT_EXPIRES_IN no puede superar 1 hora');
   }
+}
 
-  const unitsInSeconds = { s: 1, m: 60, h: 3600, d: 86400 };
-  const seconds = Number(match[1]) * unitsInSeconds[match[2]];
-  if (!Number.isSafeInteger(seconds) || seconds > 86400) {
-    throw new Error('JWT_EXPIRES_IN no puede superar 24 horas');
+export function validateRefreshTtl(value = process.env.REFRESH_TTL || '30d') {
+  const durationMs = parseDurationMs(value);
+  if (durationMs > 90 * 24 * 60 * 60 * 1000) {
+    throw new Error('REFRESH_TTL no puede superar 90 días');
   }
 }
 
 export function validateEnvironment() {
   validateJwtExpiry();
+  validateRefreshTtl();
   if (process.env.NODE_ENV !== 'production') return;
 
   if (process.env.TRUST_PROXY_HOPS !== undefined && !/^\d+$/.test(process.env.TRUST_PROXY_HOPS)) {
